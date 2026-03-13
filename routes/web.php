@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Developer\DashboardController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -12,9 +13,16 @@ Route::middleware(['auth'])->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
-    Route::get('/developer/dashboard', function () {
-        return view('developer.dashboard');
-    })->middleware('role:developer')->name('developer.dashboard');
+    Route::middleware(['auth', 'role:developer'])->group(function () {
+        Route::get('/developer/dashboard', [DashboardController::class, 'index'])->name('developer.dashboard');
+        
+        // Manajemen User
+        Route::post('developer/users/bulk-update-wilayah', [\App\Http\Controllers\Developer\UserController::class, 'bulkUpdateWilayah'])->name('developer.users.bulk-update-wilayah');
+        Route::post('developer/users/bulk-delete', [\App\Http\Controllers\Developer\UserController::class, 'bulkDelete'])->name('developer.users.bulk-delete');
+        Route::resource('developer/users', \App\Http\Controllers\Developer\UserController::class)->names('developer.users');
+        Route::post('developer/users/import', [\App\Http\Controllers\Developer\UserController::class, 'import'])->name('developer.users.import');
+        Route::get('developer/users/template/download', [\App\Http\Controllers\Developer\UserController::class, 'downloadTemplate'])->name('developer.users.template');
+    });
 
     Route::get('/pc/dashboard', function () {
         return view('pc.dashboard');

@@ -1,36 +1,101 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $title ?? 'Lazisnu App' }}</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/developer-dashboard.js'])
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="min-h-screen bg-zinc-100 text-zinc-900 antialiased">
+    <div class="flex min-h-screen gap-4 p-4">
+        <aside class="hidden w-64 shrink-0 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm lg:flex lg:flex-col">
+            <div class="mb-8 flex flex-col items-center gap-3 text-center">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-35 object-contain">
+            </div>
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+            <div class="mb-3 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
+                Menu
+            </div>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+            <nav class="flex flex-1 flex-col gap-1">
+                <a href="{{ route('developer.dashboard') }}"
+                   class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('developer.dashboard') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                    <i class="fas fa-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-            @include('layouts.navigation')
+                <a href="{{ route('developer.users.index') }}"
+                   class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('developer.users.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                    <i class="fas fa-users text-sm"></i>
+                    <span>Manajemen User</span>
+                </a>
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+                <a href="#"
+                   class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-green-700">
+                    <i class="fas fa-map-marker-alt text-sm"></i>
+                    <span>Kelola Wilayah</span>
+                </a>
+
+                <a href="#"
+                   class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-green-700">
+                    <i class="fas fa-chart-bar text-sm"></i>
+                    <span>Laporan</span>
+                </a>
+            </nav>
+
+
+        </aside>
+
+        <div class="flex-1 rounded-3xl border border-zinc-200 bg-white p-4 shadow-sm lg:p-5">
+            <header class="mb-4 flex flex-col gap-4 rounded-3xl border border-zinc-200 bg-zinc-50 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold tracking-tight">@yield('page_title', 'Dashboard')</h2>
+                    <p class="mt-1 text-sm text-zinc-500">
+                        @yield('page_subtitle', 'Kelola sistem dengan tampilan yang rapi dan efisien.')
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-3 self-start lg:self-auto relative" x-data="{ open: false }">
+                    <button @click="open = !open" @click.away="open = false" class="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white px-3 py-2 text-left transition hover:bg-zinc-50 focus:outline-none">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-lime-400 to-green-700 text-sm font-bold text-white">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
+                        <div class="leading-tight">
+                            <div class="text-sm font-semibold">{{ auth()->user()->name }}</div>
+                            <div class="text-xs text-zinc-500">
+                                {{ auth()->user()->role === 'admin_it' ? 'developer' : auth()->user()->role }}
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down ml-2 text-xs text-zinc-400 transition-transform duration-200" :class="{'rotate-180': open}"></i>
+                    </button>
+
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-100" 
+                         x-transition:enter-start="transform opacity-0 scale-95" 
+                         x-transition:enter-end="transform opacity-100 scale-100" 
+                         x-transition:leave="transition ease-in duration-75" 
+                         x-transition:leave-start="transform opacity-100 scale-100" 
+                         x-transition:leave-end="transform opacity-0 scale-95" 
+                         class="absolute right-0 top-full mt-2 w-48 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-lg z-50" 
+                         style="display: none;" x-cloak>
+                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-zinc-700 hover:bg-zinc-50 hover:text-green-700 transition">
+                            <i class="fas fa-user-edit w-4"></i>
+                            <span>Edit Profile</span>
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="flex w-full items-center gap-3 px-4 py-3 text-sm font-medium text-zinc-700 hover:bg-red-50 hover:text-red-600 transition text-left">
+                                <i class="fas fa-sign-out-alt w-4 transition-colors"></i>
+                                <span>Logout</span>
+                            </button>
+                        </form>
                     </div>
-                </header>
-            @endisset
+                </div>
+            </header>
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+            @yield('content')
         </div>
-    </body>
+    </div>
+</body>
 </html>

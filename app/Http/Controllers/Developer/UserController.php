@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Developer;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Wilayah;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -53,6 +54,14 @@ class UserController extends Controller
             'wilayah_id' => $request->wilayah_id
         ]);
 
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'BULK_UPDATE_USER_WILAYAH',
+            'description' => 'Mengubah wilayah untuk ' . count($request->user_ids) . ' user.',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
         return redirect()->route('developer.users.index')->with('success', count($request->user_ids) . ' user berhasil diperbarui wilayahnya.');
     }
 
@@ -74,6 +83,14 @@ class UserController extends Controller
 
         User::whereIn('id', $userIds)->delete();
 
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'BULK_DELETE_USER',
+            'description' => 'Menghapus ' . count($userIds) . ' user.',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
         return redirect()->route('developer.users.index')->with('success', count($userIds) . ' user berhasil dihapus.');
     }
 
@@ -93,7 +110,15 @@ class UserController extends Controller
 
         $validated['password'] = Hash::make($validated['password']);
 
-        User::create($validated);
+        $user = User::create($validated);
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'CREATE_USER',
+            'description' => 'Menambahkan user baru: ' . $user->name,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
 
         return redirect()->route('developer.users.index')->with('success', 'User berhasil ditambahkan.');
     }
@@ -120,6 +145,14 @@ class UserController extends Controller
 
         $user->update($validated);
 
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'UPDATE_USER',
+            'description' => 'Memperbarui user: ' . $user->name,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent()
+        ]);
+
         return redirect()->route('developer.users.index')->with('success', 'User berhasil diperbarui.');
     }
 
@@ -134,7 +167,16 @@ class UserController extends Controller
             return redirect()->route('developer.users.index')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
 
+        $userName = $user->name;
         $user->delete();
+
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'DELETE_USER',
+            'description' => 'Menghapus user: ' . $userName,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent()
+        ]);
 
         return redirect()->route('developer.users.index')->with('success', 'User berhasil dihapus.');
     }
@@ -150,6 +192,15 @@ class UserController extends Controller
 
         try {
             Excel::import(new UsersImport, $request->file('file'));
+
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'IMPORT_USER',
+                'description' => 'Mengimport data user dari Excel',
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent()
+            ]);
+
             return redirect()->route('developer.users.index')->with('success', 'Data user berhasil diimport.');
         } catch (\Exception $e) {
             return redirect()->route('developer.users.index')->with('error', 'Terjadi kesalahan saat import data: ' . $e->getMessage());

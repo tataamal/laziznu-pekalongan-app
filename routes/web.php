@@ -22,6 +22,12 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('developer/users', \App\Http\Controllers\Developer\UserController::class)->names('developer.users');
         Route::post('developer/users/import', [\App\Http\Controllers\Developer\UserController::class, 'import'])->name('developer.users.import');
         Route::get('developer/users/template/download', [\App\Http\Controllers\Developer\UserController::class, 'downloadTemplate'])->name('developer.users.template');
+        
+        // Manajemen Wilayah
+        Route::post('developer/wilayah/bulk-delete', [\App\Http\Controllers\Developer\WilayahController::class, 'bulkDelete'])->name('developer.wilayah.bulk-delete');
+        Route::post('developer/wilayah/import', [\App\Http\Controllers\Developer\WilayahController::class, 'import'])->name('developer.wilayah.import');
+        Route::get('developer/wilayah/template/download', [\App\Http\Controllers\Developer\WilayahController::class, 'downloadTemplate'])->name('developer.wilayah.template');
+        Route::resource('developer/wilayah', \App\Http\Controllers\Developer\WilayahController::class)->names('developer.wilayah');
     });
 
     Route::get('/pc/dashboard', function () {

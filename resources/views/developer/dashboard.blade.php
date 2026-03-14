@@ -8,7 +8,7 @@
         <div class="rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm">
             <div class="text-sm font-medium text-white/90">Total User Aktif</div>
             <div class="mt-4 text-4xl font-bold">{{ $totalAllUsers }}</div>
-            <div class="mt-3 text-xs text-white/80">Akumulasi seluruh user sistem</div>
+            <div class="mt-3 text-xs text-white/80">Total pengguna aktif</div>
         </div>
 
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">

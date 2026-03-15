@@ -4,6 +4,9 @@
 @section('page_subtitle', 'Pantau pengguna, aktivitas, dan statistik sistem.')
 
 @section('content')
+    @push('vite-scripts')
+        @vite('resources/js/developer-dashboard.js')
+    @endpush
     <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div class="rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm">
             <div class="text-sm font-medium text-white/90">Total User Aktif</div>

@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Lazisnu App' }}</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/developer-dashboard.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('vite-scripts')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body class="min-h-screen bg-zinc-100 text-zinc-900 antialiased">
     <div class="flex min-h-screen gap-4 p-4">
@@ -19,29 +21,64 @@
             </div>
 
             <nav class="flex flex-1 flex-col gap-1">
-                <a href="{{ route('developer.dashboard') }}"
-                   class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('developer.dashboard') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
-                    <i class="fas fa-home text-sm"></i>
-                    <span>Dashboard</span>
-                </a>
+                @if(auth()->user()->isDeveloper())
+                    <a href="{{ route('developer.dashboard') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('developer.dashboard') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-home text-sm"></i>
+                        <span>Dashboard</span>
+                    </a>
 
-                <a href="{{ route('developer.users.index') }}"
-                   class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('developer.users.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
-                    <i class="fas fa-users text-sm"></i>
-                    <span>Manajemen User</span>
-                </a>
+                    <a href="{{ route('developer.users.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('developer.users.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-users text-sm"></i>
+                        <span>Manajemen User</span>
+                    </a>
 
-                <a href="{{ route('developer.wilayah.index') }}"
-                   class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('developer.wilayah.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
-                    <i class="fas fa-map-marker-alt text-sm"></i>
-                    <span>Kelola Wilayah</span>
-                </a>
+                    <a href="{{ route('developer.wilayah.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('developer.wilayah.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-map-marker-alt text-sm"></i>
+                        <span>Kelola Wilayah</span>
+                    </a>
 
-                <a href="#"
-                   class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-green-700">
-                    <i class="fas fa-chart-bar text-sm"></i>
-                    <span>Laporan</span>
-                </a>
+                    <a href="#"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-green-700">
+                        <i class="fas fa-chart-bar text-sm"></i>
+                        <span>Laporan</span>
+                    </a>
+                @elseif(in_array(auth()->user()->role, ['ranting', 'mwc', 'pc']))
+                    @php
+                        $dashboardRoute = auth()->user()->role . '.dashboard';
+                    @endphp
+                    <a href="{{ Route::has($dashboardRoute) ? route($dashboardRoute) : '#' }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs($dashboardRoute) ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-home text-sm"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <a href="{{ route('ranting.income.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.income.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-wallet text-sm"></i>
+                        <span>Input Koin NU</span>
+                    </a>
+
+                    <a href="#"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('distributions.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-hand-holding-usd text-sm"></i>
+                        <span>Catat Pentasarufan</span>
+                    </a>
+
+                    <a href="#"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-green-700">
+                        <i class="fas fa-history text-sm"></i>
+                        <span>Riwayat Transaksi</span>
+                    </a>
+
+                    <a href="#"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-green-700">
+                        <i class="fas fa-headset text-sm"></i>
+                        <span>Call Center Admin {{ strtoupper(auth()->user()->role) }}</span>
+                    </a>
+                @endif
             </nav>
 
 
@@ -97,5 +134,63 @@
             @yield('content')
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            @if(session('success'))
+                Toast.fire({
+                    icon: 'success',
+                    title: "{{ session('success') }}"
+                });
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: "{{ session('error') }}",
+                });
+            @endif
+
+            @if($errors->any())
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Terjadi kesalahan validasi',
+                    text: "{{ $errors->first() }}"
+                });
+            @endif
+
+            // Global Delete Confirmation
+            window.confirmDelete = function(formId) {
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Data yang dihapus tidak dapat dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById(formId).submit();
+                    }
+                });
+            };
+        });
+    </script>
 </body>
 </html>

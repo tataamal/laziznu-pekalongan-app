@@ -56,4 +56,14 @@ class User extends Authenticatable
     {
         return $this->role === 'ranting';
     }
+
+    public function incomes()
+    {
+        return $this->hasMany(Income::class);
+    }
+
+    public function distributions()
+    {
+        return $this->hasMany(Distribution::class);
+    }
 }

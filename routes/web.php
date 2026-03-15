@@ -40,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/ranting/dashboard', [RantingDashboardController::class, 'index'])->name('ranting.dashboard');
         Route::delete('/ranting/income/bulk-delete', [InputPemasukanController::class, 'bulkDelete'])->name('ranting.income.bulk-delete');
         Route::resource('ranting/income', InputPemasukanController::class)->names('ranting.income');
+        Route::view('/ranting/call-center', 'ranting.call-center')->name('ranting.call-center');
     });
 
     Route::get('/pc/dashboard', [DashboardController::class, 'index'])

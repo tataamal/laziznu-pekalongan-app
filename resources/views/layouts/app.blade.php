@@ -66,15 +66,9 @@
                         <i class="fas fa-hand-holding-usd text-sm"></i>
                         <span>Catat Pentasarufan</span>
                     </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-green-700">
-                        <i class="fas fa-history text-sm"></i>
-                        <span>Riwayat Transaksi</span>
-                    </a>
-
-                    <a href="#"
-                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-green-700">
+                    
+                    <a href="{{ route('ranting.call-center') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.call-center') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
                         <i class="fas fa-headset text-sm"></i>
                         <span>Call Center Admin {{ strtoupper(auth()->user()->role) }}</span>
                     </a>

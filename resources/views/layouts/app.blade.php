@@ -46,7 +46,7 @@
                         <i class="fas fa-chart-bar text-sm"></i>
                         <span>Laporan</span>
                     </a>
-                @elseif(in_array(auth()->user()->role, ['ranting', 'mwc', 'pc']))
+                @elseif(auth()->user()->isRanting())
                     @php
                         $dashboardRoute = auth()->user()->role . '.dashboard';
                     @endphp
@@ -66,6 +66,72 @@
                        class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.distribution.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
                         <i class="fas fa-hand-holding-usd text-sm"></i>
                         <span>Catat Pentasarufan</span>
+                    </a>
+                    
+                    <a href="{{ route('ranting.call-center') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.call-center') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-headset text-sm"></i>
+                        <span>Call Center Admin {{ strtoupper(auth()->user()->role) }}</span>
+                    </a>
+                @elseif(auth()->user()->isMwc())
+                    @php
+                        $dashboardRoute = auth()->user()->role . '.dashboard';
+                    @endphp
+                    <a href="{{ Route::has($dashboardRoute) ? route($dashboardRoute) : '#' }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs($dashboardRoute) ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-home text-sm"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <a href="{{ route('ranting.income.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.income.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-clipboard-check text-sm"></i>
+                        <span>Persetujuan Input Koin NU</span>
+                    </a>
+
+                    <a href="{{ route('ranting.distribution.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.distribution.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-file-signature text-sm"></i>
+                        <span>Persetujuan Catat Pentasarufan</span>
+                    </a>
+
+                    <a href="{{ route('ranting.distribution.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.distribution.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-hand-holding-heart text-sm"></i>
+                        <span>Input Data Infaq</span>
+                    </a>
+                    
+                    <a href="{{ route('ranting.call-center') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.call-center') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-headset text-sm"></i>
+                        <span>Call Center Admin {{ strtoupper(auth()->user()->role) }}</span>
+                    </a>
+                @elseif(auth()->user()->isPc())
+                    @php
+                        $dashboardRoute = auth()->user()->role . '.dashboard';
+                    @endphp
+                    <a href="{{ Route::has($dashboardRoute) ? route($dashboardRoute) : '#' }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs($dashboardRoute) ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-home text-sm"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <a href="{{ route('ranting.income.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.income.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-coins text-sm"></i>
+                        <span>Data Transaksi Koin NU</span>
+                    </a>
+
+                    <a href="{{ route('ranting.distribution.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.distribution.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-list-check text-sm"></i>
+                        <span>Data Transaksi Pentasarufan</span>
+                    </a>
+
+                    <a href="{{ route('ranting.distribution.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.distribution.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-heart text-sm"></i>
+                        <span>Data Transaksi Infaq</span>
                     </a>
                     
                     <a href="{{ route('ranting.call-center') }}"

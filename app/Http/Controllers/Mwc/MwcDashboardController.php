@@ -4,16 +4,19 @@ namespace App\Http\Controllers\Mwc;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\Models\Income;
+use App\Models\Distribution;
 
-class DashboardController extends Controller
+class MwcDashboardController extends Controller
 {
     public function index()
     {
-        $incomes = \App\Models\Income::with('user')->get();
-        $distributions = \App\Models\Distribution::with('user')->get();
-
+        $incomes = Income::with('user')->get();
+        $distributions = Distribution::with('user')->get();
         $totalIncome = $incomes->sum('net_income');
         $totalExpense = $distributions->sum('cost_amount');
+        $totalInfaq = $distributions->sum('cost_amount');
         
         $startOfMonth = now()->startOfMonth();
         $transactionsThisMonth = $incomes->where('date', '>=', $startOfMonth->format('Y-m-d'))->count() + 
@@ -36,29 +39,42 @@ class DashboardController extends Controller
             return $distributions->where('pilar_type', $type)->sum('cost_amount');
         });
 
+        // Placeholder if no distribution data
+        if ($pieData->sum() === 0) {
+            $pieLabels = collect(['Belum ada data']);
+            $pieData = collect([1]); // Use 1 as placeholder for donut display
+            $hasPieData = false;
+        } else {
+            $hasPieData = true;
+        }
+
         // Trend Chart (1 Minggu Terakhir)
         $incomeDates = $incomes->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('Y-m-d'); });
         $distributionDates = $distributions->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('Y-m-d'); });
 
-        $allDates = $incomeDates->merge($distributionDates)->unique()->sortDesc()->take(7)->sort()->values();
+        $allDates = $incomeDates->merge($distributionDates)->unique();
+        
+        // Ensure we always have the last 7 days if data is sparse or empty
+        $last7Days = collect(range(6, 0))->map(function($i) { return now()->subDays($i)->format('Y-m-d'); });
+        $displayDates = $last7Days->merge($allDates)->unique()->sortDesc()->take(7)->sort()->values();
         
         $trendData = [
-            'labels' => $allDates->map(function($d) { return \Carbon\Carbon::parse($d)->format('d-m-Y'); }),
+            'labels' => $displayDates->map(function($d) { return \Carbon\Carbon::parse($d)->format('d-m-Y'); }),
             'income' => [
-                'data' => $allDates->map(function($date) use ($incomes) {
+                'data' => $displayDates->map(function($date) use ($incomes) {
                     return $incomes->filter(function($inc) use ($date) {
                         return \Carbon\Carbon::parse($inc->date)->format('Y-m-d') === $date;
                     })->sum('net_income');
                 }),
             ],
             'distribution' => [
-                'labels' => $allDates->map(function($date) use ($distributions) {
+                'labels' => $displayDates->map(function($date) use ($distributions) {
                     $dist = $distributions->filter(function($dst) use ($date) {
                         return \Carbon\Carbon::parse($dst->date)->format('Y-m-d') === $date;
                     });
                     return $dist->count() > 0 ? $dist->pluck('pilar_type')->implode(', ') : '-';
                 }),
-                'data' => $allDates->map(function($date) use ($distributions) {
+                'data' => $displayDates->map(function($date) use ($distributions) {
                     return $distributions->filter(function($dst) use ($date) {
                         return \Carbon\Carbon::parse($dst->date)->format('Y-m-d') === $date;
                     })->sum('cost_amount');
@@ -74,7 +90,8 @@ class DashboardController extends Controller
             ],
             'pie' => [
                 'labels' => $pieLabels,
-                'data' => $pieData
+                'data' => $pieData,
+                'isEmpty' => !$hasPieData
             ],
             'trend' => $trendData
         ]);
@@ -108,7 +125,7 @@ class DashboardController extends Controller
         $latestTransactions = $latestTransactions->sortByDesc('tanggal')->values();
 
         return view('mwc.dashboard', compact(
-            'totalIncome', 'totalExpense', 'transactionsThisMonth', 'usableFund', 
+            'totalIncome', 'totalExpense', 'totalInfaq', 'transactionsThisMonth', 'usableFund', 
             'chartDataJson', 'latestTransactions'
         ));
     }

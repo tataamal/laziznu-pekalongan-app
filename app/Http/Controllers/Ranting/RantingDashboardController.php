@@ -9,11 +9,12 @@ class RantingDashboardController extends Controller
 {
     public function index()
     {
-        $incomes = \App\Models\Income::with('user')->get();
-        $distributions = \App\Models\Distribution::with('user')->get();
+        $userId = auth()->id();
+        $incomes = \App\Models\Income::with('user')->where('user_id', $userId)->get();
+        $distributions = \App\Models\Distribution::with('user')->where('user_id', $userId)->get();
 
-        $totalIncome = $incomes->sum('net_income');
-        $totalExpense = $distributions->sum('cost_amount');
+        $totalIncome = $incomes->where('status', 'validated')->sum('net_income');
+        $totalExpense = $distributions->where('status', 'validated')->sum('cost_amount');
         
         $startOfMonth = now()->startOfMonth();
         $transactionsThisMonth = $incomes->where('date', '>=', $startOfMonth->format('Y-m-d'))->count() + 
@@ -25,15 +26,16 @@ class RantingDashboardController extends Controller
         $months = collect(range(5, 0))->map(function($i) { return now()->subMonths($i)->format('Y-m'); });
         $barLabels = $months->map(function($m) { return \Carbon\Carbon::createFromFormat('Y-m', $m)->translatedFormat('M'); });
         $barData = $months->map(function($m) use ($incomes) { 
-            return $incomes->filter(function($inc) use ($m) { 
+            return $incomes->where('status', 'validated')->filter(function($inc) use ($m) { 
                 return \Carbon\Carbon::parse($inc->date)->format('Y-m') === $m; 
             })->sum('net_income'); 
         });
 
         // Pie Chart (Distribusi Pilar Infaq)
-        $pieLabels = $distributions->pluck('pilar_type')->unique()->values();
-        $pieData = $pieLabels->map(function($type) use ($distributions) {
-            return $distributions->where('pilar_type', $type)->sum('cost_amount');
+        $validatedDistributions = $distributions->where('status', 'validated');
+        $pieLabels = $validatedDistributions->pluck('pilar_type')->unique()->values();
+        $pieData = $pieLabels->map(function($type) use ($validatedDistributions) {
+            return $validatedDistributions->where('pilar_type', $type)->sum('cost_amount');
         });
 
         // Placeholder if no distribution data
@@ -46,8 +48,8 @@ class RantingDashboardController extends Controller
         }
 
         // Trend Chart (1 Minggu Terakhir)
-        $incomeDates = $incomes->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('Y-m-d'); });
-        $distributionDates = $distributions->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('Y-m-d'); });
+        $incomeDates = $incomes->where('status', 'validated')->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('Y-m-d'); });
+        $distributionDates = $distributions->where('status', 'validated')->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('Y-m-d'); });
 
         $allDates = $incomeDates->merge($distributionDates)->unique();
         
@@ -59,20 +61,20 @@ class RantingDashboardController extends Controller
             'labels' => $displayDates->map(function($d) { return \Carbon\Carbon::parse($d)->format('d-m-Y'); }),
             'income' => [
                 'data' => $displayDates->map(function($date) use ($incomes) {
-                    return $incomes->filter(function($inc) use ($date) {
+                    return $incomes->where('status', 'validated')->filter(function($inc) use ($date) {
                         return \Carbon\Carbon::parse($inc->date)->format('Y-m-d') === $date;
                     })->sum('net_income');
                 }),
             ],
             'distribution' => [
                 'labels' => $displayDates->map(function($date) use ($distributions) {
-                    $dist = $distributions->filter(function($dst) use ($date) {
+                    $dist = $distributions->where('status', 'validated')->filter(function($dst) use ($date) {
                         return \Carbon\Carbon::parse($dst->date)->format('Y-m-d') === $date;
                     });
                     return $dist->count() > 0 ? $dist->pluck('pilar_type')->implode(', ') : '-';
                 }),
                 'data' => $displayDates->map(function($date) use ($distributions) {
-                    return $distributions->filter(function($dst) use ($date) {
+                    return $distributions->where('status', 'validated')->filter(function($dst) use ($date) {
                         return \Carbon\Carbon::parse($dst->date)->format('Y-m-d') === $date;
                     })->sum('cost_amount');
                 }),

@@ -4,21 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Income extends Model
+class InfaqTransaction extends Model
 {
+    protected $table = 'infaq_transaction';
+
     protected $fillable = [
         'user_id',
         'transaction_code',
-        'date',
-        'gross_profit',
-        'operating_expenses',
-        'net_income',
+        'transaction_date',
+        'transaction_type',
+        'infaq_type',
+        'description',
+        'gross_amount',
         'percentage',
+        'net_amount',
         'allowed_budget',
-        'hak_amil',
-        'status',
-        'approved_by',
-        'approved_at',
     ];
 
     public function user()

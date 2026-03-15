@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('page_title', 'Dashboard MWC')
-@section('page_subtitle', 'Kelola sistem dengan tampilan yang rapi dan efisien.')
+@section('page_subtitle', 'Kalola Persetujuan Laporan KOIN NU dan Transaksi Infaq.')
 
 @section('content')
     @push('vite-scripts')
@@ -10,27 +10,26 @@
 
     <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div class="rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm">
-            <div class="text-sm font-medium text-white/90">Total Pemasukan</div>
+            <div class="text-sm font-medium text-white/90">Saldo Infaq</div>
             <div class="mt-4 text-3xl font-bold">Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-white/80">Total pemasukan sejauh ini</div>
+            <div class="mt-3 text-xs text-white/80">Total saldo infaq sejauh ini</div>
         </div>
 
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Total Pengeluaran</div>
+            <div class="text-sm font-medium text-zinc-600">Saldo KOIN NU MWC</div>
+            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($totalInfaq, 0, ',', '.') }}</div>
+            <div class="mt-3 text-xs text-zinc-500">Total saldo koin nu sejauh ini</div>
+        </div>
+
+        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <div class="text-sm font-medium text-zinc-600">Jumlah Pengajuan Approval KOIN NU</div>
             <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($totalExpense, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Total pentasarufan sejauh ini</div>
+            <div class="mt-3 text-xs text-zinc-500">Jumlah Pengajuan Approval KOIN NU</div>
         </div>
-
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Transaksi Bulan Ini</div>
-            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">{{ $transactionsThisMonth }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Jumlah transaksi masuk & keluar</div>
-        </div>
-
-        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Dana yang Dapat Digunakan</div>
+            <div class="text-sm font-medium text-zinc-600">Jumlah Pengajuan Approval Pentasarufan</div>
             <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($usableFund, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Sisa saldo saat ini</div>
+            <div class="mt-3 text-xs text-zinc-500">Jumlah Pengajuan Approval Pentasarufan</div>
         </div>
     </section>
 

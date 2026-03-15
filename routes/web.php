@@ -40,6 +40,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/ranting/dashboard', [RantingDashboardController::class, 'index'])->name('ranting.dashboard');
         Route::delete('/ranting/income/bulk-delete', [InputPemasukanController::class, 'bulkDelete'])->name('ranting.income.bulk-delete');
         Route::resource('ranting/income', InputPemasukanController::class)->names('ranting.income');
+        
+        // Pentasarufan (Distribution)
+        Route::delete('/ranting/distribution/bulk-delete', [\App\Http\Controllers\Ranting\DistributionController::class, 'bulkDelete'])->name('ranting.distribution.bulk-delete');
+        Route::resource('ranting/distribution', \App\Http\Controllers\Ranting\DistributionController::class)->names('ranting.distribution');
+
         Route::view('/ranting/call-center', 'ranting.call-center')->name('ranting.call-center');
     });
 

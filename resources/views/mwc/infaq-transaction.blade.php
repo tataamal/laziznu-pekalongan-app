@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('page_title', 'Data Transaksi Infaq')
-@section('page_subtitle', 'Manejeman dana infaq MWC.')
+@section('page_title', 'Data Transaksi Infaq MWC')
+@section('page_subtitle', 'Kelola infaq yang masuk ke MWC.')
 
 @section('content')
     <div class="w-full space-y-8">
@@ -12,7 +12,7 @@
                     <i class="fas fa-hand-holding-heart text-xl"></i>
                 </div>
                 <div>
-                    <h2 class="text-xl font-bold text-slate-900">Transmit Infaq</h2>
+                    <h2 class="text-xl font-bold text-slate-900">Riwayat Infaq MWC</h2>
                     <p class="text-sm text-slate-500">Total {{ $items->count() }} transaksi tercatat</p>
                 </div>
             </div>
@@ -81,11 +81,11 @@
                             <th class="px-6 py-4 text-center w-12">
                                 <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-green-600 focus:ring-green-500">
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Kode & Tanggal</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Tipe & Jenis</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Info Transaksi</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jenis Transaksi</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Keterangan</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Gross Amount</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">% & Net Income</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jumlah Total</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jumlah Bersih</th>
                             <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500 w-[120px]">Aksi</th>
                         </tr>
                     </thead>
@@ -118,12 +118,6 @@
                                     <div class="font-bold text-slate-900">Rp {{ number_format($item->gross_amount, 0, ',', '.') }}</div>
                                 </td>
                                 <td class="px-6 py-5">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <span class="inline-flex items-center rounded-lg bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-100">
-                                            {{ floatval($item->percentage) }}%
-                                        </span>
-                                        <span class="text-[10px] font-medium text-slate-400 uppercase tracking-tighter">Net</span>
-                                    </div>
                                     <div class="font-bold text-green-700">Rp {{ number_format($item->net_amount, 0, ',', '.') }}</div>
                                 </td>
                                 <td class="px-6 py-5">
@@ -208,10 +202,11 @@
                         <label for="infaq_type" class="text-sm font-semibold text-slate-700 ml-1">Jenis Infaq</label>
                         <select name="infaq_type" id="infaq_type" required class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 p-3.5 text-sm transition focus:border-green-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-green-500/10">
                             <option value="" disabled selected>Pilih Jenis Infaq</option>
-                            <option value="Infaq Jumat">Infaq Jumat</option>
-                            <option value="Sedekah Subuh">Sedekah Subuh</option>
-                            <option value="Infaq Kaleng">Infaq Kaleng</option>
-                            <option value="Infaq Donasi">Infaq Donasi</option>
+                            <option value="Infaq UMKM">Infaq UMKM</option>
+                            <option value="Infaq Toko">Infaq Toko</option>
+                            <option value="Infaq LP">Infaq LP</option>
+                            <option value="Infaq Layanan">Infaq Layanan</option>
+                            <option value="Infaq Lainnya">Infaq Lainnya</option>
                         </select>
                     </div>
 
@@ -224,7 +219,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {{-- Gross --}}
                         <div class="space-y-2">
-                            <label for="gross_amount" class="text-sm font-semibold text-slate-700 ml-1">Total Gross (Rp)</label>
+                            <label for="gross_amount" class="text-sm font-semibold text-slate-700 ml-1">Jumlah Total (Rp)</label>
                             <input type="number" name="gross_amount" id="gross_amount" required class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 p-3.5 text-sm transition focus:border-green-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-green-500/10">
                         </div>
 
@@ -241,7 +236,7 @@
                     {{-- Dynamic Result display --}}
                     <div class="p-4 rounded-2xl bg-green-50 border border-green-100 flex items-center justify-between">
                         <div>
-                            <div class="text-[10px] font-bold text-green-600 uppercase tracking-wider mb-0.5">Estimated Net Income (Gross - 10%)</div>
+                            <div class="text-[10px] font-bold text-green-600 uppercase tracking-wider mb-0.5">Jumlah Bersih (Jumlah Total - 10%)</div>
                             <div class="text-2xl font-black text-green-900" id="netDisplay">Rp 0</div>
                         </div>
                         <i class="fas fa-calculator text-2xl text-green-200"></i>

@@ -13,6 +13,9 @@ class ApprovalDistributionKoinNU extends Controller
     {
         $items = Distribution::with('user')
             ->where('status', 'on_process')
+            ->whereHas('user', function($query) {
+                $query->where('wilayah_id', Auth::user()->wilayah_id);
+            })
             ->latest()
             ->get();
 

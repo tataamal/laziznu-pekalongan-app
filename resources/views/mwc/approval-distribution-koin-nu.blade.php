@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('page_title', 'Persetujuan Catat Pentasarufan')
+@section('page_title', 'Approval Pentasarufan Koin NU')
 @section('page_subtitle', 'Tinjau dan setujui laporan pentasarufan (pengeluaran) dari Ranting.')
 
 @section('content')
@@ -38,13 +38,13 @@
 
                 {{-- Stats Summary --}}
                 <div class="flex items-center justify-end">
-                    <div class="px-6 py-3 bg-green-50 rounded-2xl border border-green-100 flex items-center gap-4">
-                        <div class="h-10 w-10 rounded-xl bg-green-100 flex items-center justify-center text-green-600">
-                            <i class="fas fa-hand-holding-heart"></i>
+                    <div class="px-6 py-3 bg-amber-50 rounded-2xl border border-amber-100 flex items-center gap-4">
+                        <div class="h-10 w-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
+                            <i class="fas fa-clock"></i>
                         </div>
                         <div>
-                            <div class="text-[10px] font-bold uppercase text-green-500 tracking-tight">Menunggu Persetujuan</div>
-                            <div class="text-xl font-bold text-green-900 leading-none">{{ $items->count() }} <span class="text-xs font-medium text-green-700/60 uppercase ml-1">Laporan</span></div>
+                            <div class="text-[10px] font-bold uppercase text-amber-500 tracking-tight">Menunggu Persetujuan</div>
+                            <div class="text-xl font-bold text-amber-900 leading-none">{{ $items->count() }} <span class="text-xs font-medium text-amber-700/60 uppercase ml-1">Laporan</span></div>
                         </div>
                     </div>
                 </div>
@@ -58,10 +58,10 @@
                     <thead>
                         <tr class="bg-slate-50/80 border-b border-slate-100">
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Info Transaksi</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Ranting / Pengaju</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Ranting Asal</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Item Pentasarufan</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Pilar & Nominal</th>
-                            <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500 w-[200px]">Aksi Persetujuan</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500 w-[200px]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -78,12 +78,8 @@
                                 </td>
                                 <td class="px-6 py-5">
                                     <div class="flex items-center gap-3">
-                                        <div class="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-sm border border-blue-100">
-                                            {{ substr($item->user->name, 0, 1) }}
-                                        </div>
                                         <div>
                                             <div class="font-semibold text-slate-800 text-sm">{{ $item->user->name }}</div>
-                                            <div class="text-[10px] text-zinc-400 font-medium uppercase tracking-wider mt-0.5">Petugas Ranting</div>
                                         </div>
                                     </div>
                                 </td>
@@ -116,7 +112,7 @@
                                                 type="button" 
                                                 onclick="confirmAction('approve-form-{{ $item->id }}', 'Setujui Pentasarufan?', 'Laporan ini akan divalidasi dan tercatat sebagai pengeluaran resmi.', 'success', 'Ya, Setujui')"
                                                 class="h-10 w-10 flex items-center justify-center rounded-xl bg-green-600 text-white hover:bg-green-700 shadow-sm shadow-green-200 transition-all hover:scale-110"
-                                                title="Setujui"
+                                                title="Setujui Laporan"
                                             >
                                                 <i class="fas fa-check"></i>
                                             </button>
@@ -129,7 +125,7 @@
                                                 type="button" 
                                                 onclick="confirmAction('reject-form-{{ $item->id }}', 'Tolak Laporan?', 'Laporan ini akan ditandai sebagai ditolak.', 'error', 'Ya, Tolak')"
                                                 class="h-10 w-10 flex items-center justify-center rounded-xl bg-red-100 text-red-600 hover:bg-red-600 hover:text-white border border-red-200 transition-all hover:scale-110"
-                                                title="Tolak"
+                                                title="Tolak Laporan"
                                             >
                                                 <i class="fas fa-times"></i>
                                             </button>

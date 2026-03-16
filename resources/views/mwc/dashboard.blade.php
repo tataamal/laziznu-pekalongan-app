@@ -10,26 +10,26 @@
 
     <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div class="rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm">
-            <div class="text-sm font-medium text-white/90">Saldo Infaq</div>
-            <div class="mt-4 text-3xl font-bold">Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-white/80">Total saldo infaq sejauh ini</div>
+            <div class="text-sm font-medium text-white/90">Saldo Infaq MWC</div>
+            <div class="mt-4 text-3xl font-bold">Rp {{ number_format($totalInfaqMwc, 0, ',', '.') }}</div>
+            <div class="mt-3 text-xs text-white/80">Total saldo infaq MWC</div>
         </div>
 
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Saldo KOIN NU MWC</div>
-            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($totalInfaq, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Total saldo koin nu sejauh ini</div>
+            <div class="text-sm font-medium text-zinc-600">Saldo KOIN NU Wilayah {{ $wilayahName }}</div>
+            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($totalKoinNuWilayah, 0, ',', '.') }}</div>
+            <div class="mt-3 text-xs text-zinc-500">Total saldo amil wilayah</div>
         </div>
 
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Jumlah Pengajuan Approval KOIN NU</div>
-            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($totalExpense, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Jumlah Pengajuan Approval KOIN NU</div>
+            <div class="text-sm font-medium text-zinc-600">Approval KOIN NU</div>
+            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">{{ $pendingIncomesCount }} <span class="text-sm font-medium text-zinc-400">Laporan</span></div>
+            <div class="mt-3 text-xs text-zinc-500">Menunggu persetujuan</div>
         </div>
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Jumlah Pengajuan Approval Pentasarufan</div>
-            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($usableFund, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Jumlah Pengajuan Approval Pentasarufan</div>
+            <div class="text-sm font-medium text-zinc-600">Approval Pentasarufan</div>
+            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">{{ $pendingDistributionsCount }} <span class="text-sm font-medium text-zinc-400">Laporan</span></div>
+            <div class="mt-3 text-xs text-zinc-500">Menunggu persetujuan</div>
         </div>
     </section>
 
@@ -40,7 +40,7 @@
 
     <section class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm lg:col-span-2">
-            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Grafik Pemasukan Bulanan</h3>
+            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Transaksi Infaq MWC</h3>
             <div id="lineChartIncome" class="min-h-[300px] w-full"></div>
         </div>
 
@@ -52,7 +52,7 @@
 
     <section class="mt-4 grid grid-cols-1 gap-4">
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Transaksi 7 Hari Terakhir</h3>
+            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Performa Saldo Ranting (Allowed Budget)</h3>
             <div id="trendBarChart" class="min-h-[350px] w-full"></div>
         </div>
     </section>
@@ -66,14 +66,6 @@
                         <option value="">Semua Jenis</option>
                         <option value="pemasukan">Pemasukan</option>
                         <option value="pengeluaran">Pengeluaran</option>
-                    </select>
-
-                    <select id="filterRole" class="rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none ring-0 focus:border-green-300">
-                        <option value="">Semua Role</option>
-                        <option value="developer">Developer</option>
-                        <option value="pc">PC</option>
-                        <option value="mwc">MWC</option>
-                        <option value="ranting">Ranting</option>
                     </select>
 
                     <input type="text" id="filterTanggal" placeholder="Pilih Rentang Tanggal" class="rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none ring-0 focus:border-green-300">

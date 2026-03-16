@@ -7,110 +7,119 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Income;
 use App\Models\Distribution;
+use Illuminate\Support\Facades\Auth;
 
 class MwcDashboardController extends Controller
 {
     public function index()
     {
-        $incomes = Income::with('user')->get();
-        $distributions = Distribution::with('user')->get();
-        $totalIncome = $incomes->sum('net_income');
-        $totalExpense = $distributions->sum('cost_amount');
-        $totalInfaq = $distributions->sum('cost_amount');
-        
-        $startOfMonth = now()->startOfMonth();
-        $transactionsThisMonth = $incomes->where('date', '>=', $startOfMonth->format('Y-m-d'))->count() + 
-                                 $distributions->where('date', '>=', $startOfMonth->format('Y-m-d'))->count();
-        
-        $usableFund = $totalIncome - $totalExpense;
+        $user = Auth::user();
+        $wilayahId = $user->wilayah_id;
+        $wilayahName = $user->wilayah ? $user->wilayah->nama_wilayah : 'Semua Wilayah';
 
-        // Bar Chart (Pemasukan Bulanan) 6 Bulan terakhir
+        // 1. Infaq Transactions (MWC's own infaq filtered by wilayah)
+        $infaqTransactions = \App\Models\InfaqTransaction::with('user')
+            ->whereHas('user', function($q) use ($wilayahId) {
+                if ($wilayahId) $q->where('wilayah_id', $wilayahId);
+            })->get();
+
+        // 2. Ranting Incomes (Filtered by wilayah and validated for balance)
+        $rantingIncomes = Income::with('user')
+            ->whereHas('user', function($q) use ($wilayahId) {
+                if ($wilayahId) $q->where('wilayah_id', $wilayahId);
+            })->where('status', 'validated')->get();
+
+        // 3. Pending Approvals (Filtered by wilayah)
+        $pendingIncomesCount = Income::whereHas('user', function($q) use ($wilayahId) {
+                if ($wilayahId) $q->where('wilayah_id', $wilayahId);
+            })->where('status', 'on_process')->count();
+
+        $pendingDistributionsCount = Distribution::whereHas('user', function($q) use ($wilayahId) {
+                if ($wilayahId) $q->where('wilayah_id', $wilayahId);
+            })->where('status', 'on_process')->count();
+
+        // Stats Calculation
+        $totalInfaqMwc = $infaqTransactions->sum('allowed_budget');
+        $totalKoinNuWilayah = $rantingIncomes->sum('hak_amil');
+
+        // --- CHART DATA ---
+
+        // A. Line Chart: Infaq Trend (Pemasukan vs Pengeluaran from MWC Infaq)
         $months = collect(range(5, 0))->map(function($i) { return now()->subMonths($i)->format('Y-m'); });
-        $barLabels = $months->map(function($m) { return \Carbon\Carbon::createFromFormat('Y-m', $m)->translatedFormat('M'); });
-        $barData = $months->map(function($m) use ($incomes) { 
-            return $incomes->filter(function($inc) use ($m) { 
-                return \Carbon\Carbon::parse($inc->date)->format('Y-m') === $m; 
-            })->sum('net_income'); 
+        $lineLabels = $months->map(function($m) { return \Carbon\Carbon::createFromFormat('Y-m', $m)->translatedFormat('M'); });
+        
+        $lineDataIncome = $months->map(function($m) use ($infaqTransactions) {
+            return $infaqTransactions->filter(function($trx) use ($m) {
+                return \Carbon\Carbon::parse($trx->transaction_date)->format('Y-m') === $m && $trx->transaction_type === 'Pemasukan';
+            })->sum('gross_amount');
         });
 
-        // Pie Chart (Distribusi Pilar Infaq)
-        $pieLabels = $distributions->pluck('pilar_type')->unique()->values();
-        $pieData = $pieLabels->map(function($type) use ($distributions) {
-            return $distributions->where('pilar_type', $type)->sum('cost_amount');
+        $lineDataExpense = $months->map(function($m) use ($infaqTransactions) {
+            return $infaqTransactions->filter(function($trx) use ($m) {
+                return \Carbon\Carbon::parse($trx->transaction_date)->format('Y-m') === $m && $trx->transaction_type === 'Pengeluaran';
+            })->sum('gross_amount');
         });
 
-        // Placeholder if no distribution data
-        if ($pieData->sum() === 0) {
-            $pieLabels = collect(['Belum ada data']);
-            $pieData = collect([1]); // Use 1 as placeholder for donut display
-            $hasPieData = false;
-        } else {
-            $hasPieData = true;
-        }
+        // B. Pie/Donut Chart: Distribusi Jenis Infaq (By infaq_type)
+        $pieLabels = $infaqTransactions->pluck('infaq_type')->unique()->values();
+        $pieData = $pieLabels->map(function($type) use ($infaqTransactions) {
+            return $infaqTransactions->where('infaq_type', $type)->sum('gross_amount');
+        });
+        $hasPieData = $pieData->sum() > 0;
 
-        // Trend Chart (1 Minggu Terakhir)
-        $incomeDates = $incomes->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('Y-m-d'); });
-        $distributionDates = $distributions->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('Y-m-d'); });
+        // C. Ranting Bar Chart (Sum of allowed_budget per Ranting within wilayah)
+        $rantingPerformance = $rantingIncomes->groupBy(function($inc) {
+            return $inc->user ? $inc->user->name : 'Unknown';
+        })->map(function($group) {
+            return $group->sum('allowed_budget');
+        });
 
-        $allDates = $incomeDates->merge($distributionDates)->unique();
-        
-        // Ensure we always have the last 7 days if data is sparse or empty
-        $last7Days = collect(range(6, 0))->map(function($i) { return now()->subDays($i)->format('Y-m-d'); });
-        $displayDates = $last7Days->merge($allDates)->unique()->sortDesc()->take(7)->sort()->values();
-        
-        $trendData = [
-            'labels' => $displayDates->map(function($d) { return \Carbon\Carbon::parse($d)->format('d-m-Y'); }),
-            'income' => [
-                'data' => $displayDates->map(function($date) use ($incomes) {
-                    return $incomes->filter(function($inc) use ($date) {
-                        return \Carbon\Carbon::parse($inc->date)->format('Y-m-d') === $date;
-                    })->sum('net_income');
-                }),
-            ],
-            'distribution' => [
-                'labels' => $displayDates->map(function($date) use ($distributions) {
-                    $dist = $distributions->filter(function($dst) use ($date) {
-                        return \Carbon\Carbon::parse($dst->date)->format('Y-m-d') === $date;
-                    });
-                    return $dist->count() > 0 ? $dist->pluck('pilar_type')->implode(', ') : '-';
-                }),
-                'data' => $displayDates->map(function($date) use ($distributions) {
-                    return $distributions->filter(function($dst) use ($date) {
-                        return \Carbon\Carbon::parse($dst->date)->format('Y-m-d') === $date;
-                    })->sum('cost_amount');
-                }),
-            ]
-        ];
+        $barRantingLabels = $rantingPerformance->keys();
+        $barRantingValues = $rantingPerformance->values();
 
-        // Format to json for chart script
+        // Format to JSON for charts
         $chartDataJson = json_encode([
-            'bar' => [
-                'labels' => $barLabels,
-                'data' => $barData
+            'line' => [
+                'labels' => $lineLabels,
+                'income' => $lineDataIncome,
+                'expense' => $lineDataExpense
             ],
             'pie' => [
                 'labels' => $pieLabels,
                 'data' => $pieData,
                 'isEmpty' => !$hasPieData
             ],
-            'trend' => $trendData
+            'ranting' => [
+                'labels' => $barRantingLabels,
+                'values' => $barRantingValues
+            ]
         ]);
 
-        // Table Data (All Transactions for Client-side filtering)
+        // Table Data (Filtered by wilayah)
+        $latestIncomes = Income::with('user')
+            ->whereHas('user', function($q) use ($wilayahId) {
+                if ($wilayahId) $q->where('wilayah_id', $wilayahId);
+            })->latest()->take(50)->get();
+
+        $latestDistributions = Distribution::with('user')
+            ->whereHas('user', function($q) use ($wilayahId) {
+                if ($wilayahId) $q->where('wilayah_id', $wilayahId);
+            })->latest()->take(50)->get();
+
         $latestTransactions = collect();
-        foreach($incomes as $inc) {
+        foreach($latestIncomes as $inc) {
             $latestTransactions->push([
                 'kode' => $inc->transaction_code,
                 'tanggal' => $inc->date,
                 'user' => $inc->user ? $inc->user->name : '-',
                 'role' => $inc->user ? $inc->user->role : '-',
-                'jenis_label' => 'Pemasukan Net',
+                'jenis_label' => 'Dana Ranting',
                 'jenis_filter' => 'pemasukan',
                 'nominal' => $inc->net_income,
                 'status' => $inc->status,
             ]);
         }
-        foreach($distributions as $dst) {
+        foreach($latestDistributions as $dst) {
             $latestTransactions->push([
                 'kode' => $dst->transaction_code,
                 'tanggal' => $dst->date,
@@ -125,7 +134,8 @@ class MwcDashboardController extends Controller
         $latestTransactions = $latestTransactions->sortByDesc('tanggal')->values();
 
         return view('mwc.dashboard', compact(
-            'totalIncome', 'totalExpense', 'totalInfaq', 'transactionsThisMonth', 'usableFund', 
+            'wilayahName', 'totalInfaqMwc', 'totalKoinNuWilayah', 
+            'pendingIncomesCount', 'pendingDistributionsCount',
             'chartDataJson', 'latestTransactions'
         ));
     }

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('page_title', 'Persetujuan Input Koin NU')
-@section('page_subtitle', 'Tinjau dan setujui laporan koin NU dari Ranting.')
+@section('page_title', 'Approval Pemasukan Koin NU')
+@section('page_subtitle', 'Tinjau dan setujui laporan pemasukan koin NU dari Ranting.')
 
 @section('content')
     <div class="w-full space-y-8">
@@ -58,10 +58,10 @@
                     <thead>
                         <tr class="bg-slate-50/80 border-b border-slate-100">
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Info Transaksi</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Ranting / Pengaju</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Detail Dana (KOIN NU)</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Persentase & Budget</th>
-                            <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500 w-[200px]">Aksi Persetujuan</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Ranting Asal</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Pemasukan Bersih</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Dana Dapat Digunakan</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500 w-[200px]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -78,29 +78,18 @@
                                 </td>
                                 <td class="px-6 py-5">
                                     <div class="flex items-center gap-3">
-                                        <div class="h-9 w-9 rounded-xl bg-green-50 flex items-center justify-center text-green-600 font-bold text-sm border border-green-100">
-                                            {{ substr($item->user->name, 0, 1) }}
-                                        </div>
                                         <div>
                                             <div class="font-semibold text-slate-800 text-sm">{{ $item->user->name }}</div>
-                                            <div class="text-[10px] text-zinc-400 font-medium uppercase tracking-wider mt-0.5">Petugas Ranting</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-5">
-                                    <div class="text-xs text-slate-500 mb-0.5">Total Bersih (Koin NU)</div>
                                     <div class="font-bold text-green-700">Rp {{ number_format($item->net_income, 0, ',', '.') }}</div>
                                     <div class="text-[10px] text-slate-400 mt-1">
-                                        <span class="line-through">Gross: Rp {{ number_format($item->gross_profit, 0, ',', '.') }}</span>
+                                        <span c>Pemasukan Total: Rp {{ number_format($item->gross_profit, 0, ',', '.') }}</span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-5">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <span class="inline-flex items-center rounded-lg bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-100">
-                                            {{ $item->percentage }}%
-                                        </span>
-                                        <span class="text-[10px] font-medium text-slate-500 uppercase tracking-tighter">Budget Tersedia</span>
-                                    </div>
                                     <div class="font-bold text-slate-800">Rp {{ number_format($item->allowed_budget, 0, ',', '.') }}</div>
                                 </td>
                                 <td class="px-6 py-5">
@@ -123,7 +112,7 @@
                                             @csrf
                                             <button 
                                                 type="button" 
-                                                onclick="confirmAction('reject-form-{{ $item->id }}', 'Tolak Laporan?', 'Laporan ini akan ditandai sebagai ditolak.', 'error', 'Ya, Tolak')"
+                                                onclick="confirmAction('reject-form-{{ $item->id }}', 'Tolak Laporan?', 'Yakin ingin menolak laporan ini? Laporan yang ditolak tidak akan dihitung ke dalam saldo.', 'error', 'Ya, Tolak')"
                                                 class="h-10 w-10 flex items-center justify-center rounded-xl bg-red-100 text-red-600 hover:bg-red-600 hover:text-white border border-red-200 transition-all hover:scale-110"
                                                 title="Tolak Laporan"
                                             >

@@ -12,7 +12,12 @@ class InfaqTransactionController extends Controller
 {
     public function index()
     {
-        $items = InfaqTransaction::with('user')->latest()->get();
+        $items = InfaqTransaction::with('user')
+            ->whereHas('user', function($query) {
+                $query->where('wilayah_id', Auth::user()->wilayah_id);
+            })
+            ->latest()
+            ->get();
         return view('mwc.infaq-transaction', compact('items'));
     }
 

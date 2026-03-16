@@ -1,37 +1,40 @@
 import ApexCharts from "apexcharts";
 
 document.addEventListener("DOMContentLoaded", function () {
-    const chartDataElement = document.getElementById("ranting-chart-data");
+    const chartDataElement = document.getElementById("mwc-chart-data");
 
     if (!chartDataElement) return;
 
     const chartData = JSON.parse(chartDataElement.textContent);
 
     const palette = {
-        primary: "#005a26",
-        primaryDark: "#00471e",
-        soft: "#90bc68",
-        soft2: "#9bc676",
-        soft3: "#b7d59a",
-        soft4: "#d7e8c8",
+        primary: "#15803d", // green-700
+        primaryDark: "#166534", // green-800
+        secondary: "#f59e0b", // amber-500
+        soft: "#86efac", // green-300
+        soft2: "#fcd34d", // amber-300
         white: "#ffffff",
     };
 
-    // 1. Line Chart Income (Pemasukan Bulanan)
+    // 1. Line Chart: Infaq Trend (Pemasukan vs Pengeluaran)
     const incomeLineOptions = {
         series: [
             {
                 name: "Pemasukan",
-                data: chartData.bar.data,
+                data: chartData.line.income,
+            },
+            {
+                name: "Pengeluaran",
+                data: chartData.line.expense,
             },
         ],
         chart: {
             height: 300,
-            type: "area", // Area chart gives a more modern look resembling a filled line chart
+            type: "area",
             fontFamily: "inherit",
             toolbar: { show: false },
         },
-        colors: [palette.primary],
+        colors: [palette.primary, "#ef4444"], // Green for Income, Red for Expense
         fill: {
             type: "gradient",
             gradient: {
@@ -47,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
             width: 3,
         },
         xaxis: {
-            categories: chartData.bar.labels,
+            categories: chartData.line.labels,
             axisBorder: { show: false },
             axisTicks: { show: false },
         },
@@ -82,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ).render();
     }
 
-    // 2. Donut Chart (Distribusi Jenis Infaq)
+    // 2. Donut Chart (Distribusi Jenis Infaq By infaq_type)
     const donutOptions = {
         series: chartData.pie.data,
         labels: chartData.pie.labels,
@@ -92,13 +95,14 @@ document.addEventListener("DOMContentLoaded", function () {
             fontFamily: "inherit",
         },
         colors: chartData.pie.isEmpty
-            ? ["#e4e4e7"] // slate-200 for empty state
+            ? ["#e4e4e7"] 
             : [
                   palette.primary,
-                  palette.soft,
+                  palette.secondary,
                   palette.primaryDark,
                   palette.soft2,
-                  palette.soft3,
+                  "#22c55e",
+                  "#f87171",
               ],
         plotOptions: {
             pie: {
@@ -122,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         total: {
                             show: true,
                             showAlways: true,
-                            label: "Total",
+                            label: "Total Infaq",
                             fontSize: "14px",
                             formatter: function (w) {
                                 if (chartData.pie.isEmpty) return "0";
@@ -169,16 +173,12 @@ document.addEventListener("DOMContentLoaded", function () {
         ).render();
     }
 
-    // 3. Trend Dual Column Chart (Trend Pemasukan vs Pengeluaran)
-    const trendOptions = {
+    // 3. Bar Chart (Performa Ranting - Allowed Budget)
+    const rantingOptions = {
         series: [
             {
-                name: "Pemasukan (Net Income)",
-                data: chartData.trend.income.data,
-            },
-            {
-                name: "Pengeluaran (Cost Amount)",
-                data: chartData.trend.distribution.data,
+                name: "Saldo Ranting (Allowed Budget)",
+                data: chartData.ranting.values,
             },
         ],
         chart: {
@@ -191,17 +191,14 @@ document.addEventListener("DOMContentLoaded", function () {
             bar: {
                 horizontal: false,
                 columnWidth: "45%",
-                borderRadius: 4,
+                borderRadius: 8,
+                distributed: true,
             },
         },
         dataLabels: { enabled: false },
-        stroke: {
-            show: true,
-            width: 2,
-            colors: ["transparent"],
-        },
+        colors: [palette.primary, palette.secondary, "#10b981", "#3b82f6", "#8b5cf6", "#ec4899"],
         xaxis: {
-            categories: chartData.trend.labels,
+            categories: chartData.ranting.labels,
             axisBorder: { show: false },
             axisTicks: { show: false },
         },
@@ -216,43 +213,26 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
             },
         },
-        colors: [palette.primary, palette.soft],
-        fill: { opacity: 1 },
         tooltip: {
-            shared: true,
-            intersect: false,
             y: {
-                formatter: function (val, opts) {
-                    const idx = opts.dataPointIndex;
-                    const dsIdx = opts.seriesIndex;
-                    const amount = new Intl.NumberFormat("id-ID", {
+                formatter: function (val) {
+                    return new Intl.NumberFormat("id-ID", {
                         style: "currency",
                         currency: "IDR",
                         maximumFractionDigits: 0,
                     }).format(val);
-
-                    if (dsIdx === 1) {
-                        // Pengeluaran
-                        const type = chartData.trend.distribution.labels[idx];
-                        if (type && type !== "-") {
-                            return amount + " (" + type + ")";
-                        }
-                    }
-                    return amount;
                 },
             },
         },
         legend: {
-            position: "top",
-            horizontalAlign: "center",
-            markers: { radius: 12 },
+            show: false,
         },
     };
 
     if (document.querySelector("#trendBarChart")) {
         new ApexCharts(
             document.querySelector("#trendBarChart"),
-            trendOptions,
+            rantingOptions,
         ).render();
     }
 

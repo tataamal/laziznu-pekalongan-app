@@ -7,6 +7,7 @@ use App\Http\Controllers\Developer\UserController;
 use App\Http\Controllers\Developer\WilayahController;
 use App\Http\Controllers\Ranting\InputPemasukanController;
 use App\Http\Controllers\Ranting\RantingDashboardController;
+use App\Http\Controllers\Ranting\DistributionController;
 use App\Http\Controllers\Mwc\MwcDashboardController;
 use App\Http\Controllers\Mwc\ApprovalIncomeKoinNU;
 use App\Http\Controllers\Mwc\ApprovalDistributionKoinNU;

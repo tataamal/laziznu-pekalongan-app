@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Mwc;
+namespace App\Http\Controllers\Pc;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,17 +8,22 @@ use App\Models\InfaqTransaction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class InfaqTransactionController extends Controller
+class InfaqController extends Controller
 {
     public function index()
     {
         $items = InfaqTransaction::with('user')
             ->whereHas('user', function($query) {
-                $query->where('wilayah_id', Auth::user()->wilayah_id);
+                $query->where('role', 'pc');
+                // PC usually sees all PC-level infaq in their scope or just their own.
+                // Assuming they see their own for now, or filtered by wilayah if PC is tied to wilayah.
+                if (Auth::user()->wilayah_id) {
+                    $query->where('wilayah_id', Auth::user()->wilayah_id);
+                }
             })
             ->latest()
             ->get();
-        return view('mwc.infaq-transaction', compact('items'));
+        return view('pc.infaq-transaction', compact('items'));
     }
 
     public function store(Request $request)
@@ -33,14 +38,12 @@ class InfaqTransactionController extends Controller
 
         $percentage = 10;
         $net_amount = $validated['gross_amount'] - ($validated['gross_amount'] * $percentage / 100);
-        
-        // 1. Calculate Current Balance for Wilayah
-        $currentBalance = InfaqTransaction::whereHas('user', function($query) {
-            $query->where('wilayah_id', Auth::user()->wilayah_id);
-        })->sum('allowed_budget');
+
+        // 1. Calculate Current Balance for PC User
+        $currentBalance = InfaqTransaction::where('user_id', Auth::id())->sum('allowed_budget');
 
         if ($validated['transaction_type'] === 'Pengeluaran' && $validated['gross_amount'] > $currentBalance) {
-            return back()->withInput()->withErrors(['error' => 'Saldo Infaq Wilayah tidak mencukupi. Saldo saat ini: Rp ' . number_format($currentBalance, 0, ',', '.')]);
+            return back()->withInput()->withErrors(['error' => 'Saldo Infaq PC tidak mencukupi. Saldo saat ini: Rp ' . number_format($currentBalance, 0, ',', '.')]);
         }
 
         // 2. Determine allowed_budget storage
@@ -65,7 +68,7 @@ class InfaqTransactionController extends Controller
             ]);
 
             DB::commit();
-            return redirect()->route('mwc.infaq-transaction.index')->with('success', 'Data Infaq berhasil disimpan.');
+            return redirect()->route('pc.infaq.index')->with('success', 'Data Infaq PC berhasil disimpan.');
         } catch (\Throwable $th) {
             DB::rollBack();
             return back()->withInput()->withErrors(['error' => 'Gagal menyimpan data: ' . $th->getMessage()]);
@@ -88,12 +91,12 @@ class InfaqTransactionController extends Controller
         $net_amount = $validated['gross_amount'] - ($validated['gross_amount'] * $percentage / 100);
 
         // Calculate Balance excluding current record to see if change is valid
-        $currentBalanceExcludingMe = InfaqTransaction::whereHas('user', function($query) {
-            $query->where('wilayah_id', Auth::user()->wilayah_id);
-        })->where('id', '!=', $item->id)->sum('allowed_budget');
+        $currentBalanceExcludingMe = InfaqTransaction::where('user_id', Auth::id())
+            ->where('id', '!=', $item->id)
+            ->sum('allowed_budget');
 
         if ($validated['transaction_type'] === 'Pengeluaran' && $validated['gross_amount'] > $currentBalanceExcludingMe) {
-            return back()->withInput()->withErrors(['error' => 'Saldo Infaq Wilayah tidak mencukupi untuk update ini. Saldo tersedia (tanpa transaksi ini): Rp ' . number_format($currentBalanceExcludingMe, 0, ',', '.')]);
+            return back()->withInput()->withErrors(['error' => 'Saldo Infaq PC tidak mencukupi untuk update ini. Saldo tersedia (tanpa transaksi ini): Rp ' . number_format($currentBalanceExcludingMe, 0, ',', '.')]);
         }
 
         $allowed_budget = ($validated['transaction_type'] === 'Pengeluaran') 
@@ -111,7 +114,7 @@ class InfaqTransactionController extends Controller
             'allowed_budget' => (int) $allowed_budget,
         ]);
 
-        return redirect()->route('mwc.infaq-transaction.index')->with('success', 'Data Infaq berhasil diperbarui.');
+        return redirect()->route('pc.infaq.index')->with('success', 'Data Infaq PC berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -119,7 +122,7 @@ class InfaqTransactionController extends Controller
         $item = InfaqTransaction::findOrFail($id);
         $item->delete();
 
-        return redirect()->route('mwc.infaq-transaction.index')->with('success', 'Data Infaq berhasil dihapus.');
+        return redirect()->route('pc.infaq.index')->with('success', 'Data Infaq PC berhasil dihapus.');
     }
 
     public function bulkDelete(Request $request)
@@ -131,20 +134,20 @@ class InfaqTransactionController extends Controller
 
         InfaqTransaction::whereIn('id', $request->ids)->delete();
 
-        return redirect()->route('mwc.infaq-transaction.index')->with('success', count($request->ids) . ' data berhasil dihapus.');
+        return redirect()->route('pc.infaq.index')->with('success', count($request->ids) . ' data berhasil dihapus.');
     }
 
     private function generateTransactionCode(): string
     {
         $last = InfaqTransaction::orderByDesc('id')->first();
         if (!$last || !$last->transaction_code) {
-            return 'INF00001';
+            return 'INPC00001';
         }
 
-        preg_match('/INF(\d+)/', $last->transaction_code, $matches);
+        preg_match('/INPC(\d+)/', $last->transaction_code, $matches);
         $lastNumber = isset($matches[1]) ? (int) $matches[1] : 0;
         $nextNumber = $lastNumber + 1;
 
-        return 'INF' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+        return 'INPC' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
     }
 }

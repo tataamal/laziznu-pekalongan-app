@@ -8,29 +8,23 @@
         @vite('resources/js/pc-dashboard.js')
     @endpush
 
-    <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <section class="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div class="rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm">
-            <div class="text-sm font-medium text-white/90">Total Pemasukan</div>
-            <div class="mt-4 text-3xl font-bold">Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-white/80">Total pemasukan sejauh ini</div>
+            <div class="text-sm font-medium text-white/90">Total Saldo PC</div>
+            <div class="mt-4 text-3xl font-bold">Rp {{ number_format($totalSaldoPc, 0, ',', '.') }}</div>
+            <div class="mt-3 text-xs text-white/80">Saldo akumulasi dari Infaq PC</div>
         </div>
 
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Total Pengeluaran</div>
-            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($totalExpense, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Total pentasarufan sejauh ini</div>
+            <div class="text-sm font-medium text-zinc-600">Total Pengguna MWC</div>
+            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">{{ $totalMwcUsers }}</div>
+            <div class="mt-3 text-xs text-zinc-500">Jumlah user dengan role MWC</div>
         </div>
 
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Transaksi Bulan Ini</div>
-            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">{{ $transactionsThisMonth }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Jumlah transaksi masuk & keluar</div>
-        </div>
-
-        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Dana yang Dapat Digunakan</div>
-            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($usableFund, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Sisa saldo saat ini</div>
+            <div class="text-sm font-medium text-zinc-600">Total Pengguna Ranting</div>
+            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">{{ $totalRantingUsers }}</div>
+            <div class="mt-3 text-xs text-zinc-500">Jumlah user dengan role Ranting</div>
         </div>
     </section>
 
@@ -39,22 +33,22 @@
         {!! $chartDataJson !!}
     </script>
 
-    <section class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm lg:col-span-2">
-            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Grafik Pemasukan Bulanan</h3>
-            <div id="lineChartIncome" class="min-h-[300px] w-full"></div>
+    <section class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Pemasukan MWC & Ranting (6 Bln)</h3>
+            <div id="trendChartMwcRanting" class="min-h-[350px] w-full"></div>
         </div>
 
-        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm lg:col-span-1">
-            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Distribusi Jenis Infaq</h3>
-            <div id="donutChartDistribution" class="flex h-full min-h-[300px] w-full items-center justify-center"></div>
+        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Saldo PC (Masuk vs Keluar)</h3>
+            <div id="trendChartPc" class="min-h-[350px] w-full"></div>
         </div>
     </section>
 
-    <section class="mt-4 grid grid-cols-1 gap-4">
+    <section class="mt-4">
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Transaksi 7 Hari Terakhir</h3>
-            <div id="trendBarChart" class="min-h-[350px] w-full"></div>
+            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Distribusi Pengeluaran Infaq (PC Only)</h3>
+            <div id="donutChartDistribution" class="min-h-[350px] w-full flex items-center justify-center"></div>
         </div>
     </section>
 
@@ -103,8 +97,8 @@
                             <th class="px-3 py-3 font-semibold">User</th>
                             <th class="px-3 py-3 font-semibold">Role</th>
                             <th class="px-3 py-3 font-semibold">Jenis</th>
-                            <th class="px-3 py-3 font-semibold">Nominal</th>
-                            <th class="px-3 py-3 font-semibold">Status</th>
+                            <th class="px-3 py-3 font-semibold text-right">Nominal</th>
+                            <th class="px-3 py-3 font-semibold text-center">Tipe</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -118,14 +112,12 @@
                             <td class="px-3 py-3 font-medium">{{ $trx['user'] }}</td>
                             <td class="px-3 py-3"><span class="capitalize">{{ $trx['role'] }}</span></td>
                             <td class="px-3 py-3">{{ $trx['jenis_label'] }}</td>
-                            <td class="px-3 py-3">Rp {{ number_format($trx['nominal'], 0, ',', '.') }}</td>
-                            <td class="px-3 py-3">
-                                @if($trx['status'] === 'validated')
-                                    <span class="rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700">Tervalidasi</span>
-                                @elseif($trx['status'] === 'rejected')
-                                    <span class="rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700">Ditolak</span>
+                            <td class="px-3 py-3 text-right">Rp {{ number_format($trx['nominal'], 0, ',', '.') }}</td>
+                            <td class="px-3 py-3 text-center">
+                                @if($trx['tipe'] === 'Pemasukan')
+                                    <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">Pemasukan</span>
                                 @else
-                                    <span class="rounded-full bg-orange-100 px-2.5 py-1 text-xs font-semibold text-orange-700">Proses</span>
+                                    <span class="rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-700">Pengeluaran</span>
                                 @endif
                             </td>
                         </tr>

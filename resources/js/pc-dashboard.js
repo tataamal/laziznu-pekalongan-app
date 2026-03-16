@@ -17,19 +17,22 @@ document.addEventListener("DOMContentLoaded", function () {
         white: "#ffffff",
     };
 
-    // 1. Line Chart Income (Pemasukan Bulanan)
-    const incomeLineOptions = {
+    // 1. Trend Chart MWC & Ranting (Area Chart)
+    const trendMwcRantingOptions = {
         series: [{
-            name: 'Pemasukan',
-            data: chartData.bar.data
+            name: 'Pemasukan MWC',
+            data: chartData.trend.mwc
+        }, {
+            name: 'Pemasukan Ranting',
+            data: chartData.trend.ranting
         }],
         chart: {
-            height: 300,
-            type: 'area', // Area chart gives a more modern look resembling a filled line chart
+            height: 350,
+            type: 'area',
             fontFamily: 'inherit',
             toolbar: { show: false }
         },
-        colors: [palette.primary],
+        colors: [palette.primary, palette.soft],
         fill: {
             type: 'gradient',
             gradient: {
@@ -40,122 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         },
         dataLabels: { enabled: false },
-        stroke: {
-            curve: 'smooth',
-            width: 3
-        },
-        xaxis: {
-            categories: chartData.bar.labels,
-            axisBorder: { show: false },
-            axisTicks: { show: false },
-        },
-        yaxis: {
-            labels: {
-                formatter: function (val) {
-                    return new Intl.NumberFormat('id-ID', { notation: 'compact', compactDisplay: 'short', maximumFractionDigits: 1 }).format(val);
-                }
-            }
-        },
-        tooltip: {
-            y: {
-                formatter: function (val) {
-                    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
-                }
-            }
-        }
-    };
-    
-    if (document.querySelector("#lineChartIncome")) {
-        new ApexCharts(document.querySelector("#lineChartIncome"), incomeLineOptions).render();
-    }
-
-    // 2. Donut Chart (Distribusi Jenis Infaq)
-    const donutOptions = {
-        series: chartData.pie.data,
-        labels: chartData.pie.labels,
-        chart: {
-            type: 'donut',
-            height: 300,
-            fontFamily: 'inherit',
-        },
-        colors: [palette.primary, palette.soft, palette.primaryDark, palette.soft2, palette.soft3],
-        plotOptions: {
-            pie: {
-                donut: {
-                    size: '65%',
-                    labels: {
-                        show: true,
-                        name: { show: true, fontSize: '14px', fontWeight: 600 },
-                        value: {
-                            show: true,
-                            fontSize: '16px',
-                            fontWeight: 700,
-                            formatter: function (val) {
-                                return new Intl.NumberFormat('id-ID', { notation: 'compact', compactDisplay: 'short' }).format(val);
-                            }
-                        },
-                        total: {
-                            show: true,
-                            showAlways: true,
-                            label: 'Total',
-                            fontSize: '14px',
-                            formatter: function (w) {
-                                const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
-                                return new Intl.NumberFormat('id-ID', { notation: 'compact', compactDisplay: 'short' }).format(total);
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        dataLabels: { enabled: false },
-        stroke: { show: false },
-        legend: {
-            position: 'bottom',
-            offsetY: 0,
-            markers: { radius: 12 }
-        },
-        tooltip: {
-            y: {
-                formatter: function (val) {
-                    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
-                }
-            }
-        }
-    };
-
-    if (document.querySelector("#donutChartDistribution")) {
-        new ApexCharts(document.querySelector("#donutChartDistribution"), donutOptions).render();
-    }
-
-    // 3. Trend Dual Column Chart (Trend Pemasukan vs Pengeluaran)
-    const trendOptions = {
-        series: [{
-            name: 'Pemasukan (Net Income)',
-            data: chartData.trend.income.data
-        }, {
-            name: 'Pengeluaran (Cost Amount)',
-            data: chartData.trend.distribution.data
-        }],
-        chart: {
-            type: 'bar',
-            height: 350,
-            fontFamily: 'inherit',
-            toolbar: { show: false }
-        },
-        plotOptions: {
-            bar: {
-                horizontal: false,
-                columnWidth: '45%',
-                borderRadius: 4
-            },
-        },
-        dataLabels: { enabled: false },
-        stroke: {
-            show: true,
-            width: 2,
-            colors: ['transparent']
-        },
+        stroke: { curve: 'smooth', width: 3 },
         xaxis: {
             categories: chartData.trend.labels,
             axisBorder: { show: false },
@@ -164,40 +52,188 @@ document.addEventListener("DOMContentLoaded", function () {
         yaxis: {
             labels: {
                 formatter: function (val) {
-                    return new Intl.NumberFormat('id-ID', { notation: 'compact', compactDisplay: 'short', maximumFractionDigits: 1 }).format(val);
+                    return new Intl.NumberFormat('id-ID', { notation: 'compact', compactDisplay: 'short' }).format(val);
                 }
             }
         },
-        colors: [palette.primary, palette.soft],
-        fill: { opacity: 1 },
         tooltip: {
-            shared: true,
-            intersect: false,
+            theme: 'light',
             y: {
-                formatter: function (val, opts) {
-                    const idx = opts.dataPointIndex;
-                    const dsIdx = opts.seriesIndex;
-                    const amount = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
-                    
-                    if (dsIdx === 1) { // Pengeluaran
-                        const type = chartData.trend.distribution.labels[idx];
-                        if (type && type !== '-') {
-                            return amount + ' (' + type + ')';
-                        }
-                    }
-                    return amount;
+                formatter: function (val) {
+                    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
                 }
             }
         },
         legend: {
             position: 'top',
             horizontalAlign: 'center',
-            markers: { radius: 12 }
+            fontFamily: 'inherit',
+            fontSize: '13px',
+            fontWeight: 500,
+            labels: { colors: "#64748b" },
+            markers: { radius: 6, width: 8, height: 8, offsetX: -4 }
+        }
+    };
+    
+    if (document.querySelector("#trendChartMwcRanting")) {
+        new ApexCharts(document.querySelector("#trendChartMwcRanting"), trendMwcRantingOptions).render();
+    }
+
+    // 2. Trend Chart PC (Area Chart - Income vs Expense)
+    const trendPcOptions = {
+        series: [{
+            name: 'Pemasukan PC',
+            data: chartData.trend.pc_income
+        }, {
+            name: 'Pengeluaran PC',
+            data: chartData.trend.pc_expense
+        }],
+        chart: {
+            height: 350,
+            type: 'area',
+            fontFamily: 'inherit',
+            toolbar: { show: false }
+        },
+        colors: [palette.primaryDark, "#ef4444"], // Primary dark for income, red for expense
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.4,
+                opacityTo: 0.05,
+                stops: [0, 90, 100]
+            }
+        },
+        dataLabels: { enabled: false },
+        stroke: { curve: 'smooth', width: 3 },
+        xaxis: {
+            categories: chartData.trend.labels,
+            axisBorder: { show: false },
+            axisTicks: { show: false },
+        },
+        yaxis: {
+            labels: {
+                formatter: function (val) {
+                    return new Intl.NumberFormat('id-ID', { notation: 'compact', compactDisplay: 'short' }).format(val);
+                }
+            }
+        },
+        tooltip: {
+            theme: 'light',
+            y: {
+                formatter: function (val) {
+                    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+                }
+            }
+        },
+        legend: {
+            position: 'top',
+            horizontalAlign: 'center',
+            fontFamily: 'inherit',
+            fontSize: '13px',
+            fontWeight: 500,
+            labels: { colors: "#64748b" },
+            markers: { radius: 6, width: 8, height: 8, offsetX: -4 }
+        }
+    };
+    
+    if (document.querySelector("#trendChartPc")) {
+        new ApexCharts(document.querySelector("#trendChartPc"), trendPcOptions).render();
+    }
+
+    // 3. Donut Chart (Distribusi Pengeluaran Infaq PC Only)
+    const hasDistData = chartData.distribution.data && chartData.distribution.data.length > 0;
+    
+    // Minimal & Premium Colors
+    const donutColors = [
+        palette.primary,    // Emerald Green
+        "#0284c7",          // Sky Blue
+        "#7c3aed",          // Violet
+        "#f59e0b",          // Amber
+        "#ef4444",          // Rose
+        "#14b8a6"           // Teal
+    ];
+
+    const donutOptions = {
+        series: hasDistData ? chartData.distribution.data : [1],
+        labels: hasDistData ? chartData.distribution.labels : ['Belum ada pengeluaran'],
+        chart: {
+            type: 'donut',
+            height: 380,
+            fontFamily: 'Inter, sans-serif',
+        },
+        colors: hasDistData ? donutColors : ["#f1f5f9"],
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '72%',
+                    labels: {
+                        show: true,
+                        name: { 
+                            show: true, 
+                            fontSize: '14px', 
+                            fontWeight: 500,
+                            color: "#64748b",
+                            offsetY: -4
+                        },
+                        value: {
+                            show: true,
+                            fontSize: '22px',
+                            fontWeight: 700,
+                            color: "#1e293b",
+                            offsetY: 8,
+                            formatter: function (val) {
+                                if (!hasDistData) return "Rp 0";
+                                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+                            }
+                        },
+                        total: {
+                            show: true,
+                            showAlways: true,
+                            label: 'Total Pengeluaran',
+                            fontSize: '13px',
+                            fontWeight: 500,
+                            color: "#94a3b8",
+                            formatter: function (w) {
+                                if (!hasDistData) return "Rp 0";
+                                const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(total);
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        dataLabels: { enabled: false },
+        stroke: { show: true, width: 2, colors: [palette.white] }, // Subtle white gap
+        legend: {
+            position: 'bottom',
+            fontFamily: 'inherit',
+            fontSize: '13px',
+            fontWeight: 400,
+            labels: { colors: "#64748b" },
+            markers: { radius: 6, width: 8, height: 8, offsetX: -4 },
+            itemMargin: { horizontal: 10, vertical: 5 }
+        },
+        tooltip: {
+            enabled: true,
+            theme: 'dark',
+            style: { fontSize: '12px' },
+            onDatasetHover: { highlightDataSeries: true },
+            y: {
+                formatter: function (val) {
+                    if (!hasDistData) return "Rp 0";
+                    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+                }
+            }
+        },
+        states: {
+            hover: { filter: { type: 'darken', value: 0.9 } }
         }
     };
 
-    if (document.querySelector("#trendBarChart")) {
-        new ApexCharts(document.querySelector("#trendBarChart"), trendOptions).render();
+    if (document.querySelector("#donutChartDistribution")) {
+        new ApexCharts(document.querySelector("#donutChartDistribution"), donutOptions).render();
     }
 
     // Table Multi-Filter Data

@@ -113,22 +113,26 @@
                         <span>Dashboard</span>
                     </a>
 
-                    <a href="{{ route('ranting.income.index') }}"
-                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.income.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
-                        <i class="fas fa-coins text-sm"></i>
-                        <span>Data Transaksi Koin NU</span>
+                    <a href="{{ route('pc.infaq.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('pc.infaq.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-hand-holding-heart text-sm"></i>
+                        <span>Transaksi Infaq</span>
                     </a>
 
-                    <a href="{{ route('ranting.distribution.index') }}"
-                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.distribution.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                    <a href="{{ route('pc.data-transaksi-ranting') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('pc.data-transaksi-ranting') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
                         <i class="fas fa-list-check text-sm"></i>
-                        <span>Data Transaksi Pentasarufan</span>
+                        <span>Data Transaksi Per Ranting</span>
                     </a>
 
-
+                    <a href="{{ route('pc.data-transaksi-mwc') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('pc.data-transaksi-mwc') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-file-invoice-dollar text-sm"></i>
+                        <span>Data Transaksi Per MWC</span>
+                    </a>
                     
-                    <a href="{{ route('ranting.call-center') }}"
-                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.call-center') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                    <a href="{{ route('pc.call-center') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('pc.call-center') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
                         <i class="fas fa-headset text-sm"></i>
                         <span>Call Center Admin {{ strtoupper(auth()->user()->role) }}</span>
                     </a>

@@ -12,6 +12,11 @@ use App\Http\Controllers\Mwc\MwcDashboardController;
 use App\Http\Controllers\Mwc\ApprovalIncomeKoinNU;
 use App\Http\Controllers\Mwc\ApprovalDistributionKoinNU;
 use App\Http\Controllers\Mwc\InfaqTransactionController;
+use App\Http\Controllers\Pc\PcDashboardController;
+use App\Http\Controllers\Pc\InfaqController as PcInfaqController;
+use App\Http\Controllers\Pc\DataTransaksiMWC;
+use App\Http\Controllers\Pc\DataTransaksiRanting;
+
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -72,7 +77,18 @@ Route::middleware(['auth'])->group(function () {
 
     // Route untuk autorisasi user role pc
     Route::middleware(['auth', 'role:pc'])->group(function () {
-        Route::get('/pc/dashboard', [DashboardController::class, 'index'])->name('pc.dashboard');
+        Route::get('/pc/dashboard', [PcDashboardController::class, 'index'])->name('pc.dashboard');
+
+        // PC Infaq Transaction
+        Route::delete('/pc/infaq/bulk-delete', [PcInfaqController::class, 'bulkDelete'])->name('pc.infaq.bulk-delete');
+        Route::resource('pc/infaq', PcInfaqController::class)->names('pc.infaq');
+
+        // Data Transaksi
+        Route::get('/pc/data-transaksi-mwc', [DataTransaksiMWC::class, 'index'])->name('pc.data-transaksi-mwc');
+        Route::get('/pc/data-transaksi-ranting', [DataTransaksiRanting::class, 'index'])->name('pc.data-transaksi-ranting');
+
+        // Call Center
+        Route::view('/pc/call-center', 'pc.call-center')->name('pc.call-center');
     });
 
     // Route untuk profile

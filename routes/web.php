@@ -4,25 +4,26 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Developer\DashboardController;
 
+
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('dashboard');
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    // Route::get('/dashboard', function () {
+    //     return view('dashboard');
+    // })->name('dashboard');
 
     Route::middleware(['auth', 'role:developer'])->group(function () {
         Route::get('/developer/dashboard', [DashboardController::class, 'index'])->name('developer.dashboard');
-        
+
         // Manajemen User
         Route::post('developer/users/bulk-update-wilayah', [\App\Http\Controllers\Developer\UserController::class, 'bulkUpdateWilayah'])->name('developer.users.bulk-update-wilayah');
         Route::post('developer/users/bulk-delete', [\App\Http\Controllers\Developer\UserController::class, 'bulkDelete'])->name('developer.users.bulk-delete');
         Route::resource('developer/users', \App\Http\Controllers\Developer\UserController::class)->names('developer.users');
         Route::post('developer/users/import', [\App\Http\Controllers\Developer\UserController::class, 'import'])->name('developer.users.import');
         Route::get('developer/users/template/download', [\App\Http\Controllers\Developer\UserController::class, 'downloadTemplate'])->name('developer.users.template');
-        
+
         // Manajemen Wilayah
         Route::post('developer/wilayah/bulk-delete', [\App\Http\Controllers\Developer\WilayahController::class, 'bulkDelete'])->name('developer.wilayah.bulk-delete');
         Route::post('developer/wilayah/import', [\App\Http\Controllers\Developer\WilayahController::class, 'import'])->name('developer.wilayah.import');
@@ -47,4 +48,4 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

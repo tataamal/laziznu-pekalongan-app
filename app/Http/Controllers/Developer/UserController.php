@@ -25,9 +25,9 @@ class UserController extends Controller
         $users = User::with('wilayah')
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('telpon', 'like', "%{$search}%")
-                      ->orWhere('role', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('telpon', 'like', "%{$search}%")
+                    ->orWhere('role', 'like', "%{$search}%");
             })
             ->latest()
             ->paginate(15)
@@ -162,7 +162,7 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $user = User::findOrFail($id);
-        
+
         if ($user->id === auth()->id()) {
             return redirect()->route('developer.users.index')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
@@ -213,7 +213,7 @@ class UserController extends Controller
     public function downloadTemplate(): BinaryFileResponse
     {
         $path = public_path('templates/template_import_user.xlsx');
-        
+
         if (!file_exists($path)) {
             // Alternatively generate a dynamic export, but static file is often requested
             abort(404, 'Template file not found.');

@@ -79,10 +79,12 @@
     <div class="max-w-7xl mx-auto relative z-10">
         <div class="flex flex-col md:flex-row items-center justify-between gap-16">
 
-            <div class="flex-1 space-y-8 text-center md:text-left">
+                <div class="flex-1 space-y-8 text-center md:text-left">
                 <div class="space-y-4">
                     <h3 class="text-green-400 text-sm font-black uppercase tracking-[0.3em]">Hubungi Kami</h3>
-                    <h2 class="text-3xl md:text-4xl font-extrabold">LazisNU PC <br>Kabupaten Pekalongan</h2>
+                    <a href="https://maps.app.goo.gl/wb9U7uhE2SR8eDZW8" target="_blank" class="block group">
+                        <h2 class="text-3xl md:text-4xl font-extrabold group-hover:text-green-400 transition-colors">LazisNU PC <br>Kabupaten Pekalongan</h2>
+                    </a>
                     <div class="w-16 h-1 bg-green-500 rounded-full mx-auto md:mx-0"></div>
                 </div>
 
@@ -125,7 +127,7 @@
 
                     <div
                         class="relative bg-zinc-900 rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl h-[350px]">
-                        <iframe src="https://www.google.com/maps/embed?pb=..."
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d107756.25021028174!2d109.5507023!3d-6.9604536!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e702500119df407%3A0xf2fbab005840ffd7!2sLAZISNU%20PCNU%20KOTA%20PEKALONGAN!5e1!3m2!1id!2sid!4v1773869693300!5m2!1id!2sid"
                             class="w-full h-full grayscale hover:grayscale-0 transition-all duration-700 opacity-80 group-hover:opacity-100"
                             allowfullscreen="" loading="lazy">
                         </iframe>

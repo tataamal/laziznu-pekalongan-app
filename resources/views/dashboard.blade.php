@@ -237,59 +237,61 @@
     </section>
 
     <section id="rekap-perolehan" class="py-12 px-6 max-w-7xl mx-auto">
-        <div class="mb-8 flex items-center gap-4">
-            <div class="w-12 h-12  bg-emerald-700 rounded-xl flex items-center justify-center shadow-lg shadow-green-100">
-                <i class="fas fa-file-invoice-dollar text-white text-xl"></i>
+        <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-emerald-700 rounded-xl flex items-center justify-center shadow-lg shadow-green-100">
+                    <i class="fas fa-file-invoice-dollar text-white text-xl"></i>
+                </div>
+                <h2 class="text-emerald-900 text-3xl md:text-4xl font-extrabold tracking-tight">
+                    Rekapitulasi Perolehan KOIN NU
+                </h2>
             </div>
-            <h2 class="text-emerald-900 text-3xl md:text-4xl font-extrabold tracking-tight">
-                Rekapitulasi Perolehan
-            </h2>
+            
+            <div class="flex flex-wrap gap-3">
+                <select id="filter-month" class="bg-white border border-zinc-200 rounded-xl px-4 py-2 text-sm font-semibold text-zinc-700 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all">
+                    @foreach($months as $key => $name)
+                        <option value="{{ $key }}" {{ $month == $key ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+                <select id="filter-year" class="bg-white border border-zinc-200 rounded-xl px-4 py-2 text-sm font-semibold text-zinc-700 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all">
+                    @for($y = date('Y'); $y >= 2020; $y--)
+                        <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endfor
+                </select>
+            </div>
         </div>
 
-        <div
-            class="bg-white rounded-3xl shadow-sm border border-zinc-100 overflow-hidden hover:shadow-md transition-all duration-300">
+        <div class="bg-white rounded-3xl shadow-sm border border-zinc-100 overflow-hidden hover:shadow-md transition-all duration-300">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-green-50/50 border-b border-green-100">
-                            <th class="px-8 py-6 text-[#014421] font-bold uppercase text-sm tracking-wider">Bulan</th>
-                            <th class="px-8 py-6 text-[#014421] font-bold uppercase text-sm tracking-wider">Jumlah (Rp)
-                            </th>
-                            <th class="px-8 py-6 text-[#014421] font-bold uppercase text-sm tracking-wider text-right">
-                                Sumber Dana</th>
+                            <th class="px-8 py-6 text-[#014421] font-bold uppercase text-sm tracking-wider">Ranting</th>
+                            <th class="px-8 py-6 text-[#014421] font-bold uppercase text-sm tracking-wider">Jumlah (Rp)</th>
+                            <th class="px-8 py-6 text-[#014421] font-bold uppercase text-sm tracking-wider text-right">Keterangan</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-zinc-100">
+                    <tbody id="income-table-body" class="divide-y divide-zinc-100">
+                        @forelse($incomeData['items'] as $item)
                         <tr class="hover:bg-green-50/30 transition-colors group">
-                            <td class="px-8 py-5 text-zinc-700 font-semibold text-lg md:text-xl">Januari</td>
-                            <td class="px-8 py-5 text-zinc-600 font-mono text-lg md:text-xl font-medium">100.000.000</td>
+                            <td class="px-8 py-5 text-zinc-700 font-semibold text-lg md:text-xl">{{ $item['ranting'] }}</td>
+                            <td class="px-8 py-5 text-zinc-600 font-mono text-lg md:text-xl font-medium">{{ number_format($item['total'], 0, ',', '.') }}</td>
                             <td class="px-8 py-5 text-right">
-                                <span
-                                    class="inline-block px-4 py-1.5 bg-green-100 text-green-800 rounded-full text-xs font-bold uppercase tracking-wide group-hover:bg-[#014421] group-hover:text-white transition-all">Zakat</span>
+                                @foreach($item['sources'] as $source)
+                                <span class="inline-block px-4 py-1.5 bg-green-100 text-green-800 rounded-full text-xs font-bold uppercase tracking-wide group-hover:bg-[#014421] group-hover:text-white transition-all">{{ $source }}</span>
+                                @endforeach
                             </td>
                         </tr>
-                        <tr class="hover:bg-green-50/30 transition-colors group">
-                            <td class="px-8 py-5 text-zinc-700 font-semibold text-lg md:text-xl">Februari</td>
-                            <td class="px-8 py-5 text-zinc-600 font-mono text-lg md:text-xl font-medium">120.000.000</td>
-                            <td class="px-8 py-5 text-right">
-                                <span
-                                    class="inline-block px-4 py-1.5 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold uppercase tracking-wide group-hover:bg-emerald-600 group-hover:text-white transition-all">Infaq</span>
-                            </td>
+                        @empty
+                        <tr>
+                            <td colspan="3" class="px-8 py-10 text-center text-zinc-400 italic">Tidak ada data untuk bulan ini</td>
                         </tr>
-                        <tr class="hover:bg-green-50/30 transition-colors group">
-                            <td class="px-8 py-5 text-zinc-700 font-semibold text-lg md:text-xl">Maret</td>
-                            <td class="px-8 py-5 text-zinc-600 font-mono text-lg md:text-xl font-medium">150.000.000</td>
-                            <td class="px-8 py-5 text-right">
-                                <span
-                                    class="inline-block px-4 py-1.5 bg-teal-100 text-teal-800 rounded-full text-xs font-bold uppercase tracking-wide group-hover:bg-[#014421] group-hover:text-white transition-all">Shodaqoh</span>
-                            </td>
-                        </tr>
+                        @endforelse
                     </tbody>
                     <tfoot class="bg-[#014421]">
                         <tr>
                             <td class="px-8 py-5 text-white font-bold text-xl">Total Keseluruhan</td>
-                            <td class="px-8 py-5 text-white font-mono text-2xl font-bold" colspan="2">Rp 370.000.000
-                            </td>
+                            <td id="income-total" class="px-8 py-5 text-white font-mono text-2xl font-bold" colspan="2">Rp {{ number_format($incomeData['total_all'], 0, ',', '.') }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -303,54 +305,41 @@
                 <i class="fas fa-hand-holding-heart text-white text-xl"></i>
             </div>
             <h2 class="text-emerald-900 text-3xl md:text-4xl font-extrabold tracking-tight">
-                Rekapitulasi Pentasarufan
+                Rekapitulasi Pentasarufan KOIN NU
             </h2>
         </div>
 
-        <div
-            class="bg-white rounded-3xl shadow-sm border border-zinc-100 overflow-hidden hover:shadow-md transition-all duration-300">
+        <div class="bg-white rounded-3xl shadow-sm border border-zinc-100 overflow-hidden hover:shadow-md transition-all duration-300">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-emerald-50/50 border-b border-emerald-100">
-                            <th class="px-8 py-6 text-emerald-900 font-bold uppercase text-sm tracking-wider">Bulan</th>
-                            <th class="px-8 py-6 text-emerald-900 font-bold uppercase text-sm tracking-wider">Jumlah (Rp)
-                            </th>
-                            <th class="px-8 py-6 text-emerald-900 font-bold uppercase text-sm tracking-wider text-right">
-                                Kegiatan / Pilar</th>
+                            <th class="px-8 py-6 text-emerald-900 font-bold uppercase text-sm tracking-wider">Ranting</th>
+                            <th class="px-8 py-6 text-emerald-900 font-bold uppercase text-sm tracking-wider">Jumlah (Rp)</th>
+                            <th class="px-8 py-6 text-emerald-900 font-bold uppercase text-sm tracking-wider text-right">Kegiatan / Pilar</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-zinc-100">
+                    <tbody id="distribution-table-body" class="divide-y divide-zinc-100">
+                        @forelse($distributionData['items'] as $item)
                         <tr class="hover:bg-emerald-50/30 transition-colors group">
-                            <td class="px-8 py-5 text-zinc-700 font-semibold text-lg md:text-xl">Januari</td>
-                            <td class="px-8 py-5 text-zinc-600 font-mono text-lg md:text-xl font-medium">80.000.000</td>
+                            <td class="px-8 py-5 text-zinc-700 font-semibold text-lg md:text-xl">{{ $item['ranting'] }}</td>
+                            <td class="px-8 py-5 text-zinc-600 font-mono text-lg md:text-xl font-medium">{{ number_format($item['total'], 0, ',', '.') }}</td>
                             <td class="px-8 py-5 text-right">
-                                <span
-                                    class="inline-block px-4 py-1.5 bg-blue-100 text-blue-800 rounded-full text-xs font-bold uppercase tracking-wide group-hover:bg-blue-600 group-hover:text-white transition-all">Pendidikan</span>
+                                @foreach($item['pillars'] as $pillar)
+                                <span class="inline-block px-4 py-1.5 bg-blue-100 text-blue-800 rounded-full text-xs font-bold uppercase tracking-wide group-hover:bg-blue-600 group-hover:text-white transition-all">{{ $pillar }}</span>
+                                @endforeach
                             </td>
                         </tr>
-                        <tr class="hover:bg-emerald-50/30 transition-colors group">
-                            <td class="px-8 py-5 text-zinc-700 font-semibold text-lg md:text-xl">Februari</td>
-                            <td class="px-8 py-5 text-zinc-600 font-mono text-lg md:text-xl font-medium">90.000.000</td>
-                            <td class="px-8 py-5 text-right">
-                                <span
-                                    class="inline-block px-4 py-1.5 bg-red-100 text-red-800 rounded-full text-xs font-bold uppercase tracking-wide group-hover:bg-red-600 group-hover:text-white transition-all">Kesehatan</span>
-                            </td>
+                        @empty
+                        <tr>
+                            <td colspan="3" class="px-8 py-10 text-center text-zinc-400 italic">Tidak ada data untuk bulan ini</td>
                         </tr>
-                        <tr class="hover:bg-emerald-50/30 transition-colors group">
-                            <td class="px-8 py-5 text-zinc-700 font-semibold text-lg md:text-xl">Maret</td>
-                            <td class="px-8 py-5 text-zinc-600 font-mono text-lg md:text-xl font-medium">110.000.000</td>
-                            <td class="px-8 py-5 text-right">
-                                <span
-                                    class="inline-block px-4 py-1.5 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold uppercase tracking-wide group-hover:bg-yellow-600 group-hover:text-white transition-all">Ekonomi</span>
-                            </td>
-                        </tr>
+                        @endforelse
                     </tbody>
                     <tfoot class="bg-emerald-800">
                         <tr>
                             <td class="px-8 py-5 text-white font-bold text-xl">Total Pentasarufan</td>
-                            <td class="px-8 py-5 text-white font-mono text-2xl font-bold" colspan="2">Rp 280.000.000
-                            </td>
+                            <td id="distribution-total" class="px-8 py-5 text-white font-mono text-2xl font-bold" colspan="2">Rp {{ number_format($distributionData['total_all'], 0, ',', '.') }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -364,134 +353,178 @@
                 <i class="fas fa-chart-line text-white text-xl"></i>
             </div>
             <h2 class="text-[#014421] text-3xl md:text-4xl font-extrabold tracking-tight">
-                Statistik Aktif
+                Statistik Transaksi Infaq
             </h2>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <div
-                class="bg-white p-8 rounded-3xl shadow-sm border border-zinc-100 hover:shadow-md transition-all duration-300">
-                <div class="flex flex-col items-center text-center gap-6">
-                    <div class="relative w-40 h-40">
-                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                            <circle cx="18" cy="18" r="16" fill="none" class="text-zinc-100"
-                                stroke-width="3" stroke="currentColor"></circle>
-                            <circle cx="18" cy="18" r="16" fill="none" class="text-green-600"
-                                stroke-width="3" stroke-dasharray="75, 100" stroke-linecap="round"
-                                stroke="currentColor"></circle>
-                        </svg>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <h3 class="text-4xl font-black text-[#014421]">150</h3>
-                            <span class="text-sm font-bold text-green-700 uppercase tracking-tighter">75% Aktif</span>
-                        </div>
-                    </div>
-                    <div class="text-left w-full space-y-2 border-t border-zinc-50 pt-6">
-                        <p class="text-zinc-800 font-bold text-lg flex items-center gap-3">
-                            <i class="fa-solid fa-sitemap text-green-700 text-sm"></i>
-                            Jumlah Ranting
-                        </p>
-                        <p class="text-zinc-500 text-sm leading-relaxed text-pretty">
-                            Persentase ranting tingkat desa/kelurahan yang menjalankan program kerja aktif.
-                        </p>
-                    </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-zinc-100 hover:shadow-md transition-all duration-300">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <h4 class="text-zinc-800 font-bold text-lg flex items-center gap-3">
+                        <i class="fa-solid fa-chart-pie text-blue-600 text-sm"></i>
+                        MWC (Per Wilayah)
+                    </h4>
+                    <select id="filter-wilayah" class="bg-zinc-50 border border-zinc-200 rounded-lg px-3 py-1.5 text-xs font-bold text-zinc-700 focus:ring-2 focus:ring-green-500 outline-none">
+                        <option value="all">Semua Wilayah</option>
+                        @foreach($wilayahs as $w)
+                            <option value="{{ $w->id }}" {{ $wilayahId == $w->id ? 'selected' : '' }}>{{ $w->nama_wilayah }}</option>
+                        @endforeach
+                    </select>
                 </div>
-            </div>
-
-            <div
-                class="bg-white p-8 rounded-3xl shadow-sm border border-zinc-100 hover:shadow-md transition-all duration-300">
-                <div class="flex flex-col items-center text-center gap-6">
-                    <div class="relative w-40 h-40">
-                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                            <circle cx="18" cy="18" r="16" fill="none" class="text-zinc-100"
-                                stroke-width="3" stroke="currentColor"></circle>
-                            <circle cx="18" cy="18" r="16" fill="none" class="text-emerald-600"
-                                stroke-width="3" stroke-dasharray="90, 100" stroke-linecap="round"
-                                stroke="currentColor"></circle>
-                        </svg>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <h3 class="text-4xl font-black text-[#014421]">25</h3>
-                            <span class="text-sm font-bold text-emerald-700 uppercase tracking-tighter">90% Aktif</span>
-                        </div>
-                    </div>
-                    <div class="text-left w-full space-y-2 border-t border-zinc-50 pt-6">
-                        <p class="text-zinc-800 font-bold text-lg flex items-center gap-3">
-                            <i class="fa-solid fa-building-flag text-emerald-700 text-sm"></i>
-                            Jumlah MWC
-                        </p>
-                        <p class="text-zinc-500 text-sm leading-relaxed text-pretty">
-                            Persentase pengurus tingkat kecamatan yang berkhidmat dalam pengelolaan ZIS.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div
-                class="bg-white p-8 rounded-3xl shadow-sm border border-zinc-100 hover:shadow-md transition-all duration-300">
-                <h4 class="text-zinc-800 font-bold text-lg mb-6 flex items-center gap-3">
-                    <i class="fa-solid fa-chart-pie text-blue-600 text-sm"></i>
-                    Rasio Perolehan & Pentasarufan
-                </h4>
                 <div class="relative flex justify-center">
-                    <canvas id="pieChart" class="max-w-[220px] max-h-[220px]"></canvas>
+                    <canvas id="mwcPieChart" class="max-w-[220px] max-h-[220px]"></canvas>
                 </div>
                 <div class="mt-8 grid grid-cols-2 gap-4 text-center border-t border-zinc-50 pt-6">
                     <div>
-                        <span class="block text-2xl font-black text-[#90be6d]">60%</span>
+                        <span id="mwc-ratio-income" class="block text-2xl font-black text-[#90be6d]">{{ $infaqStats['mwc']['ratio_income'] }}%</span>
                         <span class="text-xs text-zinc-400 uppercase font-bold tracking-widest">Perolehan</span>
                     </div>
                     <div>
-                        <span class="block text-2xl font-black text-[#014421]">40%</span>
+                        <span id="mwc-ratio-expense" class="block text-2xl font-black text-[#014421]">{{ $infaqStats['mwc']['ratio_expense'] }}%</span>
                         <span class="text-xs text-zinc-400 uppercase font-bold tracking-widest">Pentasarufan</span>
                     </div>
                 </div>
             </div>
 
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-zinc-100 hover:shadow-md transition-all duration-300">
+                <h4 class="text-zinc-800 font-bold text-lg mb-6 flex items-center gap-3">
+                    <i class="fa-solid fa-chart-pie text-blue-600 text-sm"></i>
+                    Pimpinan Cabang
+                </h4>
+                <div class="relative flex justify-center">
+                    <canvas id="pcPieChart" class="max-w-[220px] max-h-[220px]"></canvas>
+                </div>
+                <div class="mt-8 grid grid-cols-2 gap-4 text-center border-t border-zinc-50 pt-6">
+                    <div>
+                        <span id="pc-ratio-income" class="block text-2xl font-black text-[#90be6d]">{{ $infaqStats['pc']['ratio_income'] }}%</span>
+                        <span class="text-xs text-zinc-400 uppercase font-bold tracking-widest">Perolehan</span>
+                    </div>
+                    <div>
+                        <span id="pc-ratio-expense" class="block text-2xl font-black text-[#014421]">{{ $infaqStats['pc']['ratio_expense'] }}%</span>
+                        <span class="text-xs text-zinc-400 uppercase font-bold tracking-widest">Pentasarufan</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('pieChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: ['Perolehan', 'Pentasarufan'],
-                    datasets: [{
-                        data: [60, 40],
-                        backgroundColor: ['#90be6d', '#014421'],
-                        borderColor: '#ffffff',
-                        borderWidth: 4,
-                        hoverOffset: 10
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }, // Legend manual dibuat di HTML agar lebih cantik
-                        tooltip: {
-                            backgroundColor: '#18181b',
-                            padding: 12,
-                            cornerRadius: 12,
-                            displayColors: false,
-                            callbacks: {
-                                label: function(context) {
-                                    return ` ${context.label}: ${context.parsed}%`;
+            let mwcChart, pcChart;
+
+            function initCharts(mwcData, pcData) {
+                const config = (data) => ({
+                    type: 'pie',
+                    data: {
+                        labels: ['Perolehan', 'Pentasarufan'],
+                        datasets: [{
+                            data: [data.income, data.expense],
+                            backgroundColor: ['#90be6d', '#014421'],
+                            borderColor: '#ffffff',
+                            borderWidth: 4,
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#18181b',
+                                padding: 12,
+                                cornerRadius: 12,
+                                displayColors: false,
+                                callbacks: {
+                                    label: (context) => ` ${context.label}: ${formatRupiah(context.parsed)}`
                                 }
                             }
-                        }
-                    },
-                    animation: {
-                        animateScale: true,
-                        animateRotate: true,
-                        duration: 2000
+                        },
+                        animation: { animateScale: true, animateRotate: true, duration: 1500 }
                     }
-                }
-            });
+                });
+
+                const mwcCtx = document.getElementById('mwcPieChart').getContext('2d');
+                const pcCtx = document.getElementById('pcPieChart').getContext('2d');
+
+                mwcChart = new Chart(mwcCtx, config(mwcData));
+                pcChart = new Chart(pcCtx, config(pcData));
+            }
+
+            // Initial chart initialization
+            initCharts(@json($infaqStats['mwc']), @json($infaqStats['pc']));
+
+            function formatRupiah(number) {
+                return new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                    minimumFractionDigits: 0
+                }).format(number).replace('Rp', 'Rp ');
+            }
+
+            async function updateData() {
+                const month = document.getElementById('filter-month').value;
+                const year = document.getElementById('filter-year').value;
+                const wilayahId = document.getElementById('filter-wilayah').value;
+
+                // Update Income Table
+                try {
+                    const incomeRes = await fetch(`/api/stats/income?month=${month}&year=${year}`);
+                    const incomeData = await incomeRes.json();
+                    const incomeBody = document.getElementById('income-table-body');
+                    incomeBody.innerHTML = incomeData.items.length ? incomeData.items.map(item => `
+                        <tr class="hover:bg-green-50/30 transition-colors group">
+                            <td class="px-8 py-5 text-zinc-700 font-semibold text-lg md:text-xl">${item.ranting}</td>
+                            <td class="px-8 py-5 text-zinc-600 font-mono text-lg md:text-xl font-medium">${new Intl.NumberFormat('id-ID').format(item.total)}</td>
+                            <td class="px-8 py-5 text-right">
+                                ${item.sources.map(s => `<span class="inline-block px-4 py-1.5 bg-green-100 text-green-800 rounded-full text-xs font-bold uppercase tracking-wide group-hover:bg-[#014421] group-hover:text-white transition-all">${s}</span>`).join('')}
+                            </td>
+                        </tr>
+                    `).join('') : '<tr><td colspan="3" class="px-8 py-10 text-center text-zinc-400 italic">Tidak ada data untuk bulan ini</td></tr>';
+                    document.getElementById('income-total').innerText = formatRupiah(incomeData.total_all);
+                } catch (e) { console.error(e); }
+
+                // Update Distribution Table
+                try {
+                    const distRes = await fetch(`/api/stats/distribution?month=${month}&year=${year}`);
+                    const distData = await distRes.json();
+                    const distBody = document.getElementById('distribution-table-body');
+                    distBody.innerHTML = distData.items.length ? distData.items.map(item => `
+                        <tr class="hover:bg-emerald-50/30 transition-colors group">
+                            <td class="px-8 py-5 text-zinc-700 font-semibold text-lg md:text-xl">${item.ranting}</td>
+                            <td class="px-8 py-5 text-zinc-600 font-mono text-lg md:text-xl font-medium">${new Intl.NumberFormat('id-ID').format(item.total)}</td>
+                            <td class="px-8 py-5 text-right">
+                                ${item.pillars.map(p => `<span class="inline-block px-4 py-1.5 bg-blue-100 text-blue-800 rounded-full text-xs font-bold uppercase tracking-wide group-hover:bg-blue-600 group-hover:text-white transition-all">${p}</span>`).join('')}
+                            </td>
+                        </tr>
+                    `).join('') : '<tr><td colspan="3" class="px-8 py-10 text-center text-zinc-400 italic">Tidak ada data untuk bulan ini</td></tr>';
+                    document.getElementById('distribution-total').innerText = formatRupiah(distData.total_all);
+                } catch (e) { console.error(e); }
+
+                // Update Charts
+                try {
+                    const infaqRes = await fetch(`/api/stats/infaq?month=${month}&year=${year}&wilayah_id=${wilayahId}`);
+                    const infaqData = await infaqRes.json();
+                    console.log("Infaq Stats Data:", infaqData);
+                    
+                    // Update MWC Chart
+                    mwcChart.data.datasets[0].data = [infaqData.mwc.income, infaqData.mwc.expense];
+                    mwcChart.update();
+                    document.getElementById('mwc-ratio-income').innerText = infaqData.mwc.ratio_income + '%';
+                    document.getElementById('mwc-ratio-expense').innerText = infaqData.mwc.ratio_expense + '%';
+
+                    // Update PC Chart
+                    pcChart.data.datasets[0].data = [infaqData.pc.income, infaqData.pc.expense];
+                    pcChart.update();
+                    document.getElementById('pc-ratio-income').innerText = infaqData.pc.ratio_income + '%';
+                    document.getElementById('pc-ratio-expense').innerText = infaqData.pc.ratio_expense + '%';
+                } catch (e) { console.error(e); }
+            }
+
+            document.getElementById('filter-month').addEventListener('change', updateData);
+            document.getElementById('filter-year').addEventListener('change', updateData);
+            document.getElementById('filter-wilayah').addEventListener('change', updateData);
         });
     </script>
 @endsection

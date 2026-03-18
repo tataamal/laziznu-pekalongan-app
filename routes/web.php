@@ -16,12 +16,13 @@ use App\Http\Controllers\Pc\PcDashboardController;
 use App\Http\Controllers\Pc\InfaqController as PcInfaqController;
 use App\Http\Controllers\Pc\DataTransaksiMWC;
 use App\Http\Controllers\Pc\DataTransaksiRanting;
+use App\Http\Controllers\LandingController;
 
 
-
-Route::get('/', function () {
-    return view('dashboard');
-});
+Route::get('/', [LandingController::class, 'index'])->name('landing');
+Route::get('/api/stats/income', [LandingController::class, 'getIncomeByRanting']);
+Route::get('/api/stats/distribution', [LandingController::class, 'getDistributionByRanting']);
+Route::get('/api/stats/infaq', [LandingController::class, 'getInfaqStats']);
 
 Route::middleware(['auth'])->group(function () {
     // Route::get('/dashboard', function () {

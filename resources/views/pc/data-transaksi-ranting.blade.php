@@ -95,7 +95,7 @@
                                     <div class="text-[11px] text-green-600 font-bold uppercase">{{ $item->user->wilayah ? $item->user->wilayah->nama_wilayah : '-' }}</div>
                                 </td>
                                 <td class="px-6 py-5">
-                                    <div class="font-bold text-slate-900">Rp {{ number_format($item->gross_income, 0, ',', '.') }}</div>
+                                    <div class="font-bold text-slate-900">Rp {{ number_format($item->gross_profit, 0, ',', '.') }}</div>
                                 </td>
                                 <td class="px-6 py-5">
                                     <div class="font-bold text-green-700">Rp {{ number_format($item->hak_amil, 0, ',', '.') }}</div>

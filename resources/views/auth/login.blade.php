@@ -21,33 +21,19 @@
                 <div class="absolute -bottom-24 -right-24 w-80 h-80 bg-green-500/10 rounded-full blur-3xl text-white"></div>
 
                 <div class="relative z-10">
-                    <div class="mb-10 block">
-                        <img src="{{ asset('images/logo.png') }}" class="w-32 brightness-0 invert" alt="Logo LazisNU">
-                    </div>
                     <div class="w-20 h-1.5 bg-green-400 mb-8 rounded-full shadow-lg shadow-green-400/20"></div>
                     <h1 class="text-4xl lg:text-5xl font-black leading-tight tracking-tight">
-                        LazisNU <br> <span class="text-green-300">Kabupaten Pekalongan</span>
+                        LAZISNU  <br> <span class="text-green-300">PCNU KOTA PEKALONGAN</span>
                     </h1>
                     <p class="text-green-50/80 mt-8 text-lg leading-relaxed max-w-sm font-medium">
-                        Lembaga Amil Zakat, Infaq, dan Shodaqoh Nahdlatul Ulama. Amanah, Profesional, dan Mandiri.
+                        Lembaga Amil Zakat, Infaq, dan Shodaqoh Nahdlatul Ulama Kota Pekalongan.
                     </p>
-                </div>
-
-                <div class="relative z-10 flex items-center gap-4 text-white/40 text-sm font-bold tracking-widest uppercase">
-                    <span>Berkhidmat untuk Umat</span>
-                    <span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
-                    <span>v2.0</span>
                 </div>
             </div>
 
             <!-- Right Side: Login Form -->
             <div class="w-full md:w-1/2 p-8 md:p-14 lg:p-20 bg-white">
                 <div class="max-w-sm mx-auto">
-                    <!-- Mobile Logo -->
-                    <div class="md:hidden flex justify-center mb-8">
-                        <img src="{{ asset('images/logo.png') }}" class="w-32" alt="Logo LazisNU">
-                    </div>
-
                     <div class="mb-10 text-center md:text-left">
                         <h2 class="text-3xl font-extrabold text-[#014421] tracking-tight">Login Admin</h2>
                         <p class="text-zinc-500 mt-2 font-medium">Selamat datang kembali! Silakan masuk ke akun Anda.</p>
@@ -99,31 +85,12 @@
                             <x-input-error :messages="$errors->get('password')" class="mt-1 text-xs text-red-500 font-bold" />
                         </div>
 
-                        <div class="flex items-center justify-between py-2">
-                            <label class="flex items-center cursor-pointer group">
-                                <input type="checkbox" name="remember"
-                                    class="w-4 h-4 rounded border-zinc-300 text-emerald-700 focus:ring-emerald-600">
-                                <span class="ms-2 text-sm font-bold text-zinc-500 group-hover:text-emerald-700 transition-colors">Ingat Saya</span>
-                            </label>
-                            @if (Route::has('password.request'))
-                                <a class="text-sm font-bold text-emerald-700 hover:text-emerald-900 transition-colors" href="{{ route('password.request') }}">
-                                    Lupa Password?
-                                </a>
-                            @endif
-                        </div>
-
                         <button type="submit"
                             class="w-full bg-emerald-900 hover:bg-[#002a15] text-white font-black py-4 rounded-2xl shadow-xl shadow-emerald-900/20 transform hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 text-sm uppercase tracking-widest mt-4">
                             <span>Masuk ke Dashboard</span>
                             <i class="fas fa-arrow-right opacity-50"></i>
                         </button>
                     </form>
-
-                    <div class="mt-12 text-center">
-                        <p class="text-zinc-400 text-[10px] font-black uppercase tracking-[0.2em]">
-                            PC LazisNU Kabupaten Pekalongan
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>

@@ -15,6 +15,8 @@ class Distribution extends Model
         'cost_amount',
         'documentation_file',
         'status',
+        'approved_by',
+        'approved_at',
     ];  
 
     public function user()

@@ -66,4 +66,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Distribution::class);
     }
+
+    public function infaqTransactions()
+    {
+        return $this->hasMany(InfaqTransaction::class);
+    }
 }

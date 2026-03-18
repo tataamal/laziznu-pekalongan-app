@@ -1,7 +1,9 @@
 <x-guest-layout>
-    <div class="min-h-screen flex items-center justify-center bg-[#f8fafc] relative overflow-hidden font-sans">
+    <x-slot name="title">Login - LazisNU Pekalongan</x-slot>
 
-        <div class="absolute inset-0 z-0 opacity-[0.03] pointer-events-none">
+    <div class="min-h-screen flex items-center justify-center bg-[#f0f4f2] relative overflow-hidden font-sans p-4 md:p-6">
+        <!-- Background Grid Decoration -->
+        <div class="absolute inset-0 z-0 opacity-[0.05] pointer-events-none">
             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
@@ -12,39 +14,47 @@
             </svg>
         </div>
 
-        <div
-            class="relative z-10 w-full max-w-[1100px] flex flex-col md:flex-row bg-white rounded-[3rem] shadow-2xl overflow-hidden m-4 border border-zinc-200/50">
-
-            <div class="hidden md:flex md:w-1/2 bg-[#014421] p-12 flex-col justify-between relative overflow-hidden">
-                <div class="absolute -top-20 -left-20 w-64 h-64 bg-green-500/10 rounded-full blur-3xl"></div>
-                <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-emerald-400/10 rounded-full blur-3xl"></div>
+        <div class="relative z-10 w-full max-w-[1100px] flex flex-col md:flex-row bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-emerald-100">
+            <!-- Left Side: Branding -->
+            <div class="hidden md:flex md:w-1/2 bg-gradient-to-br from-[#014421] via-[#015e2e] to-[#014421] p-12 lg:p-16 flex-col justify-between relative overflow-hidden text-white">
+                <div class="absolute -top-24 -left-24 w-80 h-80 bg-emerald-400/20 rounded-full blur-3xl text-white"></div>
+                <div class="absolute -bottom-24 -right-24 w-80 h-80 bg-green-500/10 rounded-full blur-3xl text-white"></div>
 
                 <div class="relative z-10">
-                    <div class="w-16 h-1 bg-green-400 mb-6 rounded-full"></div>
-                    <h1 class="text-4xl lg:text-5xl font-black text-white leading-tight">
-                        Sistem Informasi <br> <span class="text-green-400">LazisNU</span>
+                    <div class="mb-10 block">
+                        <img src="{{ asset('images/logo.png') }}" class="w-32 brightness-0 invert" alt="Logo LazisNU">
+                    </div>
+                    <div class="w-20 h-1.5 bg-green-400 mb-8 rounded-full shadow-lg shadow-green-400/20"></div>
+                    <h1 class="text-4xl lg:text-5xl font-black leading-tight tracking-tight">
+                        LazisNU <br> <span class="text-green-300">Kabupaten Pekalongan</span>
                     </h1>
-                    <p class="text-green-100/70 mt-6 text-lg leading-relaxed max-w-sm">
-                        Kelola data pentasarufan dan perolehan zakat dengan lebih efisien dan transparan.
+                    <p class="text-green-50/80 mt-8 text-lg leading-relaxed max-w-sm font-medium">
+                        Lembaga Amil Zakat, Infaq, dan Shodaqoh Nahdlatul Ulama. Amanah, Profesional, dan Mandiri.
                     </p>
                 </div>
 
-                <div class="relative z-10 flex items-center gap-4 text-white/50 text-sm">
-                    <span>LazisNU Kabupaten Pekalongan</span>
-                    <span class="w-1 h-1 bg-white/30 rounded-full"></span>
+                <div class="relative z-10 flex items-center gap-4 text-white/40 text-sm font-bold tracking-widest uppercase">
+                    <span>Berkhidmat untuk Umat</span>
+                    <span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
                     <span>v2.0</span>
                 </div>
             </div>
 
-            <div class="w-full md:w-1/2 p-8 md:p-16 lg:p-20 bg-white">
+            <!-- Right Side: Login Form -->
+            <div class="w-full md:w-1/2 p-8 md:p-14 lg:p-20 bg-white">
                 <div class="max-w-sm mx-auto">
+                    <!-- Mobile Logo -->
+                    <div class="md:hidden flex justify-center mb-8">
+                        <img src="{{ asset('images/logo.png') }}" class="w-32" alt="Logo LazisNU">
+                    </div>
+
                     <div class="mb-10 text-center md:text-left">
-                        <h2 class="text-3xl font-black text-zinc-900 tracking-tight">Login Admin</h2>
-                        <p class="text-zinc-500 mt-2 font-medium">Silakan masukkan kredensial Anda</p>
+                        <h2 class="text-3xl font-extrabold text-[#014421] tracking-tight">Login Admin</h2>
+                        <p class="text-zinc-500 mt-2 font-medium">Selamat datang kembali! Silakan masuk ke akun Anda.</p>
                     </div>
 
                     @if (session('status'))
-                        <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-2xl text-sm">
+                        <div class="mb-6 p-4 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-2xl text-sm font-medium">
                             {{ session('status') }}
                         </div>
                     @endif
@@ -52,56 +62,68 @@
                     <form method="POST" action="{{ route('login') }}" class="space-y-6">
                         @csrf
 
-                        <div class="space-y-2">
-                            <label class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Email
-                                Address</label>
-                            <div class="relative group">
-                                <input id="email" type="email" name="email" :value="old('email')" required
-                                    autofocus
-                                    class="w-full pl-0 pr-4 py-3 bg-transparent border-b-2 border-zinc-200 focus:border-[#014421] transition-all outline-none text-zinc-800 placeholder-zinc-300 font-medium text-lg"
+                        <!-- Email Address -->
+                        <div class="space-y-2 group">
+                            <label for="email" class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1 group-focus-within:text-emerald-700 transition-colors">
+                                Email Address
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-emerald-600 transition-colors">
+                                    <i class="fas fa-envelope text-sm"></i>
+                                </div>
+                                <input id="email" type="email" name="email" :value="old('email')" required autofocus
+                                    class="w-full pl-7 pr-4 py-3 bg-white border-b-2 border-zinc-100 focus:border-emerald-700 transition-all outline-none text-zinc-800 placeholder-zinc-300 font-semibold text-lg"
                                     placeholder="admin@lazisnu.org">
                             </div>
-                            <x-input-error :messages="$errors->get('email')" class="mt-1 text-xs text-red-500" />
+                            <x-input-error :messages="$errors->get('email')" class="mt-1 text-xs text-red-500 font-bold" />
                         </div>
 
-                        <div class="space-y-2">
+                        <!-- Password -->
+                        <div class="space-y-2 group" x-data="{ show: false }">
                             <div class="flex justify-between items-center ml-1">
-                                <label
-                                    class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400">Password</label>
+                                <label for="password" class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400 group-focus-within:text-emerald-700 transition-colors">
+                                    Password
+                                </label>
                             </div>
-                            <input id="password" type="password" name="password" required
-                                autocomplete="current-password"
-                                class="w-full pl-0 pr-4 py-3 bg-transparent border-b-2 border-zinc-200 focus:border-[#014421] transition-all outline-none text-zinc-800 placeholder-zinc-300 font-medium text-lg"
-                                placeholder="••••••••">
-                            <x-input-error :messages="$errors->get('password')" class="mt-1 text-xs text-red-500" />
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-emerald-600 transition-colors">
+                                    <i class="fas fa-lock text-sm"></i>
+                                </div>
+                                <input id="password" :type="show ? 'text' : 'password'" name="password" required autocomplete="current-password"
+                                    class="w-full pl-7 pr-10 py-3 bg-white border-b-2 border-zinc-100 focus:border-emerald-700 transition-all outline-none text-zinc-800 placeholder-zinc-300 font-semibold text-lg"
+                                    placeholder="••••••••">
+                                <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 hover:text-emerald-600 transition-colors">
+                                    <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                </button>
+                            </div>
+                            <x-input-error :messages="$errors->get('password')" class="mt-1 text-xs text-red-500 font-bold" />
                         </div>
 
                         <div class="flex items-center justify-between py-2">
                             <label class="flex items-center cursor-pointer group">
                                 <input type="checkbox" name="remember"
-                                    class="w-4 h-4 rounded border-zinc-300 text-[#014421] focus:ring-[#014421]">
-                                <span
-                                    class="ms-2 text-sm font-bold text-zinc-500 group-hover:text-[#014421] transition-colors">Ingat
-                                    Saya</span>
+                                    class="w-4 h-4 rounded border-zinc-300 text-emerald-700 focus:ring-emerald-600">
+                                <span class="ms-2 text-sm font-bold text-zinc-500 group-hover:text-emerald-700 transition-colors">Ingat Saya</span>
                             </label>
                             @if (Route::has('password.request'))
-                                <a class="text-sm font-bold text-[#014421] hover:underline"
-                                    href="{{ route('password.request') }}">
+                                <a class="text-sm font-bold text-emerald-700 hover:text-emerald-900 transition-colors" href="{{ route('password.request') }}">
                                     Lupa Password?
                                 </a>
                             @endif
                         </div>
 
                         <button type="submit"
-                            class="w-full bg-[#014421] hover:bg-[#002a15] text-white font-bold py-4 rounded-2xl shadow-xl shadow-green-900/20 transform hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 mt-4">
+                            class="w-full bg-emerald-900 hover:bg-[#002a15] text-white font-black py-4 rounded-2xl shadow-xl shadow-emerald-900/20 transform hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 text-sm uppercase tracking-widest mt-4">
                             <span>Masuk ke Dashboard</span>
-                            <i class="fas fa-sign-in-alt opacity-50"></i>
+                            <i class="fas fa-arrow-right opacity-50"></i>
                         </button>
                     </form>
 
-                    <p class="mt-10 text-center text-zinc-400 text-xs font-medium uppercase tracking-widest">
-                        LazisNU PC Kabupaten Pekalongan
-                    </p>
+                    <div class="mt-12 text-center">
+                        <p class="text-zinc-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                            PC LazisNU Kabupaten Pekalongan
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,27 +1,75 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
+    <x-slot name="title">Konfirmasi Password - LazisNU Pekalongan</x-slot>
+
+    <div class="min-h-screen flex items-center justify-center bg-[#f0f4f2] relative overflow-hidden font-sans p-4">
+        <!-- Background Grid Decoration -->
+        <div class="absolute inset-0 z-0 opacity-[0.05] pointer-events-none">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                        <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#014421" stroke-width="1" />
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+            </svg>
+        </div>
+
+        <div class="relative z-10 w-full max-w-md">
+            <div class="text-center mb-10">
+                <div class="inline-block mb-6">
+                    <img src="{{ asset('images/logo.png') }}" class="w-28 mx-auto drop-shadow-sm" alt="Logo LazisNU">
+                </div>
+                <h1 class="text-3xl font-black text-[#014421] tracking-tight leading-none uppercase">
+                    Lazis<span class="text-green-600">NU</span>
+                </h1>
+                <div class="w-12 h-1 bg-green-500 mx-auto mt-4 rounded-full shadow-lg shadow-green-500/20"></div>
+            </div>
+
+            <div class="bg-white rounded-[2rem] shadow-2xl border border-emerald-50 p-8 md:p-10 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-green-400 to-emerald-700"></div>
+                
+                <div class="mb-8 text-center">
+                    <h2 class="text-xl font-extrabold text-[#014421] tracking-tight">Konfirmasi Keamanan</h2>
+                    <p class="text-zinc-500 text-sm mt-3 font-medium leading-relaxed">
+                        Ini adalah area aman aplikasi. Silakan konfirmasi password Anda sebelum melanjutkan.
+                    </p>
+                </div>
+
+                <form method="POST" action="{{ route('password.confirm') }}" class="space-y-6">
+                    @csrf
+
+                    <!-- Password -->
+                    <div class="space-y-2 group" x-data="{ show: false }">
+                        <label for="password" class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1 group-focus-within:text-emerald-700 transition-colors">
+                            Password
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-emerald-600 transition-colors">
+                                <i class="fas fa-lock text-sm"></i>
+                            </div>
+                            <input id="password" :type="show ? 'text' : 'password'" name="password" required autocomplete="current-password"
+                                class="w-full pl-7 pr-10 py-3 bg-white border-b-2 border-zinc-100 focus:border-emerald-700 transition-all outline-none text-zinc-800 placeholder-zinc-300 font-semibold text-lg"
+                                placeholder="••••••••">
+                            <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 hover:text-emerald-600 transition-colors">
+                                <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
+                        </div>
+                        <x-input-error :messages="$errors->get('password')" class="mt-1 text-xs text-red-500 font-bold" />
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit"
+                            class="w-full bg-emerald-900 hover:bg-[#002a15] text-white font-black py-4 rounded-2xl shadow-xl shadow-emerald-900/20 transform hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3 text-sm uppercase tracking-widest">
+                            <span>Konfirmasi Password</span>
+                            <i class="fas fa-shield-alt opacity-50"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <p class="text-center mt-12 text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                &copy; 2026 PC LazisNU Kab. Pekalongan
+            </p>
+        </div>
     </div>
-
-    <form method="POST" action="{{ route('password.confirm') }}">
-        @csrf
-
-        <!-- Password -->
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
-    </form>
 </x-guest-layout>

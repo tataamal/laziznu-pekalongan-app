@@ -138,6 +138,61 @@
                 </table>
             </div>
         </div>
+
+        {{-- History Section --}}
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fas fa-history text-green-600"></i>
+                    Riwayat Approval
+                </h2>
+                <span class="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-full uppercase tracking-wider">50 Terakhir</span>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/80 border-b border-slate-100">
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Info Transaksi</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Ranting</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Pemasukan Bersih</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Dana Digunakan</th>
+                                <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @forelse($historyItems as $item)
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="font-bold text-slate-900 text-xs">{{ $item->transaction_code }}</div>
+                                        <div class="text-[10px] text-slate-500 mt-0.5">{{ \Carbon\Carbon::parse($item->date)->format('d M Y') }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 font-medium text-slate-700 text-xs">{{ $item->user->name }}</td>
+                                    <td class="px-6 py-4 font-bold text-green-700 text-xs">Rp {{ number_format($item->net_income, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4 font-medium text-slate-800 text-xs">Rp {{ number_format($item->allowed_budget, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4 text-center">
+                                        @if($item->status == 'validated')
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700 border border-green-200">
+                                                <i class="fas fa-check-circle mr-1"></i> DISETUJUI
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700 border border-red-200">
+                                                <i class="fas fa-times-circle mr-1"></i> DITOLAK
+                                            </span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-10 text-center text-slate-400 italic text-sm">Belum ada riwayat approval.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     @push('vite-scripts')

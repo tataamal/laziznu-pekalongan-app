@@ -52,24 +52,22 @@
                                 <option value="NU Care - Damai" {{ old('pilar_type') == 'NU Care - Damai' ? 'selected' : '' }}>NU Care - Damai</option>
                             </select>
                         </div>
-                    </div>
 
-                    <div class="space-y-2">
-                        <label for="event_name" class="text-sm font-medium text-slate-700">
-                            Nama Kegiatan / Penerima
-                        </label>
-                        <input
-                            type="text"
-                            name="event_name"
-                            id="event_name"
-                            value="{{ old('event_name') }}"
-                            placeholder="Contoh: Santunan Anak Yatim Desa A"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
-                            required
-                        >
-                    </div>
+                        <div class="space-y-2 md:col-span-2">
+                            <label for="event_name" class="text-sm font-medium text-slate-700">
+                                Nama Kegiatan / Penerima
+                            </label>
+                            <input
+                                type="text"
+                                name="event_name"
+                                id="event_name"
+                                value="{{ old('event_name') }}"
+                                placeholder="Contoh: Santunan Anak Yatim Desa A"
+                                class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                                required
+                            >
+                        </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label for="cost_amount" class="text-sm font-medium text-slate-700">
                                 Nominal Pentasarufan (Rp)
@@ -88,6 +86,23 @@
                         </div>
 
                         <div class="space-y-2">
+                            <label for="penerima_manfaat" class="text-sm font-medium text-slate-700">
+                                Jumlah Penerima Manfaat
+                            </label>
+                            <input
+                                type="number"
+                                name="penerima_manfaat"
+                                id="penerima_manfaat"
+                                min="0"
+                                step="1"
+                                value="{{ old('penerima_manfaat', 0) }}"
+                                placeholder="Contoh: 10"
+                                class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                                required
+                            >
+                        </div>
+
+                        <div class="space-y-2 md:col-span-2">
                             <label for="documentation_file" class="text-sm font-medium text-slate-700">
                                 Dokumentasi (Foto/PDF)
                             </label>
@@ -98,7 +113,7 @@
                                 accept="image/*"
                                 class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-800 file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                             >
-                            <p class="text-xs text-slate-500 italic">*Format: JPG, JPEG, PNG. Max 2MB.</p>
+                            <p class="text-xs text-slate-500 italic">*JPG, JPEG, PNG. Max 2MB.</p>
                         </div>
                     </div>
 
@@ -159,13 +174,14 @@
                                         class="rounded border-slate-300 text-slate-900 focus:ring-slate-300"
                                     >
                                 </th>
-                                <th class="px-6 py-4 font-semibold">Kode</th>
-                                <th class="px-6 py-4 font-semibold">Tanggal</th>
-                                <th class="px-6 py-4 font-semibold">Kegiatan</th>
-                                <th class="px-6 py-4 font-semibold">Nominal</th>
-                                <th class="px-6 py-4 font-semibold">Dokumentasi</th>
-                                <th class="px-6 py-4 font-semibold">Status</th>
-                                <th class="px-6 py-4 font-semibold text-right">Aksi</th>
+                                <th class="px-6 py-4 font-semibold min-w-[120px]">Kode</th>
+                                <th class="px-6 py-4 font-semibold min-w-[100px]">Tanggal</th>
+                                <th class="px-6 py-4 font-semibold min-w-[200px]">Kegiatan</th>
+                                <th class="px-6 py-4 font-semibold min-w-[140px]">Nominal</th>
+                                <th class="px-6 py-4 font-semibold min-w-[100px] text-center">Penerima</th>
+                                <th class="px-6 py-4 font-semibold min-w-[100px]">Dokumentasi</th>
+                                <th class="px-6 py-4 font-semibold min-w-[100px]">Status</th>
+                                <th class="px-6 py-4 font-semibold text-right min-w-[100px]">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -198,6 +214,11 @@
                                         <div class="text-[10px] text-slate-500">{{ $dist->pilar_type }}</div>
                                     </td>
                                     <td class="px-6 py-4 font-semibold">Rp {{ number_format($dist->cost_amount, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
+                                            {{ $dist->penerima_manfaat ?? 0 }} Org
+                                        </span>
+                                    </td>
                                     <td class="px-6 py-4">
                                         @if($dist->documentation_file)
                                             <div class="group relative inline-block">
@@ -239,6 +260,7 @@
                                                     data-pilar_type="{{ $dist->pilar_type }}"
                                                     data-event_name="{{ $dist->event_name }}"
                                                     data-cost_amount="{{ $dist->cost_amount }}"
+                                                    data-penerima_manfaat="{{ $dist->penerima_manfaat }}"
                                                     data-status="{{ $dist->status }}"
                                                     data-update_url="{{ route('ranting.distribution.update', $dist->id) }}"
                                                 >
@@ -327,18 +349,16 @@
                                 </select>
                             </div>
 
-                            <div class="space-y-2"> 
+                            <div class="space-y-2 md:col-span-2"> 
                                 <label for="edit_event_name" class="text-sm font-medium text-slate-700">Nama Kegiatan / Penerima</label>
                                 <input
                                     type="text"
-                                name="event_name"
-                                id="edit_event_name"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
-                                required
-                            >
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    name="event_name"
+                                    id="edit_event_name"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                                    required
+                                >
+                            </div>
                             <div class="space-y-2">
                                 <label for="edit_cost_amount" class="text-sm font-medium text-slate-700">Nominal (Rp)</label>
                                 <input
@@ -353,6 +373,19 @@
                             </div>
 
                             <div class="space-y-2">
+                                <label for="edit_penerima_manfaat" class="text-sm font-medium text-slate-700">Penerima Manfaat</label>
+                                <input
+                                    type="number"
+                                    name="penerima_manfaat"
+                                    id="edit_penerima_manfaat"
+                                    min="0"
+                                    step="1"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                                    required
+                                >
+                            </div>
+
+                            <div class="space-y-2 md:col-span-2">
                                 <label for="edit_documentation_file" class="text-sm font-medium text-slate-700">Dokumentasi (Baru)</label>
                                 <input
                                     type="file"
@@ -399,6 +432,7 @@
             const editPilarType = document.getElementById('edit_pilar_type');
             const editEventName = document.getElementById('edit_event_name');
             const editCostAmount = document.getElementById('edit_cost_amount');
+            const editPenerimaManfaat = document.getElementById('edit_penerima_manfaat');
 
             function openEditModal() {
                 editModal.classList.remove('hidden');
@@ -417,6 +451,7 @@
                     editPilarType.value = this.dataset.pilar_type;
                     editEventName.value = this.dataset.event_name;
                     editCostAmount.value = this.dataset.cost_amount;
+                    editPenerimaManfaat.value = this.dataset.penerima_manfaat;
 
                     openEditModal();
                 });

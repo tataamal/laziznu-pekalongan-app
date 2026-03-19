@@ -12,6 +12,7 @@ class Distribution extends Model
         'date',
         'event_name',
         'pilar_type',
+        'penerima_manfaat',
         'cost_amount',
         'documentation_file',
         'status',

@@ -19,7 +19,16 @@ class ApprovalDistributionKoinNU extends Controller
             ->latest()
             ->get();
 
-        return view('mwc.approval-distribution-koin-nu', compact('items'));
+        $historyItems = Distribution::with('user')
+            ->whereIn('status', ['validated', 'rejected'])
+            ->whereHas('user', function($query) {
+                $query->where('wilayah_id', Auth::user()->wilayah_id);
+            })
+            ->latest()
+            ->limit(50)
+            ->get();
+
+        return view('mwc.approval-distribution-koin-nu', compact('items', 'historyItems'));
     }
 
     public function approve($id)

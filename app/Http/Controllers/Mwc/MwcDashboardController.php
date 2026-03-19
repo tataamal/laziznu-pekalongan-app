@@ -106,6 +106,11 @@ class MwcDashboardController extends Controller
                 if ($wilayahId) $q->where('wilayah_id', $wilayahId);
             })->latest()->take(50)->get();
 
+        $latestInfaqTransactions = \App\Models\InfaqTransaction::with('user')
+            ->whereHas('user', function($q) use ($wilayahId) {
+                if ($wilayahId) $q->where('wilayah_id', $wilayahId);
+            })->latest()->take(50)->get();
+
         $latestTransactions = collect();
         foreach($latestIncomes as $inc) {
             $latestTransactions->push([
@@ -117,6 +122,7 @@ class MwcDashboardController extends Controller
                 'jenis_filter' => 'pemasukan',
                 'nominal' => $inc->net_income,
                 'status' => $inc->status,
+                'penerima' => null,
             ]);
         }
         foreach($latestDistributions as $dst) {
@@ -129,6 +135,20 @@ class MwcDashboardController extends Controller
                 'jenis_filter' => 'pengeluaran',
                 'nominal' => $dst->cost_amount,
                 'status' => $dst->status,
+                'penerima' => $dst->penerima_manfaat,
+            ]);
+        }
+        foreach($latestInfaqTransactions as $infaq) {
+            $latestTransactions->push([
+                'kode' => $infaq->transaction_code,
+                'tanggal' => $infaq->transaction_date,
+                'user' => $infaq->user ? $infaq->user->name : '-',
+                'role' => $infaq->user ? $infaq->user->role : '-',
+                'jenis_label' => $infaq->infaq_type,
+                'jenis_filter' => strtolower($infaq->transaction_type),
+                'nominal' => $infaq->gross_amount,
+                'status' => 'validated', // MWC Infaq is direct, conceptually validated
+                'penerima' => $infaq->penerima_manfaat,
             ]);
         }
         $latestTransactions = $latestTransactions->sortByDesc('tanggal')->values();

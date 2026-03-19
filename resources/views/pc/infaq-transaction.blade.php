@@ -84,6 +84,7 @@
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Info Transaksi</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jenis Transaksi</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Keterangan</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Penerima</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jumlah Total</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jumlah Bersih</th>
                             <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500 w-[120px]">Aksi</th>
@@ -113,6 +114,10 @@
                                     <div class="text-slate-500 max-w-[200px] truncate" title="{{ $item->description }}">
                                         {{ $item->description ?: '-' }}
                                     </div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <div class="font-bold text-slate-900">{{ number_format($item->penerima_manfaat, 0, ',', '.') }}</div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-medium">Jiwa</div>
                                 </td>
                                 <td class="px-6 py-5">
                                     <div class="font-bold text-slate-900">Rp {{ number_format($item->gross_amount, 0, ',', '.') }}</div>
@@ -207,6 +212,12 @@
                             <option value="Infaq Umum">Infaq Umum</option>
                             <option value="Infaq Lainnya">Infaq Lainnya</option>
                         </select>
+                    </div>
+
+                    {{-- Penerima Manfaat --}}
+                    <div class="space-y-2">
+                        <label for="penerima_manfaat" class="text-sm font-semibold text-slate-700 ml-1">Jumlah Penerima Manfaat (Jiwa)</label>
+                        <input type="number" name="penerima_manfaat" id="penerima_manfaat" required min="0" class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 p-3.5 text-sm transition focus:border-green-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-green-500/10" placeholder="Contoh: 10">
                     </div>
 
                     {{-- Deskripsi --}}
@@ -390,6 +401,7 @@
             // Set Today
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('transaction_date').value = today;
+            document.getElementById('penerima_manfaat').value = "";
             document.getElementById('percentage').value = "10";
             
             calculateNet();
@@ -409,6 +421,7 @@
             document.getElementById('transaction_date').value = item.transaction_date;
             document.getElementById('transaction_type').value = item.transaction_type;
             document.getElementById('infaq_type').value = item.infaq_type;
+            document.getElementById('penerima_manfaat').value = item.penerima_manfaat;
             document.getElementById('description').value = item.description;
             document.getElementById('gross_amount').value = item.gross_amount;
             document.getElementById('percentage').value = "10";

@@ -34,8 +34,12 @@
             <!-- Right Side: Login Form -->
             <div class="w-full md:w-1/2 p-8 md:p-14 lg:p-20 bg-white">
                 <div class="max-w-sm mx-auto">
+                    <a href="{{ route('landing') }}" class="inline-flex items-center gap-2 text-zinc-400 hover:text-emerald-700 transition-colors mb-8 group">
+                        <i class="fas fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
+                        <span class="text-sm font-bold uppercase tracking-widest">Kembali</span>
+                    </a>
                     <div class="mb-10 text-center md:text-left">
-                        <h2 class="text-3xl font-extrabold text-[#014421] tracking-tight">Login Admin</h2>
+                        <h2 class="text-3xl font-extrabold text-[#014421] tracking-tight">Login</h2>
                         <p class="text-zinc-500 mt-2 font-medium">Selamat datang kembali! Silakan masuk ke akun Anda.</p>
                     </div>
 

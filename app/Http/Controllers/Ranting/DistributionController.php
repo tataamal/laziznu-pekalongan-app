@@ -26,6 +26,7 @@ class DistributionController extends Controller
             'event_name' => ['required', 'string', 'max:255'],
             'pilar_type' => ['required', 'string'],
             'cost_amount' => ['required', 'integer', 'min:0'],
+            'penerima_manfaat' => ['required', 'integer', 'min:0'],
             'documentation_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ]);
 
@@ -50,6 +51,7 @@ class DistributionController extends Controller
                 'event_name' => $validated['event_name'],
                 'pilar_type' => $validated['pilar_type'],
                 'cost_amount' => $validated['cost_amount'],
+                'penerima_manfaat' => $validated['penerima_manfaat'],
                 'status' => 'on_process',
             ];
 
@@ -89,6 +91,7 @@ class DistributionController extends Controller
             'event_name' => ['required', 'string', 'max:255'],
             'pilar_type' => ['required', 'string'],
             'cost_amount' => ['required', 'integer', 'min:0'],
+            'penerima_manfaat' => ['required', 'integer', 'min:0'],
             'documentation_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ]);
 
@@ -113,6 +116,7 @@ class DistributionController extends Controller
                 'event_name' => $validated['event_name'],
                 'pilar_type' => $validated['pilar_type'],
                 'cost_amount' => $validated['cost_amount'],
+                'penerima_manfaat' => $validated['penerima_manfaat'],
             ];
 
             if ($request->hasFile('documentation_file')) {

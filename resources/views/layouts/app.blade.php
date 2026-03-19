@@ -113,6 +113,12 @@
                         <span>Dashboard</span>
                     </a>
 
+                     <a href="{{ route('pc.infaq.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('pc.infaq.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-hand-holding-heart text-sm"></i>
+                        <span>Export Report Pentasarufan</span>
+                    </a>
+
                     <a href="{{ route('pc.infaq.index') }}"
                        class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('pc.infaq.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
                         <i class="fas fa-hand-holding-heart text-sm"></i>

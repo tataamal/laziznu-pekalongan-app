@@ -14,6 +14,7 @@ class InfaqTransaction extends Model
         'transaction_date',
         'transaction_type',
         'infaq_type',
+        'penerima_manfaat',
         'description',
         'gross_amount',
         'percentage',

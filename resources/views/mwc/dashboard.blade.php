@@ -94,8 +94,9 @@
                             <th class="px-3 py-3 font-semibold">User</th>
                             <th class="px-3 py-3 font-semibold">Role</th>
                             <th class="px-3 py-3 font-semibold">Jenis</th>
-                            <th class="px-3 py-3 font-semibold">Nominal</th>
-                            <th class="px-3 py-3 font-semibold">Status</th>
+                            <th class="px-3 py-3 font-semibold text-center">Penerima</th>
+                            <th class="px-3 py-3 font-semibold text-center">Nominal</th>
+                            <th class="px-3 py-3 font-semibold text-center">Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -109,8 +110,16 @@
                             <td class="px-3 py-3 font-medium">{{ $trx['user'] }}</td>
                             <td class="px-3 py-3"><span class="capitalize">{{ $trx['role'] }}</span></td>
                             <td class="px-3 py-3">{{ $trx['jenis_label'] }}</td>
-                            <td class="px-3 py-3">Rp {{ number_format($trx['nominal'], 0, ',', '.') }}</td>
-                            <td class="px-3 py-3">
+                            <td class="px-3 py-3 text-center">
+                                @if(isset($trx['penerima']) && $trx['penerima'] > 0)
+                                    <div class="font-bold text-zinc-900">{{ number_format($trx['penerima'], 0, ',', '.') }}</div>
+                                    <div class="text-[10px] text-zinc-500 uppercase font-medium">Jiwa</div>
+                                @else
+                                    <span class="text-zinc-400">-</span>
+                                @endif
+                            </td>
+                            <td class="px-3 py-3 text-center font-bold">Rp {{ number_format($trx['nominal'], 0, ',', '.') }}</td>
+                            <td class="px-3 py-3 text-center">
                                 @if($trx['status'] === 'validated')
                                     <span class="rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700">Tervalidasi</span>
                                 @elseif($trx['status'] === 'rejected')
@@ -122,7 +131,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="px-3 py-6 text-center text-sm text-zinc-500">
+                            <td colspan="8" class="px-3 py-6 text-center text-sm text-zinc-500">
                                 Belum ada data transaksi.
                             </td>
                         </tr>

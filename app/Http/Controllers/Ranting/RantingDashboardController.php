@@ -4,56 +4,54 @@ namespace App\Http\Controllers\Ranting;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\Models\Income;
+use App\Models\Distribution;
 
 class RantingDashboardController extends Controller
 {
     public function index()
     {
         $userId = auth()->id();
-        $incomes = \App\Models\Income::with('user')->where('user_id', $userId)->get();
-        $distributions = \App\Models\Distribution::with('user')->where('user_id', $userId)->get();
+        $incomes = Income::with('user')->where('user_id', $userId)->get();
+        $distributions = Distribution::with('user')->where('user_id', $userId)->get();
 
         $totalIncome = $incomes->where('status', 'validated')->sum('net_income');
         $totalExpense = $distributions->where('status', 'validated')->sum('cost_amount');
+        $totalHakAmil = $incomes->where('status', 'validated')->sum('hak_amil');
         
         $startOfMonth = now()->startOfMonth();
         $transactionsThisMonth = $incomes->where('date', '>=', $startOfMonth->format('Y-m-d'))->count() + 
                                  $distributions->where('date', '>=', $startOfMonth->format('Y-m-d'))->count();
         
         $usableFund = $totalIncome - $totalExpense;
-
-        // Bar Chart (Pemasukan Bulanan) 6 Bulan terakhir
         $months = collect(range(5, 0))->map(function($i) { return now()->subMonths($i)->format('Y-m'); });
-        $barLabels = $months->map(function($m) { return \Carbon\Carbon::createFromFormat('Y-m', $m)->translatedFormat('M'); });
+        $barLabels = $months->map(function($m) { return Carbon::createFromFormat('Y-m', $m)->translatedFormat('M'); });
         $barData = $months->map(function($m) use ($incomes) { 
             return $incomes->where('status', 'validated')->filter(function($inc) use ($m) { 
-                return \Carbon\Carbon::parse($inc->date)->format('Y-m') === $m; 
+                return Carbon::parse($inc->date)->format('Y-m') === $m; 
             })->sum('net_income'); 
         });
 
-        // Pie Chart (Distribusi Pilar Infaq)
         $validatedDistributions = $distributions->where('status', 'validated');
         $pieLabels = $validatedDistributions->pluck('pilar_type')->unique()->values();
         $pieData = $pieLabels->map(function($type) use ($validatedDistributions) {
             return $validatedDistributions->where('pilar_type', $type)->sum('cost_amount');
         });
 
-        // Placeholder if no distribution data
         if ($pieData->sum() === 0) {
             $pieLabels = collect(['Belum ada data']);
-            $pieData = collect([1]); // Use 1 as placeholder for donut display
+            $pieData = collect([1]);
             $hasPieData = false;
         } else {
             $hasPieData = true;
         }
 
-        // Trend Chart (1 Minggu Terakhir)
         $incomeDates = $incomes->where('status', 'validated')->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('Y-m-d'); });
         $distributionDates = $distributions->where('status', 'validated')->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('Y-m-d'); });
 
         $allDates = $incomeDates->merge($distributionDates)->unique();
         
-        // Ensure we always have the last 7 days if data is sparse or empty
         $last7Days = collect(range(6, 0))->map(function($i) { return now()->subDays($i)->format('Y-m-d'); });
         $displayDates = $last7Days->merge($allDates)->unique()->sortDesc()->take(7)->sort()->values();
         
@@ -124,7 +122,7 @@ class RantingDashboardController extends Controller
         $latestTransactions = $latestTransactions->sortByDesc('tanggal')->values();
 
         return view('ranting.dashboard', compact(
-            'totalIncome', 'totalExpense', 'transactionsThisMonth', 'usableFund', 
+            'totalIncome', 'totalExpense', 'totalHakAmil', 'transactionsThisMonth', 'usableFund', 
             'chartDataJson', 'latestTransactions'
         ));
     }

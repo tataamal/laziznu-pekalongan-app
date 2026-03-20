@@ -8,15 +8,15 @@
         @vite('resources/js/ranting-dashboard.js')
     @endpush
 
-    <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div class="rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm">
-            <div class="text-sm font-medium text-white/90">Total Pemasukan</div>
+            <div class="text-sm font-medium text-white/90">Total Pemasukan KOIN NU</div>
             <div class="mt-4 text-3xl font-bold">Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-white/80">Total pemasukan sejauh ini</div>
+            <div class="mt-3 text-xs text-white/80">TotalS Pemasukan KOIN NU</div>
         </div>
 
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Total Pengeluaran</div>
+            <div class="text-sm font-medium text-zinc-600">Total Pengeluaran KOIN NU</div>
             <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($totalExpense, 0, ',', '.') }}</div>
             <div class="mt-3 text-xs text-zinc-500">Total pentasarufan sejauh ini</div>
         </div>
@@ -25,6 +25,12 @@
             <div class="text-sm font-medium text-zinc-600">Dana yang Dapat Digunakan</div>
             <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($usableFund, 0, ',', '.') }}</div>
             <div class="mt-3 text-xs text-zinc-500">Sisa saldo saat ini</div>
+        </div>
+
+        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <div class="text-sm font-medium text-zinc-600">Hak Amil</div>
+            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($totalHakAmil, 0, ',', '.') }}</div>
+            <div class="mt-3 text-xs text-zinc-500">Hak amil dari total pemasukan</div>
         </div>
     </section>
 

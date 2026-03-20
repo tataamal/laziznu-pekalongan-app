@@ -28,7 +28,7 @@
 
             <h1
                 class="text-4xl md:text-7xl font-black text-white tracking-tight mb-6 leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
-                LazisNU <span class="text-green-300">Kabupaten Pekalongan</span>
+                LAZISNU <span class="text-green-300">Kabupaten Pekalongan</span>
             </h1>
 
             <div class="w-24 h-1.5 bg-green-400 mx-auto mb-8 rounded-full shadow-lg shadow-green-400/20"></div>
@@ -68,7 +68,7 @@
                     <i class="fa-solid fa-mosque text-3xl md:text-4xl text-green-700"></i>
                 </div>
                 <h2 class="text-[#014421] text-3xl md:text-4xl font-extrabold tracking-tight">
-                    Profil LazisNU PC Kabupaten Pekalongan
+                    Profil LAZIZNU PC Kabupaten Pekalongan
                 </h2>
             </div>
 

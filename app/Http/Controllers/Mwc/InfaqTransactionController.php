@@ -140,7 +140,7 @@ class InfaqTransactionController extends Controller
 
     private function generateTransactionCode(): string
     {
-        $last = InfaqTransaction::orderByDesc('id')->first();
+        $last = InfaqTransaction::where('transaction_code', 'like', 'INF%')->orderByDesc('id')->first();
         if (!$last || !$last->transaction_code) {
             return 'INF00001';
         }

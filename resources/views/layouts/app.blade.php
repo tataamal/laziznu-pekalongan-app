@@ -67,6 +67,12 @@
                         <i class="fas fa-hand-holding-usd text-sm"></i>
                         <span>Catat Pentasarufan</span>
                     </a>
+
+                    <a href="{{ route('ranting.export-report.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.export-report.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-file-excel text-sm"></i>
+                        <span>Export Data Pentasarufan</span>
+                    </a>
                     
                     <a href="{{ route('ranting.call-center') }}"
                        class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.call-center') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
@@ -98,6 +104,12 @@
                         <span>Input Data Infaq</span>
                     </a>
                     
+                    <a href="{{ route('mwc.export-report.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('mwc.export-report.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-file-excel text-sm"></i>
+                        <span>Export Data Pentasarufan</span>
+                    </a>
+                    
                     <a href="{{ route('mwc.call-center') }}"
                        class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('mwc.call-center') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
                         <i class="fas fa-headset text-sm"></i>
@@ -113,9 +125,9 @@
                         <span>Dashboard</span>
                     </a>
 
-                     <a href="{{ route('pc.infaq.index') }}"
-                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('pc.infaq.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
-                        <i class="fas fa-hand-holding-heart text-sm"></i>
+                      <a href="{{ route('pc.export-report.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('pc.export-report.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-file-excel text-sm"></i>
                         <span>Export Report Pentasarufan</span>
                     </a>
 

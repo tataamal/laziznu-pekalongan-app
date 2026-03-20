@@ -172,7 +172,7 @@ class InputPemasukanController extends Controller
 
     private function generateTransactionCode(): string
     {
-        $last = Income::orderByDesc('id')->first();
+        $last = Income::where('transaction_code', 'like', 'ICM%')->orderByDesc('id')->first();
 
         if (!$last || !$last->transaction_code) {
             return 'ICM00001';

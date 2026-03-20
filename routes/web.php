@@ -56,6 +56,11 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('ranting/income', InputPemasukanController::class)->names('ranting.income');
         Route::delete('/ranting/distribution/bulk-delete', [DistributionController::class, 'bulkDelete'])->name('ranting.distribution.bulk-delete');
         Route::resource('ranting/distribution', DistributionController::class)->names('ranting.distribution');
+        
+        // Report Pentasarufan
+        Route::get('/ranting/export-report', [\App\Http\Controllers\Ranting\ReportController::class, 'index'])->name('ranting.export-report.index');
+        Route::post('/ranting/export-report/export', [\App\Http\Controllers\Ranting\ReportController::class, 'export'])->name('ranting.export-report.export');
+        
         Route::view('/ranting/call-center', 'ranting.call-center')->name('ranting.call-center');
     });
 
@@ -77,6 +82,10 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('mwc/infaq-transaction', InfaqTransactionController::class)->names('mwc.infaq-transaction');
         
         Route::view('/mwc/call-center', 'mwc.call-center')->name('mwc.call-center');
+        
+        // Report Pentasarufan
+        Route::get('/mwc/export-report', [\App\Http\Controllers\Mwc\ReportController::class, 'index'])->name('mwc.export-report.index');
+        Route::post('/mwc/export-report/export', [\App\Http\Controllers\Mwc\ReportController::class, 'export'])->name('mwc.export-report.export');
     });
 
     // Route untuk autorisasi user role pc
@@ -93,6 +102,10 @@ Route::middleware(['auth'])->group(function () {
 
         // Call Center
         Route::view('/pc/call-center', 'pc.call-center')->name('pc.call-center');
+
+        // Report Pentasarufan
+        Route::get('/pc/export-report', [\App\Http\Controllers\Pc\ReportController::class, 'index'])->name('pc.export-report.index');
+        Route::post('/pc/export-report/export', [\App\Http\Controllers\Pc\ReportController::class, 'export'])->name('pc.export-report.export');
     });
 
     // Route untuk profile

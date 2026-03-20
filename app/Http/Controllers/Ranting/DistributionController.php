@@ -190,7 +190,7 @@ class DistributionController extends Controller
 
     private function generateTransactionCode(): string
     {
-        $last = Distribution::orderByDesc('id')->first();
+        $last = Distribution::where('transaction_code', 'like', 'DST%')->orderByDesc('id')->first();
 
         if (!$last || !$last->transaction_code) {
             return 'DST00001';

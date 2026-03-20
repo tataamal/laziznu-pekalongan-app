@@ -83,7 +83,7 @@
                 <div class="space-y-4">
                     <h3 class="text-green-400 text-sm font-black uppercase tracking-[0.3em]">Hubungi Kami</h3>
                     <a href="https://maps.app.goo.gl/wb9U7uhE2SR8eDZW8" target="_blank" class="block group">
-                        <h2 class="text-3xl md:text-4xl font-extrabold group-hover:text-green-400 transition-colors">LazisNU PC <br>Kabupaten Pekalongan</h2>
+                        <h2 class="text-3xl md:text-4xl font-extrabold group-hover:text-green-400 transition-colors">LAZISNU PC <br>Kabupaten Pekalongan</h2>
                     </a>
                     <div class="w-16 h-1 bg-green-500 rounded-full mx-auto md:mx-0"></div>
                 </div>
@@ -115,7 +115,7 @@
                 </div>
 
                 <div class="pt-10 border-t border-white/10 text-sm opacity-50 italic">
-                    <p>© 2026 LazisNU Kabupaten Pekalongan. <br>Dedikasi untuk Kemaslahatan Umat.</p>
+                    <p>© 2026 LAZISNU Kabupaten Pekalongan. <br>Dedikasi untuk Kemaslahatan Umat.</p>
                 </div>
             </div>
 
@@ -127,10 +127,7 @@
 
                     <div
                         class="relative bg-zinc-900 rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl h-[350px]">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d107756.25021028174!2d109.5507023!3d-6.9604536!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e702500119df407%3A0xf2fbab005840ffd7!2sLAZISNU%20PCNU%20KOTA%20PEKALONGAN!5e1!3m2!1id!2sid!4v1773869693300!5m2!1id!2sid"
-                            class="w-full h-full grayscale hover:grayscale-0 transition-all duration-700 opacity-80 group-hover:opacity-100"
-                            allowfullscreen="" loading="lazy">
-                        </iframe>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4486.406085288493!2d109.63825999999999!3d-6.960434200000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e70210d13f5ec79%3A0x70f090acf861956a!2sGedung%20PCNU%20Kab.%20Pekalongan!5e1!3m2!1sid!2sid!4v1773977795850!5m2!1sid!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                 </div>
             </div>

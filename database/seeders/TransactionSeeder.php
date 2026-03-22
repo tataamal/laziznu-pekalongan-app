@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\Income;
+use App\Models\Distribution;
 
 class TransactionSeeder extends Seeder
 {
@@ -13,7 +16,7 @@ class TransactionSeeder extends Seeder
     public function run(): void
     {
         // Pastikan ada user ranting untuk testing
-        $user = \App\Models\User::firstOrCreate(
+        $user = User::firstOrCreate(
             ['email' => 'ranting@example.com'],
             [
                 'name' => 'Admin Ranting A',
@@ -23,8 +26,8 @@ class TransactionSeeder extends Seeder
             ]
         );
 
-        $incomeCount = \App\Models\Income::count();
-        $baseDate = \Carbon\Carbon::now()->subMonths(5);
+        $incomeCount = Income::count();
+        $baseDate = Carbon::now()->subMonths(5);
 
         for ($i = 1; $i <= 15; $i++) {
             $incomeCount++;
@@ -33,7 +36,7 @@ class TransactionSeeder extends Seeder
             $operational = $grossProfit * 0.1;
             $netIncome = $grossProfit - $operational;
             
-            \App\Models\Income::create([
+            Income::create([
                 'user_id' => $user->id,
                 'transaction_code' => $transactionCode,
                 'date' => $baseDate->copy()->addDays(rand(0, 150)),
@@ -47,14 +50,14 @@ class TransactionSeeder extends Seeder
             ]);
         }
 
-        $distributionCount = \App\Models\Distribution::count();
+        $distributionCount = Distribution::count();
         $pilars = ['NU Care Cerdas', 'NU Care Sehat', 'NU Care Hijau', 'NU Care Berdaya', 'NU Care Damai'];
 
         for ($i = 1; $i <= 10; $i++) {
             $distributionCount++;
             $transactionCode = 'DST' . str_pad($distributionCount, 5, '0', STR_PAD_LEFT);
             
-            \App\Models\Distribution::create([
+            Distribution::create([
                 'user_id' => $user->id,
                 'transaction_code' => $transactionCode,
                 'date' => $baseDate->copy()->addDays(rand(0, 150)),

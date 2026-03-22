@@ -46,6 +46,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('developer/wilayah/import', [WilayahController::class, 'import'])->name('developer.wilayah.import');
         Route::get('developer/wilayah/template/download', [WilayahController::class, 'downloadTemplate'])->name('developer.wilayah.template');
         Route::resource('developer/wilayah', WilayahController::class)->names('developer.wilayah');
+
+        // Manajemen Data Ranting
+        Route::delete('developer/management-ranting/bulk-delete', [\App\Http\Controllers\Developer\ManagementRantingController::class, 'bulkDelete'])->name('developer.management-ranting.bulk-delete');
+        Route::resource('developer/management-ranting', \App\Http\Controllers\Developer\ManagementRantingController::class)->names('developer.management-ranting');
+
+        // Manajemen Data Munfiq
+        Route::delete('developer/management-munfiq/bulk-delete', [\App\Http\Controllers\Developer\ManagementMunfiqController::class, 'bulkDelete'])->name('developer.management-munfiq.bulk-delete');
+        Route::resource('developer/management-munfiq', \App\Http\Controllers\Developer\ManagementMunfiqController::class)->names('developer.management-munfiq');
     });
 
     // Route untuk autorisasi user role ranting

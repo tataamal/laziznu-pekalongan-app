@@ -53,11 +53,18 @@
                         <span>Kelola Wilayah</span>
                     </a>
 
-                    <a href="#"
-                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-green-700">
-                        <i class="fas fa-chart-bar text-sm"></i>
-                        <span>Laporan</span>
+                    <a href="{{ route('developer.management-ranting.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('developer.management-ranting.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-users text-sm"></i>
+                        <span>Kelola Data Ranting</span>
                     </a>
+
+                    <a href="{{ route('developer.management-munfiq.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('developer.management-munfiq.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-id-card text-sm"></i>
+                        <span>Kelola Data Munfiq</span>
+                    </a>
+
                 @elseif(auth()->user()->isRanting())
                     @php
                         $dashboardRoute = auth()->user()->role . '.dashboard';

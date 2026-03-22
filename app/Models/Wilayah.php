@@ -20,4 +20,9 @@ class Wilayah extends Model
     {
         return $this->hasMany(User::class, 'wilayah_id');
     }
+
+    public function data_ranting()
+    {
+        return $this->hasMany(DataRanting::class);
+    }
 }

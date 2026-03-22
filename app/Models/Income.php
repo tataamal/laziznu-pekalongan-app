@@ -16,6 +16,8 @@ class Income extends Model
         'percentage',
         'allowed_budget',
         'hak_amil',
+        'hak_amil_mwc',
+        'hak_amil_pc',
         'status',
         'approved_by',
         'approved_at',

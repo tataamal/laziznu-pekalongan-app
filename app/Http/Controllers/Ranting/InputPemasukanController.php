@@ -28,6 +28,9 @@ class InputPemasukanController extends Controller
             'date' => ['required', 'date'],
             'gross_profit' => ['required', 'integer', 'min:0'],
             'operating_expenses' => ['required', 'integer', 'min:0'],
+            'hak_amil' => ['required', 'integer', 'min:0'],
+            'hak_amil_mwc' => ['required', 'integer', 'min:0'],
+            'hak_amil_pc' => ['required', 'integer', 'min:0'],
         ]);
 
         DB::beginTransaction();
@@ -48,6 +51,8 @@ class InputPemasukanController extends Controller
                 'percentage' => $calculated['percentage'],
                 'allowed_budget' => $calculated['allowed_budget'],
                 'hak_amil' => $calculated['hak_amil'],
+                'hak_amil_mwc' => $calculated['hak_amil_mwc'],
+                'hak_amil_pc' => $calculated['hak_amil_pc'],
                 'status' => 'on_process',
             ]);
 
@@ -94,6 +99,9 @@ class InputPemasukanController extends Controller
             'date' => ['required', 'date'],
             'gross_profit' => ['required', 'integer', 'min:0'],
             'operating_expenses' => ['required', 'integer', 'min:0'],
+            'hak_amil' => ['required', 'integer', 'min:0'],
+            'hak_amil_mwc' => ['required', 'integer', 'min:0'],
+            'hak_amil_pc' => ['required', 'integer', 'min:0'],
         ]);
 
         DB::beginTransaction();
@@ -112,6 +120,8 @@ class InputPemasukanController extends Controller
                 'percentage' => $calculated['percentage'],
                 'allowed_budget' => $calculated['allowed_budget'],
                 'hak_amil' => $calculated['hak_amil'],
+                'hak_amil_mwc' => $calculated['hak_amil_mwc'],
+                'hak_amil_pc' => $calculated['hak_amil_pc'],
                 // status tidak diubah, tetap mengikuti data sebelumnya
             ]);
 
@@ -159,14 +169,20 @@ class InputPemasukanController extends Controller
     {
         $netIncome = max($grossProfit - $operatingExpenses, 0);
         $percentage = 60.00;
+        $percentage_mwc = 35.00;
+        $percentage_pc = 5.00;
         $allowedBudget = (int) round($netIncome * 0.60);
         $hakAmil = (int) round($allowedBudget * 0.20);
+        $hakAmilMwc = (int) round($netIncome * ($percentage_mwc / 100));
+        $hakAmilPc = (int) round($netIncome * ($percentage_pc / 100));
 
         return [
             'net_income' => $netIncome,
             'percentage' => $percentage,
             'allowed_budget' => $allowedBudget,
             'hak_amil' => $hakAmil,
+            'hak_amil_mwc' => $hakAmilMwc,
+            'hak_amil_pc' => $hakAmilPc,
         ];
     }
 

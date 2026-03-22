@@ -25,25 +25,31 @@
 
         <div>
             <label for="email" class="block text-sm font-medium text-zinc-700">{{ __('Email') }}</label>
-            <input id="email" name="email" type="email" class="mt-1 block w-full rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 text-sm outline-none ring-0 placeholder:text-zinc-400 focus:border-green-300" value="{{ old('email', $user->email) }}" required autocomplete="username" />
+            @if (in_array(auth()->user()->role, ['mwc', 'pc', 'ranting']))
+                <input id="email" name="email" type="email" class="mt-1 block w-full rounded-2xl border border-zinc-200 bg-zinc-100 px-4 py-2.5 text-sm outline-none ring-0 focus:border-green-300 text-zinc-500 cursor-not-allowed" value="{{ old('email', $user->email) }}" readonly />
+            @else
+                <input id="email" name="email" type="email" class="mt-1 block w-full rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 text-sm outline-none ring-0 placeholder:text-zinc-400 focus:border-green-300" value="{{ old('email', $user->email) }}" required autocomplete="username" />
+            @endif
             <x-input-error class="mt-2 text-xs text-red-500" :messages="$errors->get('email')" />
 
-            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <div>
-                    <p class="mt-2 text-sm text-zinc-800">
-                        {{ __('Alamat email Anda belum diverifikasi.') }}
+            @if (!in_array(auth()->user()->role, ['mwc', 'pc', 'ranting']))
+                @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
+                    <div>
+                        <p class="mt-2 text-sm text-zinc-800">
+                            {{ __('Alamat email Anda belum diverifikasi.') }}
 
-                        <button form="send-verification" class="text-sm text-zinc-600 underline hover:text-zinc-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                            {{ __('Klik di sini untuk mengirim ulang email verifikasi.') }}
-                        </button>
-                    </p>
-
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 text-sm font-medium text-green-600">
-                            {{ __('Tautan verifikasi baru telah dikirim ke alamat email Anda.') }}
+                            <button form="send-verification" class="text-sm text-zinc-600 underline hover:text-zinc-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                {{ __('Klik di sini untuk mengirim ulang email verifikasi.') }}
+                            </button>
                         </p>
-                    @endif
-                </div>
+
+                        @if (session('status') === 'verification-link-sent')
+                            <p class="mt-2 text-sm font-medium text-green-600">
+                                {{ __('Tautan verifikasi baru telah dikirim ke alamat email Anda.') }}
+                            </p>
+                        @endif
+                    </div>
+                @endif
             @endif
         </div>
 

@@ -60,7 +60,11 @@
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Info Transaksi</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Ranting Asal</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Pemasukan Bersih</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jasa Petugas</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Dana Dapat Digunakan</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Hak Amil Ranting</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Hak Amil MWC</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Hak Amil PC</th>
                             <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500 w-[200px]">Aksi</th>
                         </tr>
                     </thead>
@@ -70,7 +74,7 @@
                                 data-search="{{ strtolower($item->transaction_code . ' ' . $item->user->name . ' ' . $item->net_income) }}"
                                 data-date="{{ $item->date }}">
                                 <td class="px-6 py-5">
-                                    <div class="font-bold text-slate-900 leading-tight">{{ $item->transaction_code }}</div>
+                                    <div class="font-bold text-sm text-slate-900 leading-tight">{{ $item->transaction_code }}</div>
                                     <div class="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
                                         <i class="far fa-calendar-alt text-[10px]"></i>
                                         {{ \Carbon\Carbon::parse($item->date)->format('d M Y') }}
@@ -84,13 +88,25 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-5">
-                                    <div class="font-bold text-green-700">Rp {{ number_format($item->net_income, 0, ',', '.') }}</div>
-                                    <div class="text-[10px] text-slate-400 mt-1">
+                                    <div class="font-bold text-sm text-green-700">Rp {{ number_format($item->net_income, 0, ',', '.') }}</div>
+                                    <div class="text-xs text-slate-400 mt-1">
                                         <span c>Pemasukan Total: Rp {{ number_format($item->gross_profit, 0, ',', '.') }}</span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-5">
-                                    <div class="font-bold text-slate-800">Rp {{ number_format($item->allowed_budget, 0, ',', '.') }}</div>
+                                    <div class="font-bold text-sm text-slate-800">Rp {{ number_format($item->operating_expenses, 0, ',', '.') }}</div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <div class="font-bold text-sm text-slate-800">Rp {{ number_format($item->allowed_budget, 0, ',', '.') }}</div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <div class="font-bold text-sm text-slate-800">Rp {{ number_format($item->hak_amil, 0, ',', '.') }}</div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <div class="font-bold text-sm text-slate-800">Rp {{ number_format($item->hak_amil_mwc, 0, ',', '.') }}</div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <div class="font-bold text-sm text-slate-800">Rp {{ number_format($item->hak_amil_pc, 0, ',', '.') }}</div>
                                 </td>
                                 <td class="px-6 py-5">
                                     <div class="flex items-center justify-center gap-2">
@@ -156,8 +172,13 @@
                             <tr class="bg-slate-50/80 border-b border-slate-100">
                                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Info Transaksi</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Ranting</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Pemasukan Bersih</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Dana Digunakan</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Perolehan Total</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jasa Petugas</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Perolehan Bersih</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Dana Dapat digunakan</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Hak Amil Ranting</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Hak Amil MWC</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Hak Amil PC</th>
                                 <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500">Status</th>
                             </tr>
                         </thead>
@@ -169,8 +190,13 @@
                                         <div class="text-[10px] text-slate-500 mt-0.5">{{ \Carbon\Carbon::parse($item->date)->format('d M Y') }}</div>
                                     </td>
                                     <td class="px-6 py-4 font-medium text-slate-700 text-xs">{{ $item->user->name }}</td>
+                                    <td class="px-6 py-4 font-bold text-green-700 text-xs">Rp {{ number_format($item->gross_profit, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4 font-medium text-slate-800 text-xs">Rp {{ number_format($item->operating_expenses, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4 font-bold text-green-700 text-xs">Rp {{ number_format($item->net_income, 0, ',', '.') }}</td>
-                                    <td class="px-6 py-4 font-medium text-slate-800 text-xs">Rp {{ number_format($item->allowed_budget, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4 font-medium text-slate-800 text-xs">Rp {{ number_format($item->allowable_incomes, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4 font-medium text-slate-800 text-xs">Rp {{ number_format($item->hak_amil, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4 font-medium text-slate-800 text-xs">Rp {{ number_format($item->hak_amil_mwc, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4 font-medium text-slate-800 text-xs">Rp {{ number_format($item->hak_amil_pc, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4 text-center">
                                         @if($item->status == 'validated')
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-green-100 text-green-700 border border-green-200">

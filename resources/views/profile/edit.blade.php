@@ -11,6 +11,7 @@
             </div>
         </div>
 
+        @if (!in_array(auth()->user()->role, ['mwc', 'pc', 'ranting']))
         <div class="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
             <div class="max-w-xl">
                 @include('profile.partials.update-password-form')
@@ -22,5 +23,6 @@
                 @include('profile.partials.delete-user-form')
             </div>
         </div>
+        @endif
     </div>
 @endsection

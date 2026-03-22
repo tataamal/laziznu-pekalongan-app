@@ -162,6 +162,38 @@
                         </div>
                     </div>
 
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="hak_amil_mwc" class="text-sm font-medium text-slate-700">
+                                Hak Amil MWC (Rp)
+                            </label>
+                            <input
+                                type="number"
+                                name="hak_amil_mwc"
+                                id="hak_amil_mwc"
+                                value="0"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
+                                readonly
+                            >
+                            <p class="text-xs text-slate-500">Otomatis: Perolehan Bersih × 35%</p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="hak_amil_pc" class="text-sm font-medium text-slate-700">
+                                Hak Amil PC (Rp)
+                            </label>
+                            <input
+                                type="number"
+                                name="hak_amil_pc"
+                                id="hak_amil_pc"
+                                value="0"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
+                                readonly
+                            >
+                            <p class="text-xs text-slate-500">Otomatis: Perolehan Bersih × 5%</p>
+                        </div>
+                    </div>
+
                     <div class="flex items-center justify-end gap-3 pt-2">
                         <button
                             type="reset"
@@ -222,6 +254,10 @@
                                 <th class="px-6 py-4 font-semibold">Kode</th>
                                 <th class="px-6 py-4 font-semibold">Tanggal</th>
                                 <th class="px-6 py-4 font-semibold">Perolehan Total</th>
+                                <th class="px-6 py-4 font-semibold">Perolehan Bersih</th>
+                                <th class="px-6 py-4 font-semibold">Hak Amil</th>
+                                <th class="px-6 py-4 font-semibold">Hak Amil MWC</th>
+                                <th class="px-6 py-4 font-semibold">Hak Amil PC</th>
                                 <th class="px-6 py-4 font-semibold">Status</th>
                                 <th class="px-6 py-4 font-semibold text-right">Aksi</th>
                             </tr>
@@ -229,7 +265,7 @@
                         <tbody class="divide-y divide-slate-100">
                             @forelse($items as $income)
                                 @php
-                                    $isValidated = $income->status === 'validated';
+                                    $isValidated = $income->status === 'validated' || $income->status === 'rejected';
                                 @endphp
                                 <tr class="text-sm text-slate-700 hover:bg-slate-50/50 transition">
                                     <td class="px-6 py-4">
@@ -252,6 +288,10 @@
                                     <td class="px-6 py-4 font-medium">{{ $income->transaction_code }}</td>
                                     <td class="px-6 py-4">{{ \Carbon\Carbon::parse($income->date)->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4">Rp {{ number_format($income->gross_profit, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4">Rp {{ number_format($income->net_income, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4">Rp {{ number_format($income->hak_amil, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4">Rp {{ number_format($income->hak_amil_mwc, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4">Rp {{ number_format($income->hak_amil_pc, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4">
                                         @if ($income->status === 'validated')
                                             <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
@@ -279,6 +319,8 @@
                                                     data-percentage="{{ $income->percentage }}"
                                                     data-allowed_budget="{{ $income->allowed_budget }}"
                                                     data-hak_amil="{{ $income->hak_amil }}"
+                                                    data-hak_amil_mwc="{{ $income->hak_amil_mwc }}"
+                                                    data-hak_amil_pc="{{ $income->hak_amil_pc }}"
                                                     data-status="{{ $income->status }}"
                                                     data-update_url="{{ route('ranting.income.update', $income->id) }}"
                                                 >
@@ -421,7 +463,32 @@
                                 <label for="edit_hak_amil" class="text-sm font-medium text-slate-700">Dana Operasional Amil (Rp)</label>
                                 <input
                                     type="number"
+                                    name="hak_amil"
                                     id="edit_hak_amil"
+                                    class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
+                                    readonly
+                                >
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="edit_hak_amil_mwc" class="text-sm font-medium text-slate-700">Hak Amil MWC (Rp)</label>
+                                <input
+                                    type="number"
+                                    name="hak_amil_mwc"
+                                    id="edit_hak_amil_mwc"
+                                    class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
+                                    readonly
+                                >
+                            </div>
+
+                            <div class="space-y-2">
+                                <label for="edit_hak_amil_pc" class="text-sm font-medium text-slate-700">Hak Amil PC (Rp)</label>
+                                <input
+                                    type="number"
+                                    name="hak_amil_pc"
+                                    id="edit_hak_amil_pc"
                                     class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
                                     readonly
                                 >
@@ -458,6 +525,8 @@
             const percentage = document.getElementById('percentage');
             const allowedBudget = document.getElementById('allowed_budget');
             const hakAmil = document.getElementById('hak_amil');
+            const hakAmilMwc = document.getElementById('hak_amil_mwc');
+            const hakAmilPc = document.getElementById('hak_amil_pc');
 
             function calculateCreateForm() {
                 const gross = parseInt(grossProfit.value || 0);
@@ -467,11 +536,15 @@
                 const percentValue = 60;
                 const allowed = Math.round(net * (percentValue / 100));
                 const amil = Math.round(allowed * 0.20);
+                const amilMwc = Math.round(net * 0.35);
+                const amilPc = Math.round(net * 0.05);
 
                 netIncome.value = net;
                 percentage.value = percentValue;
                 allowedBudget.value = allowed;
                 hakAmil.value = amil;
+                hakAmilMwc.value = amilMwc;
+                hakAmilPc.value = amilPc;
             }
 
             if (grossProfit && operatingExpenses) {
@@ -493,6 +566,8 @@
             const editPercentage = document.getElementById('edit_percentage');
             const editAllowedBudget = document.getElementById('edit_allowed_budget');
             const editHakAmil = document.getElementById('edit_hak_amil');
+            const editHakAmilMwc = document.getElementById('edit_hak_amil_mwc');
+            const editHakAmilPc = document.getElementById('edit_hak_amil_pc');
             const editStatus = document.getElementById('edit_status');
 
             function calculateEditForm() {
@@ -503,11 +578,15 @@
                 const percentValue = 60;
                 const allowed = Math.round(net * (percentValue / 100));
                 const amil = Math.round(allowed * 0.20);
+                const amilMwc = Math.round(net * 0.35);
+                const amilPc = Math.round(net * 0.05);
 
                 editNetIncome.value = net;
                 editPercentage.value = percentValue;
                 editAllowedBudget.value = allowed;
                 editHakAmil.value = amil;
+                editHakAmilMwc.value = amilMwc;
+                editHakAmilPc.value = amilPc;
             }
 
             function openEditModal() {
@@ -530,6 +609,8 @@
                     editPercentage.value = this.dataset.percentage;
                     editAllowedBudget.value = this.dataset.allowed_budget;
                     editHakAmil.value = this.dataset.hak_amil;
+                    editHakAmilMwc.value = this.dataset.hak_amil_mwc;
+                    editHakAmilPc.value = this.dataset.hak_amil_pc;
                     editStatus.textContent = this.dataset.status;
 
                     calculateEditForm();

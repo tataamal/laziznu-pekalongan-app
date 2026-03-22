@@ -40,7 +40,7 @@ class MwcDashboardController extends Controller
 
         // Stats Calculation
         $totalInfaqMwc = $infaqTransactions->sum('allowed_budget');
-        $totalKoinNuWilayah = $rantingIncomes->sum('hak_amil');
+        $totalKoinNuWilayah = $rantingIncomes->sum('hak_amil_mwc');
 
         // --- CHART DATA ---
 

@@ -1,18 +1,24 @@
 @extends('layouts.app')
 
 @section('page_title', 'Dashboard PC')
-@section('page_subtitle', 'Kelola sistem dengan tampilan yang rapi dan efisien.')
+@section('page_subtitle', 'Monitoring Cashfolow KOIN NU dan Infaq Kabupaten Pekalongan.')
 
 @section('content')
     @push('vite-scripts')
         @vite('resources/js/pc-dashboard.js')
     @endpush
 
-    <section class="grid grid-cols-1 gap-4 md:grid-cols-3">
+    <section class="grid grid-cols-1 gap-4 md:grid-cols-4">
         <div class="rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm">
-            <div class="text-sm font-medium text-white/90">Total Saldo PC</div>
+            <div class="text-sm font-medium text-white/90">Total Saldo Infaq PC</div>
             <div class="mt-4 text-3xl font-bold">Rp {{ number_format($totalSaldoPc, 0, ',', '.') }}</div>
             <div class="mt-3 text-xs text-white/80">Saldo akumulasi dari Infaq PC</div>
+        </div>
+
+        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <div class="text-sm font-medium text-zinc-600">Hak Amil KOIN NU</div>
+            <div class="mt-4 text-3xl font-bold tracking-tight text-green-700">Rp {{ number_format($totalHakAmilPcKoinNu, 0, ',', '.') }}</div>
+            <div class="mt-3 text-xs text-zinc-500">Total saldo hak amil PC</div>
         </div>
 
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
@@ -35,19 +41,19 @@
 
     <section class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Pemasukan MWC & Ranting (6 Bln)</h3>
+            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Pemasukan MWC & Ranting 6 Bulan Terakhir</h3>
             <div id="trendChartMwcRanting" class="min-h-[350px] w-full"></div>
         </div>
 
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Saldo PC (Masuk vs Keluar)</h3>
+            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Saldo PC 6 Bulan Terakhir</h3>
             <div id="trendChartPc" class="min-h-[350px] w-full"></div>
         </div>
     </section>
 
     <section class="mt-4">
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Distribusi Pengeluaran Infaq (PC Only)</h3>
+            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Distribusi Pengeluaran Infaq</h3>
             <div id="donutChartDistribution" class="min-h-[350px] w-full flex items-center justify-center"></div>
         </div>
     </section>

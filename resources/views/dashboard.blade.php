@@ -248,6 +248,12 @@
             </div>
             
             <div class="flex flex-wrap gap-3">
+                <select id="filter-status" class="bg-white border border-zinc-200 rounded-xl px-4 py-2 text-sm font-semibold text-zinc-700 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all">
+                    <option value="validated" {{ $status == 'validated' ? 'selected' : '' }}>Validated</option>
+                    <option value="on_process" {{ $status == 'on_process' ? 'selected' : '' }}>On Process</option>
+                    <option value="rejected" {{ $status == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                    <option value="all" {{ $status == 'all' ? 'selected' : '' }}>Semua Status</option>
+                </select>
                 <select id="filter-month" class="bg-white border border-zinc-200 rounded-xl px-4 py-2 text-sm font-semibold text-zinc-700 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all">
                     @foreach($months as $key => $name)
                         <option value="{{ $key }}" {{ $month == $key ? 'selected' : '' }}>{{ $name }}</option>
@@ -467,10 +473,11 @@
                 const month = document.getElementById('filter-month').value;
                 const year = document.getElementById('filter-year').value;
                 const wilayahId = document.getElementById('filter-wilayah').value;
+                const status = document.getElementById('filter-status').value;
 
                 // Update Income Table
                 try {
-                    const incomeRes = await fetch(`/api/stats/income?month=${month}&year=${year}`);
+                    const incomeRes = await fetch(`/api/stats/income?month=${month}&year=${year}&status=${status}`);
                     const incomeData = await incomeRes.json();
                     const incomeBody = document.getElementById('income-table-body');
                     incomeBody.innerHTML = incomeData.items.length ? incomeData.items.map(item => `
@@ -487,7 +494,7 @@
 
                 // Update Distribution Table
                 try {
-                    const distRes = await fetch(`/api/stats/distribution?month=${month}&year=${year}`);
+                    const distRes = await fetch(`/api/stats/distribution?month=${month}&year=${year}&status=${status}`);
                     const distData = await distRes.json();
                     const distBody = document.getElementById('distribution-table-body');
                     distBody.innerHTML = distData.items.length ? distData.items.map(item => `
@@ -525,6 +532,7 @@
             document.getElementById('filter-month').addEventListener('change', updateData);
             document.getElementById('filter-year').addEventListener('change', updateData);
             document.getElementById('filter-wilayah').addEventListener('change', updateData);
+            document.getElementById('filter-status').addEventListener('change', updateData);
         });
     </script>
 @endsection

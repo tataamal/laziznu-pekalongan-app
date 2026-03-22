@@ -9,12 +9,24 @@
     @stack('vite-scripts')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="icon" href="{{ asset('images/logo.png') }}">
 </head>
 <body class="min-h-screen bg-zinc-100 text-zinc-900 antialiased">
     <div class="flex min-h-screen gap-4 p-4">
         <aside class="hidden w-64 shrink-0 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm lg:flex lg:flex-col">
             <div class="mb-8 flex flex-col items-center gap-3 text-center">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-35 object-contain">
+                @php
+                    $dashboardRoute = '#';
+                    if (auth()->check()) {
+                        if (auth()->user()->isDeveloper()) $dashboardRoute = route('developer.dashboard');
+                        elseif (auth()->user()->isRanting()) $dashboardRoute = route('ranting.dashboard');
+                        elseif (auth()->user()->isMwc()) $dashboardRoute = route('mwc.dashboard');
+                        elseif (auth()->user()->isPc()) $dashboardRoute = route('pc.dashboard');
+                    }
+                @endphp
+                <a href="{{ $dashboardRoute }}" class="block transition hover:opacity-80">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-35 object-contain">
+                </a>
             </div>
 
             <div class="mb-3 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">

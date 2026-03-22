@@ -18,6 +18,7 @@ class LandingController extends Controller
         $month = $request->get('month', date('m'));
         $year = $request->get('year', date('Y'));
         $wilayahId = $request->get('wilayah_id', 1);
+        $status = $request->get('status', 'validated');
 
         $wilayahs = Wilayah::all();
         $months = [
@@ -28,12 +29,12 @@ class LandingController extends Controller
         ];
 
         // Initial data for view
-        $incomeData = $this->getIncomeData($month, $year);
-        $distributionData = $this->getDistributionData($month, $year);
+        $incomeData = $this->getIncomeData($month, $year, $status);
+        $distributionData = $this->getDistributionData($month, $year, $status);
         $infaqStats = $this->getInfaqStatsData($month, $year, $wilayahId);
 
         return view('dashboard', compact(
-            'wilayahs', 'months', 'month', 'year', 'wilayahId',
+            'wilayahs', 'months', 'month', 'year', 'wilayahId', 'status',
             'incomeData', 'distributionData', 'infaqStats'
         ));
     }
@@ -42,16 +43,18 @@ class LandingController extends Controller
     {
         $month = $request->get('month', date('m'));
         $year = $request->get('year', date('Y'));
+        $status = $request->get('status', 'validated');
         
-        return response()->json($this->getIncomeData($month, $year));
+        return response()->json($this->getIncomeData($month, $year, $status));
     }
 
     public function getDistributionByRanting(Request $request)
     {
         $month = $request->get('month', date('m'));
         $year = $request->get('year', date('Y'));
+        $status = $request->get('status', 'validated');
 
-        return response()->json($this->getDistributionData($month, $year));
+        return response()->json($this->getDistributionData($month, $year, $status));
     }
 
     public function getInfaqStats(Request $request)
@@ -63,25 +66,38 @@ class LandingController extends Controller
         return response()->json($this->getInfaqStatsData($month, $year, $wilayahId));
     }
 
-    private function getIncomeData($month, $year)
+    private function getIncomeData($month, $year, $status = 'validated')
     {
-        $incomes = Income::with('user')
+        $query = Income::with('user')
             ->whereMonth('date', $month)
-            ->whereYear('date', $year)
-            ->orderBy('date', 'desc')
-            ->get();
+            ->whereYear('date', $year);
+
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $incomes = $query->orderBy('date', 'desc')->get();
 
         // Group by user (Ranting)
-        $grouped = $incomes->groupBy('user_id')->map(function ($items) {
+        $grouped = $incomes->groupBy(function($item) use ($status) {
+            return $status === 'all' ? $item->user_id . '_' . $item->status : $item->user_id;
+        })->map(function ($items) use ($status) {
             $user = $items->first()->user;
+            $rantingName = $user->name;
+            if ($status === 'all') {
+                $rantingName .= ' (' . ucfirst($items->first()->status) . ')';
+            }
             return [
-                'ranting' => $user->name,
+                'ranting' => $rantingName,
                 'total' => $items->sum('net_income'),
-                'sources' => $items->pluck('status')->unique()->values()->all(), // Using status as source proxy or similar if source field not found
+                'sources' => $items->pluck('status')->unique()->values()->all(),
             ];
         })->values();
 
-        $totalAll = $grouped->sum('total');
+        $totalAll = Income::whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->where('status', 'validated')
+            ->sum('net_income');
 
         return [
             'items' => $grouped,
@@ -89,25 +105,38 @@ class LandingController extends Controller
         ];
     }
 
-    private function getDistributionData($month, $year)
+    private function getDistributionData($month, $year, $status = 'validated')
     {
-        $distributions = Distribution::with('user')
+        $query = Distribution::with('user')
             ->whereMonth('date', $month)
-            ->whereYear('date', $year)
-            ->orderBy('date', 'desc')
-            ->get();
+            ->whereYear('date', $year);
+
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $distributions = $query->orderBy('date', 'desc')->get();
 
         // Group by user (Ranting)
-        $grouped = $distributions->groupBy('user_id')->map(function ($items) {
+        $grouped = $distributions->groupBy(function($item) use ($status) {
+            return $status === 'all' ? $item->user_id . '_' . $item->status : $item->user_id;
+        })->map(function ($items) use ($status) {
             $user = $items->first()->user;
+            $rantingName = $user->name;
+            if ($status === 'all') {
+                $rantingName .= ' (' . ucfirst($items->first()->status) . ')';
+            }
             return [
-                'ranting' => $user->name,
+                'ranting' => $rantingName,
                 'total' => $items->sum('cost_amount'),
                 'pillars' => $items->pluck('pilar_type')->unique()->values()->all(),
             ];
         })->values();
 
-        $totalAll = $grouped->sum('total');
+        $totalAll = Distribution::whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->where('status', 'validated')
+            ->sum('cost_amount');
 
         return [
             'items' => $grouped,

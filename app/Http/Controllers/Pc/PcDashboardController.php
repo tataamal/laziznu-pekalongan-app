@@ -4,50 +4,56 @@ namespace App\Http\Controllers\Pc;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\InfaqTransaction;
+use App\Models\Income;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PcDashboardController extends Controller
 {
     public function index()
     {
-        $userId = \Illuminate\Support\Facades\Auth::id();
+        $userId = Auth::id();
 
         // 1. Data untuk Card
-        $totalSaldoPc = \App\Models\InfaqTransaction::where('user_id', $userId)->sum('allowed_budget');
-        $totalMwcUsers = \App\Models\User::where('role', 'mwc')->count();
-        $totalRantingUsers = \App\Models\User::where('role', 'ranting')->count();
+        $totalSaldoPc = InfaqTransaction::where('user_id', $userId)->sum('allowed_budget');
+        $totalMwcUsers = User::where('role', 'mwc')->count();
+        $totalRantingUsers = User::where('role', 'ranting')->count();
+        $totalHakAmilPcKoinNu = Income::where('status', 'validated')->sum('hak_amil_pc');
 
         // 2. Data untuk Trend (6 Bulan Terakhir)
         $months = collect(range(5, 0))->map(function($i) { return now()->subMonths($i)->format('Y-m'); });
         $trendLabels = $months->map(function($m) { return \Carbon\Carbon::createFromFormat('Y-m', $m)->translatedFormat('M'); });
 
         $trendMwc = $months->map(function($m) {
-            return \App\Models\InfaqTransaction::whereHas('user', function($q) { $q->where('role', 'mwc'); })
+            return InfaqTransaction::whereHas('user', function($q) { $q->where('role', 'mwc'); })
                 ->where('transaction_type', 'Pemasukan')
                 ->whereRaw("DATE_FORMAT(transaction_date, '%Y-%m') = ?", [$m])
                 ->sum('gross_amount');
         });
 
         $trendPcIncome = $months->map(function($m) use ($userId) {
-            return \App\Models\InfaqTransaction::where('user_id', $userId)
+            return InfaqTransaction::where('user_id', $userId)
                 ->where('transaction_type', 'Pemasukan')
                 ->whereRaw("DATE_FORMAT(transaction_date, '%Y-%m') = ?", [$m])
                 ->sum('gross_amount');
         });
 
         $trendPcExpense = $months->map(function($m) use ($userId) {
-            return \App\Models\InfaqTransaction::where('user_id', $userId)
+            return InfaqTransaction::where('user_id', $userId)
                 ->where('transaction_type', 'Pengeluaran')
                 ->whereRaw("DATE_FORMAT(transaction_date, '%Y-%m') = ?", [$m])
                 ->sum('gross_amount');
         });
 
         $trendRanting = $months->map(function($m) {
-            return \App\Models\Income::whereRaw("DATE_FORMAT(date, '%Y-%m') = ?", [$m])
+            return Income::whereRaw("DATE_FORMAT(date, '%Y-%m') = ?", [$m])
                 ->sum('gross_profit');
         });
 
         // 3. Distribusi Pengeluaran Infaq (Khusus User PC)
-        $pcExpenseData = \App\Models\InfaqTransaction::where('user_id', $userId)
+        $pcExpenseData = InfaqTransaction::where('user_id', $userId)
             ->where('transaction_type', 'Pengeluaran')
             ->select('infaq_type', \Illuminate\Support\Facades\DB::raw('SUM(gross_amount) as total'))
             ->groupBy('infaq_type')
@@ -57,7 +63,7 @@ class PcDashboardController extends Controller
         $distData = $pcExpenseData->pluck('total');
 
         // Table Data (Latest 10 transactions for PC only)
-        $latestTransactions = \App\Models\InfaqTransaction::where('user_id', $userId)
+        $latestTransactions = InfaqTransaction::where('user_id', $userId)
             ->latest()
             ->take(10)
             ->get()
@@ -91,7 +97,7 @@ class PcDashboardController extends Controller
         ]);
 
         return view('pc.dashboard', compact(
-            'totalSaldoPc', 'totalMwcUsers', 'totalRantingUsers',
+            'totalSaldoPc', 'totalHakAmilPcKoinNu', 'totalMwcUsers', 'totalRantingUsers',
             'chartDataJson', 'latestTransactions'
         ));
     }

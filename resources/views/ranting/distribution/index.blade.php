@@ -113,7 +113,7 @@
                                 accept="image/*"
                                 class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-800 file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                             >
-                            <p class="text-xs text-slate-500 italic">*JPG, JPEG, PNG. Max 2MB.</p>
+                            <p class="text-xs text-slate-500 italic">*JPG, JPEG, PNG, WEBP. Max 2MB. (Auto WebP Compression)</p>
                         </div>
                     </div>
 
@@ -394,7 +394,7 @@
                                     accept="image/*"
                                     class="w-full text-xs"
                                 >
-                                <p class="text-[10px] text-slate-400 italic">Format: JPG, JPEG, PNG. Max 2MB.</p>
+                                <p class="text-[10px] text-slate-400 italic">Format: JPG, JPEG, PNG, WEBP. Max 2MB. (Auto WebP Compression)</p>
                             </div>
                         </div>
 

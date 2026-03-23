@@ -27,7 +27,7 @@ class DistributionController extends Controller
             'pilar_type' => ['required', 'string'],
             'cost_amount' => ['required', 'integer', 'min:0'],
             'penerima_manfaat' => ['required', 'integer', 'min:0'],
-            'documentation_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'documentation_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         // Balance Check
@@ -56,8 +56,32 @@ class DistributionController extends Controller
             ];
 
             if ($request->hasFile('documentation_file')) {
-                $path = $request->file('documentation_file')->store('distributions', 'public');
-                $data['documentation_file'] = $path;
+                $file = $request->file('documentation_file');
+                $image = @imagecreatefromstring(file_get_contents($file));
+                
+                if ($image !== false) {
+                    if (function_exists('exif_read_data')) {
+                        $exif = @exif_read_data($file->getPathname());
+                        if(!empty($exif['Orientation'])) {
+                            switch($exif['Orientation']) {
+                                case 3: $image = imagerotate($image, 180, 0); break;
+                                case 6: $image = imagerotate($image, -90, 0); break;
+                                case 8: $image = imagerotate($image, 90, 0); break;
+                            }
+                        }
+                    }
+
+                    $filename = 'distributions/' . uniqid() . '_' . time() . '.webp';
+                    ob_start();
+                    imagewebp($image, null, 80);
+                    $webpData = ob_get_clean();
+                    Storage::disk('public')->put($filename, $webpData);
+                    imagedestroy($image);
+                    $data['documentation_file'] = $filename;
+                } else {
+                    $path = $file->store('distributions', 'public');
+                    $data['documentation_file'] = $path;
+                }
             }
 
             Distribution::create($data);
@@ -92,7 +116,7 @@ class DistributionController extends Controller
             'pilar_type' => ['required', 'string'],
             'cost_amount' => ['required', 'integer', 'min:0'],
             'penerima_manfaat' => ['required', 'integer', 'min:0'],
-            'documentation_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'documentation_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         // Balance Check
@@ -124,8 +148,33 @@ class DistributionController extends Controller
                 if ($item->documentation_file) {
                     Storage::disk('public')->delete($item->documentation_file);
                 }
-                $path = $request->file('documentation_file')->store('distributions', 'public');
-                $data['documentation_file'] = $path;
+                
+                $file = $request->file('documentation_file');
+                $image = @imagecreatefromstring(file_get_contents($file));
+                
+                if ($image !== false) {
+                    if (function_exists('exif_read_data')) {
+                        $exif = @exif_read_data($file->getPathname());
+                        if(!empty($exif['Orientation'])) {
+                            switch($exif['Orientation']) {
+                                case 3: $image = imagerotate($image, 180, 0); break;
+                                case 6: $image = imagerotate($image, -90, 0); break;
+                                case 8: $image = imagerotate($image, 90, 0); break;
+                            }
+                        }
+                    }
+
+                    $filename = 'distributions/' . uniqid() . '_' . time() . '.webp';
+                    ob_start();
+                    imagewebp($image, null, 80);
+                    $webpData = ob_get_clean();
+                    Storage::disk('public')->put($filename, $webpData);
+                    imagedestroy($image);
+                    $data['documentation_file'] = $filename;
+                } else {
+                    $path = $file->store('distributions', 'public');
+                    $data['documentation_file'] = $path;
+                }
             }
 
             $item->update($data);

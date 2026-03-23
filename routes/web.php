@@ -22,6 +22,9 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Pc\ReportController;
 use App\Http\Controllers\Mwc\ReportController as MwcReportController;
 use App\Http\Controllers\Ranting\ReportController as RantingReportController;
+use App\Http\Controllers\Ranting\ManagementMunfiqController as RantingMunfiqController;
+use App\Http\Controllers\Mwc\ManagementMunfiqController as MwcMunfiqController;
+use App\Http\Controllers\Pc\ManagementMunfiqController as PcMunfiqController;
 
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
@@ -57,6 +60,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/ranting/export-report', [RantingReportController::class, 'index'])->name('ranting.export-report.index');
         Route::post('/ranting/export-report/export', [RantingReportController::class, 'export'])->name('ranting.export-report.export');
         Route::view('/ranting/call-center', 'ranting.call-center')->name('ranting.call-center');
+        Route::delete('/ranting/management-munfiq/bulk-delete', [RantingMunfiqController::class, 'bulkDelete'])->name('ranting.management-munfiq.bulk-delete');
+        Route::resource('ranting/management-munfiq', RantingMunfiqController::class)->names('ranting.management-munfiq');
     });
 
     Route::middleware(['auth', 'role:mwc'])->group(function () {
@@ -72,6 +77,8 @@ Route::middleware(['auth'])->group(function () {
         Route::view('/mwc/call-center', 'mwc.call-center')->name('mwc.call-center');
         Route::get('/mwc/export-report', [MwcReportController::class, 'index'])->name('mwc.export-report.index');
         Route::post('/mwc/export-report/export', [MwcReportController::class, 'export'])->name('mwc.export-report.export');
+        Route::delete('/mwc/management-munfiq/bulk-delete', [MwcMunfiqController::class, 'bulkDelete'])->name('mwc.management-munfiq.bulk-delete');
+        Route::resource('mwc/management-munfiq', MwcMunfiqController::class)->names('mwc.management-munfiq');
     });
 
     Route::middleware(['auth', 'role:pc'])->group(function () {
@@ -83,6 +90,8 @@ Route::middleware(['auth'])->group(function () {
         Route::view('/pc/call-center', 'pc.call-center')->name('pc.call-center');
         Route::get('/pc/export-report', [ReportController::class, 'index'])->name('pc.export-report.index');
         Route::post('/pc/export-report/export', [ReportController::class, 'export'])->name('pc.export-report.export');
+        Route::delete('/pc/management-munfiq/bulk-delete', [PcMunfiqController::class, 'bulkDelete'])->name('pc.management-munfiq.bulk-delete');
+        Route::resource('pc/management-munfiq', PcMunfiqController::class)->names('pc.management-munfiq');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -93,6 +93,12 @@
                         <span>Export Data Pentasarufan</span>
                     </a>
                     
+                    <a href="{{ route('ranting.management-munfiq.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.management-munfiq.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-id-card text-sm"></i>
+                        <span>Kelola Data Munfiq</span>
+                    </a>
+                    
                     <a href="{{ route('ranting.call-center') }}"
                        class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('ranting.call-center') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
                         <i class="fas fa-headset text-sm"></i>
@@ -127,6 +133,12 @@
                        class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('mwc.export-report.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
                         <i class="fas fa-file-excel text-sm"></i>
                         <span>Export Data Pentasarufan</span>
+                    </a>
+                    
+                    <a href="{{ route('mwc.management-munfiq.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('mwc.management-munfiq.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-id-card text-sm"></i>
+                        <span>Kelola Data Munfiq</span>
                     </a>
                     
                     <a href="{{ route('mwc.call-center') }}"
@@ -166,6 +178,12 @@
                        class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('pc.data-transaksi-mwc') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
                         <i class="fas fa-file-invoice-dollar text-sm"></i>
                         <span>Data Transaksi Per MWC</span>
+                    </a>
+                    
+                    <a href="{{ route('pc.management-munfiq.index') }}"
+                       class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium {{ request()->routeIs('pc.management-munfiq.*') ? 'bg-green-700 text-white shadow-md' : 'text-zinc-600 hover:bg-zinc-100 hover:text-green-700' }}">
+                        <i class="fas fa-id-card text-sm"></i>
+                        <span>Kelola Data Munfiq</span>
                     </a>
                     
                     <a href="{{ route('pc.call-center') }}"

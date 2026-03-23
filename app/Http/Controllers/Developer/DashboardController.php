@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\View\View;
 use App\Models\ActivityLog;
+use Illuminate\Http\Request;
+use App\Models\Wilayah;
+use App\Http\Controllers\LandingController;
 
 class DashboardController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $totalPc = User::where('role', 'pc')->count();
         $totalMwc = User::where('role', 'mwc')->count();
@@ -44,6 +47,24 @@ class DashboardController extends Controller
             ],
         ];
 
+        $month = $request->get('month', date('m'));
+        $year = $request->get('year', date('Y'));
+        $wilayahId = $request->get('wilayah_id', 'all');
+        $status = $request->get('status', 'validated');
+
+        $wilayahs = Wilayah::all();
+        $months = [
+            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
+            '04' => 'April', '05' => 'Mei', '06' => 'Juni',
+            '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
+            '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+        ];
+
+        $landingCtrl = new LandingController();
+        $incomeData = $landingCtrl->getIncomeData($month, $year, $status);
+        $distributionData = $landingCtrl->getDistributionData($month, $year, $status);
+        $infaqStats = $landingCtrl->getInfaqStatsData($month, $year, $wilayahId);
+
         return view('developer.dashboard', compact(
             'totalPc',
             'totalMwc',
@@ -51,7 +72,9 @@ class DashboardController extends Controller
             'totalAllUsers',
             'totalTransaksiBulanIni',
             'transaksiTerbaru',
-            'aktivitasUser'
+            'aktivitasUser',
+            'wilayahs', 'months', 'month', 'year', 'wilayahId', 'status',
+            'incomeData', 'distributionData', 'infaqStats'
         ));
     }
 }

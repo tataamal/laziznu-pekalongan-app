@@ -60,7 +60,7 @@
                     <th class="px-5 py-4 font-semibold">Nama</th>
                     <th class="px-5 py-4 font-semibold">Kontak</th>
                     <th class="px-5 py-4 font-semibold">Role</th>
-                    <th class="px-5 py-4 font-semibold">Wilayah</th>
+                    <th class="px-5 py-4 font-semibold">Wilayah / Ranting</th>
                     <th class="px-5 py-4 font-semibold text-right">Aksi</th>
                 </tr>
             </thead>
@@ -95,7 +95,10 @@
                                 {{ strtoupper($user->role) }}
                             </span>
                         </td>
-                        <td class="px-5 py-4">{{ $user->wilayah->nama_wilayah ?? '-' }}</td>
+                        <td class="px-5 py-4">
+                            <div>{{ $user->wilayah->nama_wilayah ?? '-' }}</div>
+                            <div class="text-xs text-zinc-500">{{ $user->ranting->nama ?? '-' }}</div>
+                        </td>
                         <td class="px-5 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <button onclick="openEditModal({{ $user->toJson() }})" class="rounded-xl p-2 text-zinc-400 transition hover:bg-zinc-100 hover:text-blue-600">
@@ -152,7 +155,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="mb-1 block text-sm font-medium text-zinc-700">Role</label>
-                        <select name="role" required class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
+                        <select name="role" id="create_role" onchange="toggleRantingVisibility('create')" required class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
                             <option value="">Pilih Role</option>
                             @foreach($roles as $role)
                                 <option value="{{ $role }}">{{ strtoupper($role) }}</option>
@@ -164,14 +167,25 @@
                         <input type="text" name="telpon" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
                     </div>
                 </div>
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-zinc-700">Wilayah</label>
-                    <select name="wilayah_id" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
-                        <option value="">Pilih Wilayah (Opsional)</option>
-                        @foreach($wilayahs as $wilayah)
-                            <option value="{{ $wilayah->id }}">{{ $wilayah->nama_wilayah }}</option>
-                        @endforeach
-                    </select>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-zinc-700">Wilayah</label>
+                        <select name="wilayah_id" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
+                            <option value="">Pilih Wilayah (Opsional)</option>
+                            @foreach($wilayahs as $wilayah)
+                                <option value="{{ $wilayah->id }}">{{ $wilayah->nama_wilayah }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div id="create_ranting_container" class="hidden">
+                        <label class="mb-1 block text-sm font-medium text-zinc-700">Ranting <span class="text-red-500">*</span></label>
+                        <select name="ranting_id" id="create_ranting_id" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
+                            <option value="">Pilih Ranting</option>
+                            @foreach($rantings as $ranting)
+                                <option value="{{ $ranting->id }}">{{ $ranting->nama }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
                 <div class="mt-6 flex justify-end gap-3">
                     <button type="button" onclick="document.getElementById('createModal').classList.add('hidden')" class="rounded-2xl px-5 py-2.5 text-sm font-semibold text-zinc-600 hover:bg-zinc-100">Batal</button>
@@ -208,7 +222,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="mb-1 block text-sm font-medium text-zinc-700">Role</label>
-                        <select name="role" id="edit_role" required class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
+                        <select name="role" id="edit_role" onchange="toggleRantingVisibility('edit')" required class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
                             @foreach($roles as $role)
                                 <option value="{{ $role }}">{{ strtoupper($role) }}</option>
                             @endforeach
@@ -219,14 +233,25 @@
                         <input type="text" name="telpon" id="edit_telpon" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
                     </div>
                 </div>
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-zinc-700">Wilayah</label>
-                    <select name="wilayah_id" id="edit_wilayah_id" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
-                        <option value="">Pilih Wilayah (Opsional)</option>
-                        @foreach($wilayahs as $wilayah)
-                            <option value="{{ $wilayah->id }}">{{ $wilayah->nama_wilayah }}</option>
-                        @endforeach
-                    </select>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="mb-1 block text-sm font-medium text-zinc-700">Wilayah</label>
+                        <select name="wilayah_id" id="edit_wilayah_id" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
+                            <option value="">Pilih Wilayah (Opsional)</option>
+                            @foreach($wilayahs as $wilayah)
+                                <option value="{{ $wilayah->id }}">{{ $wilayah->nama_wilayah }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div id="edit_ranting_container" class="hidden">
+                        <label class="mb-1 block text-sm font-medium text-zinc-700">Ranting <span class="text-red-500">*</span></label>
+                        <select name="ranting_id" id="edit_ranting_id" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
+                            <option value="">Pilih Ranting</option>
+                            @foreach($rantings as $ranting)
+                                <option value="{{ $ranting->id }}">{{ $ranting->nama }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
                 <div class="mt-6 flex justify-end gap-3">
                     <button type="button" onclick="document.getElementById('editModal').classList.add('hidden')" class="rounded-2xl px-5 py-2.5 text-sm font-semibold text-zinc-600 hover:bg-zinc-100">Batal</button>
@@ -374,6 +399,21 @@
                 toggleBulkActions();
             });
         }
+        function toggleRantingVisibility(prefix) {
+            const roleSelect = document.getElementById(prefix + '_role');
+            const rantingContainer = document.getElementById(prefix + '_ranting_container');
+            const rantingSelect = document.getElementById(prefix + '_ranting_id');
+            
+            if (roleSelect.value === 'ranting') {
+                rantingContainer.classList.remove('hidden');
+                rantingSelect.required = true;
+            } else {
+                rantingContainer.classList.add('hidden');
+                rantingSelect.required = false;
+                rantingSelect.value = '';
+            }
+        }
+
         function openEditModal(user) {
             const form = document.getElementById('editForm');
             form.action = `/developer/users/${user.id}`;
@@ -382,6 +422,9 @@
             document.getElementById('edit_role').value = user.role;
             document.getElementById('edit_telpon').value = user.telpon || '';
             document.getElementById('edit_wilayah_id').value = user.wilayah_id || '';
+            document.getElementById('edit_ranting_id').value = user.ranting_id || '';
+            
+            toggleRantingVisibility('edit');
             document.getElementById('editModal').classList.remove('hidden');
         }
 

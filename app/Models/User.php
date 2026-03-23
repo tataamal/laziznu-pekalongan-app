@@ -17,6 +17,7 @@ class User extends Authenticatable
         'role',
         'telpon',
         'wilayah_id',
+        'ranting_id'
     ];
 
     protected $hidden = [
@@ -35,6 +36,11 @@ class User extends Authenticatable
     public function wilayah(): BelongsTo
     {
         return $this->belongsTo(Wilayah::class, 'wilayah_id');
+    }
+
+    public function ranting(): BelongsTo
+    {
+        return $this->belongsTo(DataRanting::class, 'ranting_id');
     }
 
     public function isDeveloper(): bool

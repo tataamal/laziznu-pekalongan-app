@@ -5,6 +5,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Developer\DashboardController;
 use App\Http\Controllers\Developer\UserController;
 use App\Http\Controllers\Developer\WilayahController;
+use App\Http\Controllers\Developer\ManagementRantingController;
+use App\Http\Controllers\Developer\ManagementMunfiqController;
 use App\Http\Controllers\Ranting\InputPemasukanController;
 use App\Http\Controllers\Ranting\RantingDashboardController;
 use App\Http\Controllers\Ranting\DistributionController;
@@ -17,6 +19,9 @@ use App\Http\Controllers\Pc\InfaqController as PcInfaqController;
 use App\Http\Controllers\Pc\DataTransaksiMWC;
 use App\Http\Controllers\Pc\DataTransaksiRanting;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\Pc\ReportController;
+use App\Http\Controllers\Mwc\ReportController as MwcReportController;
+use App\Http\Controllers\Ranting\ReportController as RantingReportController;
 
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
@@ -25,38 +30,23 @@ Route::get('/api/stats/distribution', [LandingController::class, 'getDistributio
 Route::get('/api/stats/infaq', [LandingController::class, 'getInfaqStats']);
 
 Route::middleware(['auth'])->group(function () {
-    // Route::get('/dashboard', function () {
-    //     return view('dashboard');
-    // })->name('dashboard');
-
-    
-    // Route untuk autorisasi user role developer
     Route::middleware(['auth', 'role:developer'])->group(function () {
         Route::get('/developer/dashboard', [DashboardController::class, 'index'])->name('developer.dashboard');
-
-        // Manajemen User
-        Route::post('developer/users/bulk-update-wilayah', [\App\Http\Controllers\Developer\UserController::class, 'bulkUpdateWilayah'])->name('developer.users.bulk-update-wilayah');
-        Route::post('developer/users/bulk-delete', [\App\Http\Controllers\Developer\UserController::class, 'bulkDelete'])->name('developer.users.bulk-delete');
-        Route::resource('developer/users', \App\Http\Controllers\Developer\UserController::class)->names('developer.users');
-        Route::post('developer/users/import', [\App\Http\Controllers\Developer\UserController::class, 'import'])->name('developer.users.import');
-        Route::get('developer/users/template/download', [\App\Http\Controllers\Developer\UserController::class, 'downloadTemplate'])->name('developer.users.template');
-
-        // Manajemen Wilayah
+        Route::post('developer/users/bulk-update-wilayah', [UserController::class, 'bulkUpdateWilayah'])->name('developer.users.bulk-update-wilayah');
+        Route::post('developer/users/bulk-delete', [UserController::class, 'bulkDelete'])->name('developer.users.bulk-delete');
+        Route::resource('developer/users', UserController::class)->names('developer.users');
+        Route::post('developer/users/import', [UserController::class, 'import'])->name('developer.users.import');
+        Route::get('developer/users/template/download', [UserController::class, 'downloadTemplate'])->name('developer.users.template');
         Route::post('developer/wilayah/bulk-delete', [WilayahController::class, 'bulkDelete'])->name('developer.wilayah.bulk-delete');
         Route::post('developer/wilayah/import', [WilayahController::class, 'import'])->name('developer.wilayah.import');
         Route::get('developer/wilayah/template/download', [WilayahController::class, 'downloadTemplate'])->name('developer.wilayah.template');
         Route::resource('developer/wilayah', WilayahController::class)->names('developer.wilayah');
-
-        // Manajemen Data Ranting
-        Route::delete('developer/management-ranting/bulk-delete', [\App\Http\Controllers\Developer\ManagementRantingController::class, 'bulkDelete'])->name('developer.management-ranting.bulk-delete');
-        Route::resource('developer/management-ranting', \App\Http\Controllers\Developer\ManagementRantingController::class)->names('developer.management-ranting');
-
-        // Manajemen Data Munfiq
-        Route::delete('developer/management-munfiq/bulk-delete', [\App\Http\Controllers\Developer\ManagementMunfiqController::class, 'bulkDelete'])->name('developer.management-munfiq.bulk-delete');
-        Route::resource('developer/management-munfiq', \App\Http\Controllers\Developer\ManagementMunfiqController::class)->names('developer.management-munfiq');
+        Route::delete('developer/management-ranting/bulk-delete', [ManagementRantingController::class, 'bulkDelete'])->name('developer.management-ranting.bulk-delete');
+        Route::resource('developer/management-ranting', ManagementRantingController::class)->names('developer.management-ranting');
+        Route::delete('developer/management-munfiq/bulk-delete', [ManagementMunfiqController::class, 'bulkDelete'])->name('developer.management-munfiq.bulk-delete');
+        Route::resource('developer/management-munfiq', ManagementMunfiqController::class)->names('developer.management-munfiq');
     });
 
-    // Route untuk autorisasi user role ranting
     Route::middleware(['auth', 'role:ranting'])->group(function () {
         Route::get('/ranting/income', [InputPemasukanController::class, 'index'])->name('ranting.income.index');
         Route::get('/ranting/dashboard', [RantingDashboardController::class, 'index'])->name('ranting.dashboard');
@@ -64,59 +54,37 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('ranting/income', InputPemasukanController::class)->names('ranting.income');
         Route::delete('/ranting/distribution/bulk-delete', [DistributionController::class, 'bulkDelete'])->name('ranting.distribution.bulk-delete');
         Route::resource('ranting/distribution', DistributionController::class)->names('ranting.distribution');
-        
-        // Report Pentasarufan
-        Route::get('/ranting/export-report', [\App\Http\Controllers\Ranting\ReportController::class, 'index'])->name('ranting.export-report.index');
-        Route::post('/ranting/export-report/export', [\App\Http\Controllers\Ranting\ReportController::class, 'export'])->name('ranting.export-report.export');
-        
+        Route::get('/ranting/export-report', [RantingReportController::class, 'index'])->name('ranting.export-report.index');
+        Route::post('/ranting/export-report/export', [RantingReportController::class, 'export'])->name('ranting.export-report.export');
         Route::view('/ranting/call-center', 'ranting.call-center')->name('ranting.call-center');
     });
 
     Route::middleware(['auth', 'role:mwc'])->group(function () {
         Route::get('/mwc/dashboard', [MwcDashboardController::class, 'index'])->name('mwc.dashboard');
-        
-        // Income Approval
         Route::get('/mwc/approval-income-koin-nu', [ApprovalIncomeKoinNU::class, 'index'])->name('mwc.approval-income-koin-nu');
         Route::post('/mwc/approval-income-koin-nu/{id}/approve', [ApprovalIncomeKoinNU::class, 'approve'])->name('mwc.approval-income-koin-nu.approve');
         Route::post('/mwc/approval-income-koin-nu/{id}/reject', [ApprovalIncomeKoinNU::class, 'reject'])->name('mwc.approval-income-koin-nu.reject');
-
-        // Distribution Approval
         Route::get('/mwc/approval-distribution-koin-nu', [ApprovalDistributionKoinNU::class, 'index'])->name('mwc.approval-distribution-koin-nu');
         Route::post('/mwc/approval-distribution-koin-nu/{id}/approve', [ApprovalDistributionKoinNU::class, 'approve'])->name('mwc.approval-distribution-koin-nu.approve');
         Route::post('/mwc/approval-distribution-koin-nu/{id}/reject', [ApprovalDistributionKoinNU::class, 'reject'])->name('mwc.approval-distribution-koin-nu.reject');
-
-        // Infaq Transaction
         Route::delete('/mwc/infaq-transaction/bulk-delete', [InfaqTransactionController::class, 'bulkDelete'])->name('mwc.infaq-transaction.bulk-delete');
         Route::resource('mwc/infaq-transaction', InfaqTransactionController::class)->names('mwc.infaq-transaction');
-        
         Route::view('/mwc/call-center', 'mwc.call-center')->name('mwc.call-center');
-        
-        // Report Pentasarufan
-        Route::get('/mwc/export-report', [\App\Http\Controllers\Mwc\ReportController::class, 'index'])->name('mwc.export-report.index');
-        Route::post('/mwc/export-report/export', [\App\Http\Controllers\Mwc\ReportController::class, 'export'])->name('mwc.export-report.export');
+        Route::get('/mwc/export-report', [MwcReportController::class, 'index'])->name('mwc.export-report.index');
+        Route::post('/mwc/export-report/export', [MwcReportController::class, 'export'])->name('mwc.export-report.export');
     });
 
-    // Route untuk autorisasi user role pc
     Route::middleware(['auth', 'role:pc'])->group(function () {
         Route::get('/pc/dashboard', [PcDashboardController::class, 'index'])->name('pc.dashboard');
-
-        // PC Infaq Transaction
         Route::delete('/pc/infaq/bulk-delete', [PcInfaqController::class, 'bulkDelete'])->name('pc.infaq.bulk-delete');
         Route::resource('pc/infaq', PcInfaqController::class)->names('pc.infaq');
-
-        // Data Transaksi
         Route::get('/pc/data-transaksi-mwc', [DataTransaksiMWC::class, 'index'])->name('pc.data-transaksi-mwc');
         Route::get('/pc/data-transaksi-ranting', [DataTransaksiRanting::class, 'index'])->name('pc.data-transaksi-ranting');
-
-        // Call Center
         Route::view('/pc/call-center', 'pc.call-center')->name('pc.call-center');
-
-        // Report Pentasarufan
-        Route::get('/pc/export-report', [\App\Http\Controllers\Pc\ReportController::class, 'index'])->name('pc.export-report.index');
-        Route::post('/pc/export-report/export', [\App\Http\Controllers\Pc\ReportController::class, 'export'])->name('pc.export-report.export');
+        Route::get('/pc/export-report', [ReportController::class, 'index'])->name('pc.export-report.index');
+        Route::post('/pc/export-report/export', [ReportController::class, 'export'])->name('pc.export-report.export');
     });
 
-    // Route untuk profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

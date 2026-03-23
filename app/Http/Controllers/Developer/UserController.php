@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Developer;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Wilayah;
+use App\Models\DataRanting;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -22,7 +23,7 @@ class UserController extends Controller
     {
         $search = $request->input('search');
 
-        $users = User::with('wilayah')
+        $users = User::with(['wilayah', 'ranting'])
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
@@ -34,9 +35,10 @@ class UserController extends Controller
             ->withQueryString();
 
         $wilayahs = Wilayah::all();
+        $rantings = DataRanting::all();
         $roles = ['pc', 'mwc', 'ranting', 'developer'];
 
-        return view('developer.users.index', compact('users', 'wilayahs', 'roles', 'search'));
+        return view('developer.users.index', compact('users', 'wilayahs', 'rantings', 'roles', 'search'));
     }
 
     /**
@@ -106,7 +108,12 @@ class UserController extends Controller
             'role' => ['required', Rule::in(['pc', 'mwc', 'ranting', 'developer'])],
             'telpon' => 'nullable|string|max:20',
             'wilayah_id' => 'nullable|exists:wilayah,id',
+            'ranting_id' => 'required_if:role,ranting|nullable|exists:data_ranting,id',
         ]);
+
+        if ($validated['role'] !== 'ranting') {
+            $validated['ranting_id'] = null;
+        }
 
         $validated['password'] = Hash::make($validated['password']);
 
@@ -136,7 +143,12 @@ class UserController extends Controller
             'role' => ['required', Rule::in(['pc', 'mwc', 'ranting', 'developer'])],
             'telpon' => 'nullable|string|max:20',
             'wilayah_id' => 'nullable|exists:wilayah,id',
+            'ranting_id' => 'required_if:role,ranting|nullable|exists:data_ranting,id',
         ]);
+
+        if ($validated['role'] !== 'ranting') {
+            $validated['ranting_id'] = null;
+        }
 
         if ($request->filled('password')) {
             $request->validate(['password' => 'string|min:8']);

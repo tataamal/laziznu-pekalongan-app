@@ -66,7 +66,7 @@ class LandingController extends Controller
         return response()->json($this->getInfaqStatsData($month, $year, $wilayahId));
     }
 
-    private function getIncomeData($month, $year, $status = 'validated')
+    public function getIncomeData($month, $year, $status = 'validated')
     {
         $query = Income::with('user')
             ->whereMonth('date', $month)
@@ -105,7 +105,7 @@ class LandingController extends Controller
         ];
     }
 
-    private function getDistributionData($month, $year, $status = 'validated')
+    public function getDistributionData($month, $year, $status = 'validated')
     {
         $query = Distribution::with('user')
             ->whereMonth('date', $month)
@@ -144,7 +144,7 @@ class LandingController extends Controller
         ];
     }
 
-    private function getInfaqStatsData($month, $year, $wilayahId)
+    public function getInfaqStatsData($month, $year, $wilayahId)
     {
         // PC Stats
         $pcIncomeQuery = InfaqTransaction::whereHas('user', function ($q) {

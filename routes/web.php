@@ -46,6 +46,8 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('developer/wilayah', WilayahController::class)->names('developer.wilayah');
         Route::delete('developer/management-ranting/bulk-delete', [ManagementRantingController::class, 'bulkDelete'])->name('developer.management-ranting.bulk-delete');
         Route::resource('developer/management-ranting', ManagementRantingController::class)->names('developer.management-ranting');
+        Route::post('developer/management-munfiq/import', [ManagementMunfiqController::class, 'import'])->name('developer.management-munfiq.import');
+        Route::get('developer/management-munfiq/template', [ManagementMunfiqController::class, 'downloadTemplate'])->name('developer.management-munfiq.template');
         Route::delete('developer/management-munfiq/bulk-delete', [ManagementMunfiqController::class, 'bulkDelete'])->name('developer.management-munfiq.bulk-delete');
         Route::resource('developer/management-munfiq', ManagementMunfiqController::class)->names('developer.management-munfiq');
     });

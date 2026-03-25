@@ -11,12 +11,19 @@
 </head>
 
 <body class="font-sans bg-[#f0f2f5] text-gray-800">
-    <nav class="sticky top-0 z-50 w-full">
-        <div class="bg-white/10 backdrop-blur-md border-b border-white/10 px-4 sm:px-6 lg:px-8 py-3">
+    <nav class="sticky top-0 z-50 w-full" x-data="{ isMobileMenuOpen: false }">
+        <div class="bg-white/10 px-4 py-3 backdrop-blur-md border-b border-white/10 sm:px-6 lg:px-8">
             <div
-                class="max-w-7xl mx-auto flex items-center justify-between bg-white/90 backdrop-blur-md border border-zinc-200/50 p-3 rounded-2xl shadow-xl shadow-black/5">
+                class="relative mx-auto flex max-w-7xl items-center justify-between rounded-2xl border border-zinc-200/50 bg-white/90 p-3 shadow-xl shadow-black/5 backdrop-blur-md">
 
-                <div class="flex items-center gap-1 md:gap-4 overflow-x-auto no-scrollbar">
+                <div class="flex w-full items-center justify-between gap-2 md:hidden">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-8 object-contain">
+                    <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 text-zinc-600 transition hover:text-green-700 focus:outline-none">
+                        <i class="fas" :class="isMobileMenuOpen ? 'fa-times' : 'fa-bars'"></i>
+                    </button>
+                </div>
+
+                <div class="no-scrollbar hidden items-center gap-1 overflow-x-auto md:flex md:gap-4">
                     <a href="#profile"
                         class="px-4 py-2 text-zinc-600 font-bold text-sm hover:text-[#014421] hover:bg-green-50 rounded-xl transition-all">Profil</a>
                     <a href="#rekap-perolehan"
@@ -27,9 +34,30 @@
                         class="px-4 py-2 text-zinc-600 font-bold text-sm hover:text-[#014421] hover:bg-green-50 rounded-xl transition-all">Statistik</a>
                 </div>
 
-                <div class="flex items-center ml-4">
+                <div class="ml-4 hidden items-center md:flex">
                     <a href="{{ route('login') }}"
                         class="bg-[#014421] text-white py-2 px-5 rounded-xl font-bold shadow-lg hover:bg-green-800 transition-all text-sm whitespace-nowrap">
+                        Login <i class="fas fa-sign-in-alt ml-2 opacity-70"></i>
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Dropdown -->
+                <div x-show="isMobileMenuOpen" 
+                     x-transition:enter="transition ease-out duration-200" 
+                     x-transition:enter-start="opacity-0 -translate-y-2" 
+                     x-transition:enter-end="opacity-100 translate-y-0" 
+                     x-transition:leave="transition ease-in duration-150" 
+                     x-transition:leave-start="opacity-100 translate-y-0" 
+                     x-transition:leave-end="opacity-0 -translate-y-2" 
+                     @click.away="isMobileMenuOpen = false"
+                     class="absolute left-0 right-0 top-full mt-2 flex flex-col gap-2 rounded-2xl border border-zinc-200/50 bg-white p-4 shadow-xl md:hidden"
+                     style="display: none;" x-cloak>
+                    <a @click="isMobileMenuOpen = false" href="#profile" class="px-4 py-3 text-sm font-bold text-zinc-600 transition-all hover:bg-green-50 hover:text-[#014421] rounded-xl">Profil</a>
+                    <a @click="isMobileMenuOpen = false" href="#rekap-perolehan" class="px-4 py-3 text-sm font-bold text-zinc-600 transition-all hover:bg-green-50 hover:text-[#014421] rounded-xl">Perolehan</a>
+                    <a @click="isMobileMenuOpen = false" href="#rekap-pentasarufan" class="px-4 py-3 text-sm font-bold text-zinc-600 transition-all hover:bg-green-50 hover:text-[#014421] rounded-xl">Pentasarufan</a>
+                    <a @click="isMobileMenuOpen = false" href="#stats" class="px-4 py-3 text-sm font-bold text-zinc-600 transition-all hover:bg-green-50 hover:text-[#014421] rounded-xl">Statistik</a>
+                    <div class="my-2 border-t border-zinc-100"></div>
+                    <a href="{{ route('login') }}" class="rounded-xl bg-[#014421] px-5 py-3 text-center text-sm font-bold text-white shadow-lg transition-all hover:bg-green-800">
                         Login <i class="fas fa-sign-in-alt ml-2 opacity-70"></i>
                     </a>
                 </div>

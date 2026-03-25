@@ -8,7 +8,6 @@ use App\Models\Distribution;
 use App\Models\Income;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class DistributionController extends Controller
 {
@@ -30,10 +29,9 @@ class DistributionController extends Controller
             'documentation_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
-        // Balance Check
         $totalAllowed = Income::where('user_id', Auth::id())->sum('allowed_budget');
         $totalSpent = Distribution::where('user_id', Auth::id())->sum('cost_amount');
-        
+
         if (($totalSpent + $validated['cost_amount']) > $totalAllowed) {
             $remaining = max($totalAllowed - $totalSpent, 0);
             return back()
@@ -56,32 +54,9 @@ class DistributionController extends Controller
             ];
 
             if ($request->hasFile('documentation_file')) {
-                $file = $request->file('documentation_file');
-                $image = @imagecreatefromstring(file_get_contents($file));
-                
-                if ($image !== false) {
-                    if (function_exists('exif_read_data')) {
-                        $exif = @exif_read_data($file->getPathname());
-                        if(!empty($exif['Orientation'])) {
-                            switch($exif['Orientation']) {
-                                case 3: $image = imagerotate($image, 180, 0); break;
-                                case 6: $image = imagerotate($image, -90, 0); break;
-                                case 8: $image = imagerotate($image, 90, 0); break;
-                            }
-                        }
-                    }
-
-                    $filename = 'distributions/' . uniqid() . '_' . time() . '.webp';
-                    ob_start();
-                    imagewebp($image, null, 80);
-                    $webpData = ob_get_clean();
-                    Storage::disk('public')->put($filename, $webpData);
-                    imagedestroy($image);
-                    $data['documentation_file'] = $filename;
-                } else {
-                    $path = $file->store('distributions', 'public');
-                    $data['documentation_file'] = $path;
-                }
+                $data['documentation_file'] = $this->saveDocumentationFile(
+                    $request->file('documentation_file')
+                );
             }
 
             Distribution::create($data);
@@ -119,12 +94,11 @@ class DistributionController extends Controller
             'documentation_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
-        // Balance Check
         $totalAllowed = Income::where('user_id', Auth::id())->sum('allowed_budget');
         $totalSpent = Distribution::where('user_id', Auth::id())
             ->where('id', '!=', $id)
             ->sum('cost_amount');
-        
+
         if (($totalSpent + $validated['cost_amount']) > $totalAllowed) {
             $remaining = max($totalAllowed - $totalSpent, 0);
             return back()
@@ -144,37 +118,11 @@ class DistributionController extends Controller
             ];
 
             if ($request->hasFile('documentation_file')) {
-                // Delete old file if exists
-                if ($item->documentation_file) {
-                    Storage::disk('public')->delete($item->documentation_file);
-                }
-                
-                $file = $request->file('documentation_file');
-                $image = @imagecreatefromstring(file_get_contents($file));
-                
-                if ($image !== false) {
-                    if (function_exists('exif_read_data')) {
-                        $exif = @exif_read_data($file->getPathname());
-                        if(!empty($exif['Orientation'])) {
-                            switch($exif['Orientation']) {
-                                case 3: $image = imagerotate($image, 180, 0); break;
-                                case 6: $image = imagerotate($image, -90, 0); break;
-                                case 8: $image = imagerotate($image, 90, 0); break;
-                            }
-                        }
-                    }
+                $this->deleteDocumentationFile($item->documentation_file);
 
-                    $filename = 'distributions/' . uniqid() . '_' . time() . '.webp';
-                    ob_start();
-                    imagewebp($image, null, 80);
-                    $webpData = ob_get_clean();
-                    Storage::disk('public')->put($filename, $webpData);
-                    imagedestroy($image);
-                    $data['documentation_file'] = $filename;
-                } else {
-                    $path = $file->store('distributions', 'public');
-                    $data['documentation_file'] = $path;
-                }
+                $data['documentation_file'] = $this->saveDocumentationFile(
+                    $request->file('documentation_file')
+                );
             }
 
             $item->update($data);
@@ -196,16 +144,14 @@ class DistributionController extends Controller
     public function destroy($id)
     {
         $item = Distribution::findOrFail($id);
-        
+
         if ($item->status === 'validated') {
             return redirect()
                 ->route('ranting.distribution.index')
                 ->withErrors(['error' => 'Data sudah divalidasi, tidak dapat dihapus.']);
         }
 
-        if ($item->documentation_file) {
-            Storage::disk('public')->delete($item->documentation_file);
-        }
+        $this->deleteDocumentationFile($item->documentation_file);
 
         $item->delete();
 
@@ -226,15 +172,72 @@ class DistributionController extends Controller
             ->get();
 
         foreach ($items as $item) {
-            if ($item->documentation_file) {
-                Storage::disk('public')->delete($item->documentation_file);
-            }
+            $this->deleteDocumentationFile($item->documentation_file);
             $item->delete();
         }
 
         return redirect()
             ->route('ranting.distribution.index')
             ->with('success', count($items) . ' data berhasil dihapus.');
+    }
+
+    private function saveDocumentationFile($file): string
+    {
+        $basePath = env('UPLOAD_PUBLIC_PATH');
+        $destination = rtrim($basePath, '/') . '/distributions';
+    
+        if (!file_exists($destination)) {
+            mkdir($destination, 0755, true);
+        }
+    
+        $image = @imagecreatefromstring(file_get_contents($file));
+    
+        if ($image !== false) {
+            if (function_exists('exif_read_data')) {
+                $exif = @exif_read_data($file->getPathname());
+                if (!empty($exif['Orientation'])) {
+                    switch ($exif['Orientation']) {
+                        case 3:
+                            $image = imagerotate($image, 180, 0);
+                            break;
+                        case 6:
+                            $image = imagerotate($image, -90, 0);
+                            break;
+                        case 8:
+                            $image = imagerotate($image, 90, 0);
+                            break;
+                    }
+                }
+            }
+    
+            $filename = uniqid() . '_' . time() . '.webp';
+            $fullPath = $destination . '/' . $filename;
+    
+            imagewebp($image, $fullPath, 80);
+            imagedestroy($image);
+    
+            return 'distributions/' . $filename;
+        }
+    
+        $extension = $file->getClientOriginalExtension();
+        $filename = uniqid() . '_' . time() . '.' . $extension;
+        $file->move($destination, $filename);
+    
+        return 'distributions/' . $filename;
+    }
+
+    private function deleteDocumentationFile(?string $path): void
+    {
+        if (!$path) {
+            return;
+        }
+    
+        $basePath = env('UPLOAD_PUBLIC_PATH');
+        $fullPath = rtrim($basePath, '/') . '/' . ltrim($path, '/');
+    
+        if (file_exists($fullPath)) {
+            @unlink($fullPath);
+        }
     }
 
     private function generateTransactionCode(): string
@@ -254,4 +257,5 @@ class DistributionController extends Controller
 
         return 'DST' . str_pad($nextNumber, $digitLength, '0', STR_PAD_LEFT);
     }
+    
 }

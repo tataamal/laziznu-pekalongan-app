@@ -23,10 +23,10 @@
                 <div class="relative z-10">
                     <div class="w-20 h-1.5 bg-green-400 mb-8 rounded-full shadow-lg shadow-green-400/20"></div>
                     <h1 class="text-4xl lg:text-5xl font-black leading-tight tracking-tight">
-                        LAZISNU  <br> <span class="text-green-300">PCNU KOTA PEKALONGAN</span>
+                        LAZISNU  <br> <span class="text-green-300">PCNU KABUPATEN PEKALONGAN</span>
                     </h1>
                     <p class="text-green-50/80 mt-8 text-lg leading-relaxed max-w-sm font-medium">
-                        Lembaga Amil Zakat, Infaq, dan Shodaqoh Nahdlatul Ulama Kota Pekalongan.
+                        Lembaga Amil Zakat, Infaq, dan Shodaqoh Nahdlatul Ulama Kabupaten Pekalongan.
                     </p>
                 </div>
             </div>

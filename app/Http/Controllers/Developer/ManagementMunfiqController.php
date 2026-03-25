@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\MunfiqData;
 use App\Models\DataRanting;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\MunfiqDataImport;
+use App\Exports\MunfiqTemplateExport;
 
 class ManagementMunfiqController extends Controller
 {
@@ -103,6 +106,27 @@ class ManagementMunfiqController extends Controller
         $management_munfiq->delete();
         return redirect()->route('developer.management-munfiq.index')
             ->with('success', 'Data Munfiq berhasil dihapus');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv,xls|max:5120',
+        ]);
+
+        try {
+            Excel::import(new MunfiqDataImport, $request->file('file'));
+            return redirect()->route('developer.management-munfiq.index')
+                ->with('success', 'Data Munfiq berhasil diimport');
+        } catch (\Exception $e) {
+            return redirect()->route('developer.management-munfiq.index')
+                ->with('error', 'Gagal memproses file import. Pastikan format sesuai template.');
+        }
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new MunfiqTemplateExport, 'Template_Import_Munfiq.xlsx');
     }
 
     public function bulkDelete(Request $request)

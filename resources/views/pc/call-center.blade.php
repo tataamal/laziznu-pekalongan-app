@@ -33,10 +33,13 @@
                         <h3 class="text-sm font-semibold text-slate-800">Telepon</h3>
                         <p class="mt-2 text-sm text-slate-500">Kontak langsung pusat Pimpinan Cabang.</p>
                         <div class="mt-4">
-                            <a href="tel:+622188899900"
-                               class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">
-                                +62 21 888 999 00
-                            </a>
+                            @if(auth()->user()->telpon)
+                                <a href="tel:{{ auth()->user()->telpon }}" class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">
+                                    {{ auth()->user()->telpon }}
+                                </a>
+                            @else
+                                <span class="text-sm font-semibold text-slate-500">-</span>
+                            @endif
                         </div>
                     </div>
 
@@ -48,9 +51,8 @@
                         <h3 class="text-sm font-semibold text-slate-800">Email</h3>
                         <p class="mt-2 text-sm text-slate-500">Layanan korespondensi resmi tingkat PC.</p>
                         <div class="mt-4">
-                            <a href="mailto:admin@pc-laziznu.org"
-                               class="text-sm font-semibold text-blue-700 hover:text-blue-800">
-                                admin@pc-laziznu.org
+                            <a href="mailto:{{ auth()->user()->email }}" class="text-sm font-semibold text-blue-700 hover:text-blue-800">
+                                {{ auth()->user()->email }}
                             </a>
                         </div>
                     </div>
@@ -74,10 +76,9 @@
                             📍
                         </div>
                         <h3 class="text-sm font-semibold text-slate-800">Alamat</h3>
-                        <p class="mt-2 text-sm text-slate-500">Kantor Pimpinan Cabang LAZISNU.</p>
-                        <div class="mt-4 text-sm font-medium text-slate-700 leading-6">
-                            Gedung PCNU Lt. 2,<br>
-                            Pusat Kota Pekalongan
+                        <div class=" text-sm font-medium text-slate-700 leading-6 whitespace-pre-line">
+                            Gedung PCNU Kab. Pekalongan
+                            Jl. Raya Bebekan, Kemoren, Karangdowo, Kec. Kedungwuni, Kabupaten Pekalongan, Jawa Tengah 51173
                         </div>
                     </div>
                 </div>

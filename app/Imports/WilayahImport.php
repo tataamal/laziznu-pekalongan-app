@@ -8,6 +8,8 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class WilayahImport implements ToModel, WithHeadingRow
 {
+    private $headersChecked = false;
+
     /**
     * @param array $row
     *
@@ -15,6 +17,16 @@ class WilayahImport implements ToModel, WithHeadingRow
     */
     public function model(array $row)
     {
+        if (!$this->headersChecked) {
+            $requiredHeaders = ['nama_wilayah', 'alamat', 'pic', 'telp_pic'];
+            foreach ($requiredHeaders as $header) {
+                if (!array_key_exists($header, $row)) {
+                    throw new \Exception("Format header tidak sesuai template. Kolom '$header' tidak ditemukan.");
+                }
+            }
+            $this->headersChecked = true;
+        }
+
         if (empty($row['nama_wilayah'])) {
             return null;
         }

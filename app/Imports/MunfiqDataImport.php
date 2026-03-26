@@ -13,6 +13,17 @@ class MunfiqDataImport implements ToCollection, WithHeadingRow
 {
     public function collection(Collection $rows)
     {
+        if ($rows->isEmpty()) {
+            throw new \Exception("File excel kosong.");
+        }
+
+        $firstRow = $rows->first()->toArray();
+        $requiredHeaders = ['ranting', 'nama', 'jenis_kelamin', 'alamat', 'status'];
+        foreach ($requiredHeaders as $header) {
+            if (!array_key_exists($header, $firstRow)) {
+                throw new \Exception("Format header tidak sesuai template. Kolom '$header' tidak ditemukan.");
+            }
+        }
         // Cache ranting data by UPPERCASE name for case-insensitive matching
         $rantings = DataRanting::all()->keyBy(function($item) {
             return strtoupper(trim($item->nama));
@@ -32,10 +43,7 @@ class MunfiqDataImport implements ToCollection, WithHeadingRow
             $ranting = $rantings->get($rantingName);
 
             if (!$ranting) {
-                // If ranting is not found in database, we should skip to prevent integrity constraint violation
-                // since data_ranting_id is required.
-                Log::warning("Import Munfiq: Ranting tidak ditemukan untuk " . $row['ranting']);
-                continue; 
+                throw new \Exception("Ranting tidak ditemukan untuk '" . $row['ranting'] . "'. Pastikan nama ranting yang diinput sesuai dengan data di sistem.");
             }
 
             $jenisKelamin = strtoupper(trim($row['jenis_kelamin'] ?? 'L'));

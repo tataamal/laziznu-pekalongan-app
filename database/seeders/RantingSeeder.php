@@ -41,6 +41,7 @@ class RantingSeeder extends Seeder
                 'wilayah_id' => $wilayahIds[$index % 3],
                 'nama' => $nama,
                 'kode_ranting' => $alphabets[$index % 26],
+                'alamat' => 'Jl. ' . $nama,
             ]);
         }
         

@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             WilayahSeeder::class,
+            RantingSeeder::class,
             UserSeeder::class,
         ]);
     }   

@@ -120,7 +120,7 @@ class ManagementMunfiqController extends Controller
                 ->with('success', 'Data Munfiq berhasil diimport');
         } catch (\Exception $e) {
             return redirect()->route('developer.management-munfiq.index')
-                ->with('error', 'Gagal memproses file import. Pastikan format sesuai template.');
+                ->with('error', 'Gagal memproses file import: ' . $e->getMessage());
         }
     }
 

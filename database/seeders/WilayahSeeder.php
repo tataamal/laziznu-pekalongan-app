@@ -34,7 +34,7 @@ class WilayahSeeder extends Seeder
         foreach ($list as $nama) {
             Wilayah::create([
                 'nama_wilayah' => $nama,
-                'alamat' => null,
+                'alamat' => 'Jl. ' . $nama,
                 'pic' => null,
                 'telp_pic' => null,
             ]);

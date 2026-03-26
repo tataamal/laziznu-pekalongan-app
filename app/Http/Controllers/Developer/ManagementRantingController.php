@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DataRanting;
 use App\Models\Wilayah;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\RantingTemplateExport;
+use App\Imports\RantingDataImport;
 
 class ManagementRantingController extends Controller
 {
@@ -103,5 +106,26 @@ class ManagementRantingController extends Controller
 
         return redirect()->route('developer.management-ranting.index')
             ->with('error', 'Tidak ada data yang dipilih untuk dihapus');
+    }
+
+    public function template()
+    {
+        return Excel::download(new RantingTemplateExport, 'template-data-ranting.xlsx');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:10240',
+        ]);
+
+        try {
+            Excel::import(new RantingDataImport, $request->file('file'));
+            return redirect()->route('developer.management-ranting.index')
+                ->with('success', 'Data ranting berhasil diimport');
+        } catch (\Exception $e) {
+            return redirect()->route('developer.management-ranting.index')
+                ->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
+        }
     }
 }

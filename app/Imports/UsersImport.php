@@ -9,6 +9,8 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class UsersImport implements ToModel, WithHeadingRow
 {
+    private $headersChecked = false;
+
     /**
     * @param array $row
     *
@@ -16,6 +18,15 @@ class UsersImport implements ToModel, WithHeadingRow
     */
     public function model(array $row)
     {
+        if (!$this->headersChecked) {
+            $requiredHeaders = ['nama', 'email', 'password', 'role', 'telpon'];
+            foreach ($requiredHeaders as $header) {
+                if (!array_key_exists($header, $row)) {
+                    throw new \Exception("Format header tidak sesuai template. Kolom '$header' tidak ditemukan.");
+                }
+            }
+            $this->headersChecked = true;
+        }
         return new User([
             'name'       => $row['nama'],
             'email'      => $row['email'],

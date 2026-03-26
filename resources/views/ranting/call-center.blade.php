@@ -34,10 +34,13 @@
                         <h3 class="text-sm font-semibold text-slate-800">Telepon</h3>
                         <p class="mt-2 text-sm text-slate-500">Hubungi call center secara langsung.</p>
                         <div class="mt-4">
-                            <a href="tel:+622112345678"
-                               class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">
-                                +62 21 1234 5678
-                            </a>
+                            @if(auth()->user()->telpon)
+                                <a href="tel:{{ auth()->user()->telpon }}" class="text-sm font-semibold text-emerald-700 hover:text-emerald-800">
+                                    {{ auth()->user()->telpon }}
+                                </a>
+                            @else
+                                <span class="text-sm font-semibold text-slate-500">-</span>
+                            @endif
                         </div>
                     </div>
 
@@ -49,9 +52,8 @@
                         <h3 class="text-sm font-semibold text-slate-800">Email</h3>
                         <p class="mt-2 text-sm text-slate-500">Kirim pertanyaan atau laporan kendala.</p>
                         <div class="mt-4">
-                            <a href="mailto:cs@mwc.com"
-                               class="text-sm font-semibold text-blue-700 hover:text-blue-800">
-                                cs@mwc.com
+                            <a href="mailto:{{ auth()->user()->email }}" class="text-sm font-semibold text-blue-700 hover:text-blue-800">
+                                {{ auth()->user()->email }}
                             </a>
                         </div>
                     </div>
@@ -75,10 +77,9 @@
                             📍
                         </div>
                         <h3 class="text-sm font-semibold text-slate-800">Alamat</h3>
-                        <p class="mt-2 text-sm text-slate-500">Lokasi kantor layanan MWC.</p>
-                        <div class="mt-4 text-sm font-medium text-slate-700 leading-6">
-                            Jl. Kesesi-Kajen No. 123,<br>
-                            Kec. Kesesi
+                        <p class="mt-2 text-sm text-slate-500">Lokasi kantor layanan Ranting.</p>
+                        <div class="mt-4 text-sm font-medium text-slate-700 leading-6 whitespace-pre-line">
+                            {{ auth()->user()->ranting->alamat ?? '-' }}
                         </div>
                     </div>
                 </div>

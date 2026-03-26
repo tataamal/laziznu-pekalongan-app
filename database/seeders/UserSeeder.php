@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Wilayah;
+use App\Models\DataRanting;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -23,6 +24,7 @@ class UserSeeder extends Seeder
         );
 
         $wilayahMwc = Wilayah::first();
+        $rantingMwc = DataRanting::first();
 
         User::updateOrCreate(
             ['email' => 'pc@example.com'],
@@ -54,6 +56,7 @@ class UserSeeder extends Seeder
                 'role' => 'ranting',
                 'telpon' => '081234567893',
                 'wilayah_id' => $wilayahMwc?->id,
+                'ranting_id' => $rantingMwc?->id,
             ]
         );
     }

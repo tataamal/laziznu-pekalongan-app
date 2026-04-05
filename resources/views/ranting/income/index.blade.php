@@ -44,19 +44,16 @@
                             <label for="date" class="text-sm font-medium text-slate-700">
                                 Tanggal/Bulan
                             </label>
-                            <input
-                                type="date"
-                                name="date"
-                                id="date"
+                            <input type="date" name="date" id="date"
                                 value="{{ old('date', now()->format('Y-m-d')) }}"
                                 class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
-                                required
-                            >
+                                required>
                         </div>
 
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-slate-700">Status</label>
-                            <div class="flex items-center h-[42px] px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-600">
+                            <div
+                                class="flex items-center h-[42px] px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-600">
                                 on_process
                             </div>
                         </div>
@@ -67,34 +64,20 @@
                             <label for="gross_profit" class="text-sm font-medium text-slate-700">
                                 Perolehan Total (Rp)
                             </label>
-                            <input
-                                type="number"
-                                name="gross_profit"
-                                id="gross_profit"
-                                min="0"
-                                step="1"
-                                value="{{ old('gross_profit') }}"
-                                placeholder="Masukkan jumlah total"
+                            <input type="number" name="gross_profit" id="gross_profit" min="0" step="1"
+                                value="{{ old('gross_profit') }}" placeholder="Masukkan jumlah total"
                                 class="calc-input w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
-                                required
-                            >
+                                required>
                         </div>
 
                         <div class="space-y-2">
                             <label for="operating_expenses" class="text-sm font-medium text-slate-700">
                                 Jasa Petugas (Rp)
                             </label>
-                            <input
-                                type="number"
-                                name="operating_expenses"
-                                id="operating_expenses"
-                                min="0"
-                                step="1"
-                                value="{{ old('operating_expenses') }}"
-                                placeholder="Masukkan jasa petugas"
+                            <input type="number" name="operating_expenses" id="operating_expenses" min="0"
+                                step="1" value="{{ old('operating_expenses') }}" placeholder="Masukkan jasa petugas"
                                 class="calc-input w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
-                                required
-                            >
+                                required>
                         </div>
                     </div>
 
@@ -103,14 +86,9 @@
                             <label for="net_income" class="text-sm font-medium text-slate-700">
                                 Perolehan Bersih (Rp)
                             </label>
-                            <input
-                                type="number"
-                                name="net_income"
-                                id="net_income"
-                                value="0"
+                            <input type="number" name="net_income" id="net_income" value="0"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
-                                readonly
-                            >
+                                readonly>
                             <p class="text-xs text-slate-500">Otomatis: Perolehan Total - Jasa Petugas</p>
                         </div>
 
@@ -118,14 +96,9 @@
                             <label for="percentage" class="text-sm font-medium text-slate-700">
                                 Presentase (%)
                             </label>
-                            <input
-                                type="number"
-                                name="percentage"
-                                id="percentage"
-                                value="60"
+                            <input type="number" name="percentage" id="percentage" value="60"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
-                                readonly
-                            >
+                                readonly>
                             <p class="text-xs text-slate-500">Otomatis tetap 60% untuk ranting</p>
                         </div>
                     </div>
@@ -135,14 +108,9 @@
                             <label for="allowed_budget" class="text-sm font-medium text-slate-700">
                                 Dana dapat Digunakan (Rp)
                             </label>
-                            <input
-                                type="number"
-                                name="allowed_budget"
-                                id="allowed_budget"
-                                value="0"
+                            <input type="number" name="allowed_budget" id="allowed_budget" value="0"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
-                                readonly
-                            >
+                                readonly>
                             <p class="text-xs text-slate-500">Otomatis: Perolehan Bersih × 60%</p>
                         </div>
 
@@ -150,14 +118,9 @@
                             <label for="hak_amil" class="text-sm font-medium text-slate-700">
                                 Dana Operasional Amil (Rp)
                             </label>
-                            <input
-                                type="number"
-                                name="hak_amil"
-                                id="hak_amil"
-                                value="0"
+                            <input type="number" name="hak_amil" id="hak_amil" value="0"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
-                                readonly
-                            >
+                                readonly>
                             <p class="text-xs text-slate-500">Otomatis: Dana dapat Digunakan × 20%</p>
                         </div>
                     </div>
@@ -165,47 +128,33 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label for="hak_amil_mwc" class="text-sm font-medium text-slate-700">
-                                Hak Amil MWC (Rp)
+                                Dana Dapat Digunakan MWC (Rp)
                             </label>
-                            <input
-                                type="number"
-                                name="hak_amil_mwc"
-                                id="hak_amil_mwc"
-                                value="0"
+                            <input type="number" name="hak_amil_mwc" id="hak_amil_mwc" value="0"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
-                                readonly
-                            >
+                                readonly>
                             <p class="text-xs text-slate-500">Otomatis: Perolehan Bersih × 35%</p>
                         </div>
 
                         <div class="space-y-2">
                             <label for="hak_amil_pc" class="text-sm font-medium text-slate-700">
-                                Hak Amil PC (Rp)
+                                Dana Dapat Digunakan PC (Rp)
                             </label>
-                            <input
-                                type="number"
-                                name="hak_amil_pc"
-                                id="hak_amil_pc"
-                                value="0"
+                            <input type="number" name="hak_amil_pc" id="hak_amil_pc" value="0"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
-                                readonly
-                            >
+                                readonly>
                             <p class="text-xs text-slate-500">Otomatis: Perolehan Bersih × 5%</p>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-end gap-3 pt-2">
-                        <button
-                            type="reset"
-                            class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
-                        >
+                        <button type="reset"
+                            class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
                             Reset
                         </button>
 
-                        <button
-                            type="submit"
-                            class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-800 transition"
-                        >
+                        <button type="submit"
+                            class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-800 transition">
                             Simpan Data
                         </button>
                     </div>
@@ -224,12 +173,9 @@
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <button
-                            type="button"
-                            id="deleteSelectedBtn"
+                        <button type="button" id="deleteSelectedBtn"
                             class="inline-flex items-center rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled
-                        >
+                            disabled>
                             Hapus Selected
                         </button>
                     </div>
@@ -245,11 +191,8 @@
                         <thead class="bg-slate-50 sticky top-0 z-10">
                             <tr class="text-left text-xs uppercase tracking-wide text-slate-500">
                                 <th class="px-6 py-4 font-semibold w-[60px]">
-                                    <input
-                                        type="checkbox"
-                                        id="selectAll"
-                                        class="rounded border-slate-300 text-slate-900 focus:ring-slate-300"
-                                    >
+                                    <input type="checkbox" id="selectAll"
+                                        class="rounded border-slate-300 text-slate-900 focus:ring-slate-300">
                                 </th>
                                 <th class="px-6 py-4 font-semibold">Kode</th>
                                 <th class="px-6 py-4 font-semibold">Tanggal</th>
@@ -270,18 +213,11 @@
                                 <tr class="text-sm text-slate-700 hover:bg-slate-50/50 transition">
                                     <td class="px-6 py-4">
                                         @if (!$isValidated)
-                                            <input
-                                                type="checkbox"
-                                                name="ids[]"
-                                                value="{{ $income->id }}"
-                                                class="row-checkbox rounded border-slate-300 text-slate-900 focus:ring-slate-300"
-                                            >
+                                            <input type="checkbox" name="ids[]" value="{{ $income->id }}"
+                                                class="row-checkbox rounded border-slate-300 text-slate-900 focus:ring-slate-300">
                                         @else
-                                            <input
-                                                type="checkbox"
-                                                disabled
-                                                class="rounded border-slate-200 bg-slate-100 cursor-not-allowed"
-                                            >
+                                            <input type="checkbox" disabled
+                                                class="rounded border-slate-200 bg-slate-100 cursor-not-allowed">
                                         @endif
                                     </td>
 
@@ -294,11 +230,13 @@
                                     <td class="px-6 py-4">Rp {{ number_format($income->hak_amil_pc, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4">
                                         @if ($income->status === 'validated')
-                                            <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
+                                            <span
+                                                class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
                                                 validated
                                             </span>
                                         @else
-                                            <span class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700">
+                                            <span
+                                                class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700">
                                                 {{ $income->status }}
                                             </span>
                                         @endif
@@ -307,11 +245,9 @@
                                     <td class="px-6 py-4 text-right">
                                         <div class="flex items-center justify-end gap-2">
                                             @if (!$isValidated)
-                                                <button
-                                                    type="button"
+                                                <button type="button"
                                                     class="edit-btn p-2 text-slate-400 hover:text-blue-600 transition"
-                                                    title="Edit"
-                                                    data-id="{{ $income->id }}"
+                                                    title="Edit" data-id="{{ $income->id }}"
                                                     data-date="{{ \Carbon\Carbon::parse($income->date)->format('Y-m-d') }}"
                                                     data-gross_profit="{{ $income->gross_profit }}"
                                                     data-operating_expenses="{{ $income->operating_expenses }}"
@@ -322,20 +258,19 @@
                                                     data-hak_amil_mwc="{{ $income->hak_amil_mwc }}"
                                                     data-hak_amil_pc="{{ $income->hak_amil_pc }}"
                                                     data-status="{{ $income->status }}"
-                                                    data-update_url="{{ route('ranting.income.update', $income->id) }}"
-                                                >
+                                                    data-update_url="{{ route('ranting.income.update', $income->id) }}">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
 
-                                                <form id="delete-form-{{ $income->id }}" action="{{ route('ranting.income.destroy', $income->id) }}" method="POST" class="inline">
+                                                <form id="delete-form-{{ $income->id }}"
+                                                    action="{{ route('ranting.income.destroy', $income->id) }}"
+                                                    method="POST" class="inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button
-                                                        type="button"
+                                                    <button type="button"
                                                         onclick="confirmDelete('delete-form-{{ $income->id }}')"
                                                         class="p-2 text-slate-400 hover:text-red-600 transition"
-                                                        title="Hapus"
-                                                    >
+                                                        title="Hapus">
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>
                                                 </form>
@@ -370,7 +305,8 @@
                         <h3 class="text-lg font-semibold text-slate-800">Edit Pemasukan Koin NU</h3>
                         <p class="text-sm text-slate-500 mt-1">Perbarui data pemasukan melalui modal.</p>
                     </div>
-                    <button type="button" id="closeEditModal" class="text-slate-400 hover:text-slate-700 text-xl leading-none">
+                    <button type="button" id="closeEditModal"
+                        class="text-slate-400 hover:text-slate-700 text-xl leading-none">
                         &times;
                     </button>
                 </div>
@@ -383,131 +319,101 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <label for="edit_date" class="text-sm font-medium text-slate-700">Tanggal/Bulan</label>
-                                <input
-                                    type="date"
-                                    name="date"
-                                    id="edit_date"
+                                <input type="date" name="date" id="edit_date"
                                     class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
-                                    required
-                                >
+                                    required>
                             </div>
 
                             <div class="space-y-2">
                                 <label class="text-sm font-medium text-slate-700">Status</label>
-                                <div id="edit_status" class="flex items-center h-[42px] px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-600"></div>
+                                <div id="edit_status"
+                                    class="flex items-center h-[42px] px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-600">
+                                </div>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
-                                <label for="edit_gross_profit" class="text-sm font-medium text-slate-700">Perolehan Total (Rp)</label>
-                                <input
-                                    type="number"
-                                    name="gross_profit"
-                                    id="edit_gross_profit"
-                                    min="0"
+                                <label for="edit_gross_profit" class="text-sm font-medium text-slate-700">Perolehan Total
+                                    (Rp)</label>
+                                <input type="number" name="gross_profit" id="edit_gross_profit" min="0"
                                     step="1"
                                     class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
-                                    required
-                                >
+                                    required>
                             </div>
 
                             <div class="space-y-2">
-                                <label for="edit_operating_expenses" class="text-sm font-medium text-slate-700">Jasa Petugas (Rp)</label>
-                                <input
-                                    type="number"
-                                    name="operating_expenses"
-                                    id="edit_operating_expenses"
-                                    min="0"
-                                    step="1"
+                                <label for="edit_operating_expenses" class="text-sm font-medium text-slate-700">Jasa
+                                    Petugas (Rp)</label>
+                                <input type="number" name="operating_expenses" id="edit_operating_expenses"
+                                    min="0" step="1"
                                     class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
-                                    required
-                                >
+                                    required>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
-                                <label for="edit_net_income" class="text-sm font-medium text-slate-700">Perolehan Bersih (Rp)</label>
-                                <input
-                                    type="number"
-                                    id="edit_net_income"
+                                <label for="edit_net_income" class="text-sm font-medium text-slate-700">Perolehan Bersih
+                                    (Rp)</label>
+                                <input type="number" id="edit_net_income"
                                     class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
-                                    readonly
-                                >
+                                    readonly>
                             </div>
 
                             <div class="space-y-2">
-                                <label for="edit_percentage" class="text-sm font-medium text-slate-700">Presentase (%)</label>
-                                <input
-                                    type="number"
-                                    id="edit_percentage"
+                                <label for="edit_percentage" class="text-sm font-medium text-slate-700">Presentase
+                                    (%)</label>
+                                <input type="number" id="edit_percentage"
                                     class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
-                                    readonly
-                                >
+                                    readonly>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
-                                <label for="edit_allowed_budget" class="text-sm font-medium text-slate-700">Dana dapat Digunakan (Rp)</label>
-                                <input
-                                    type="number"
-                                    id="edit_allowed_budget"
+                                <label for="edit_allowed_budget" class="text-sm font-medium text-slate-700">Dana dapat
+                                    Digunakan (Rp)</label>
+                                <input type="number" id="edit_allowed_budget"
                                     class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
-                                    readonly
-                                >
+                                    readonly>
                             </div>
 
                             <div class="space-y-2">
-                                <label for="edit_hak_amil" class="text-sm font-medium text-slate-700">Dana Operasional Amil (Rp)</label>
-                                <input
-                                    type="number"
-                                    name="hak_amil"
-                                    id="edit_hak_amil"
+                                <label for="edit_hak_amil" class="text-sm font-medium text-slate-700">Dana Operasional
+                                    Amil (Rp)</label>
+                                <input type="number" name="hak_amil" id="edit_hak_amil"
                                     class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
-                                    readonly
-                                >
+                                    readonly>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2">
-                                <label for="edit_hak_amil_mwc" class="text-sm font-medium text-slate-700">Hak Amil MWC (Rp)</label>
-                                <input
-                                    type="number"
-                                    name="hak_amil_mwc"
-                                    id="edit_hak_amil_mwc"
+                                <label for="edit_hak_amil_mwc" class="text-sm font-medium text-slate-700">Hak Amil MWC
+                                    (Rp)</label>
+                                <input type="number" name="hak_amil_mwc" id="edit_hak_amil_mwc"
                                     class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
-                                    readonly
-                                >
+                                    readonly>
                             </div>
 
                             <div class="space-y-2">
-                                <label for="edit_hak_amil_pc" class="text-sm font-medium text-slate-700">Hak Amil PC (Rp)</label>
-                                <input
-                                    type="number"
-                                    name="hak_amil_pc"
-                                    id="edit_hak_amil_pc"
+                                <label for="edit_hak_amil_pc" class="text-sm font-medium text-slate-700">Hak Amil PC
+                                    (Rp)</label>
+                                <input type="number" name="hak_amil_pc" id="edit_hak_amil_pc"
                                     class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
-                                    readonly
-                                >
+                                    readonly>
                             </div>
                         </div>
 
                         <div class="flex items-center justify-end gap-3 pt-2">
-                            <button
-                                type="button"
-                                id="cancelEditModal"
-                                class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
-                            >
+                            <button type="button" id="cancelEditModal"
+                                class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
                                 Batal
                             </button>
 
-                            <button
-                                type="submit"
-                                class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-800 transition"
-                            >
+                            <button type="submit"
+                                class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-800 transition">
                                 Update Data
                             </button>
                         </div>
@@ -518,7 +424,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const grossProfit = document.getElementById('gross_profit');
             const operatingExpenses = document.getElementById('operating_expenses');
             const netIncome = document.getElementById('net_income');
@@ -600,7 +506,7 @@
             }
 
             document.querySelectorAll('.edit-btn').forEach(button => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', function() {
                     editForm.action = this.dataset.update_url;
                     editDate.value = this.dataset.date;
                     editGrossProfit.value = this.dataset.gross_profit;
@@ -627,7 +533,7 @@
             cancelEditModal.addEventListener('click', hideEditModal);
             editModalOverlay.addEventListener('click', hideEditModal);
 
-            document.addEventListener('keydown', function (e) {
+            document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && !editModal.classList.contains('hidden')) {
                     hideEditModal();
                 }
@@ -644,7 +550,7 @@
             }
 
             if (selectAll) {
-                selectAll.addEventListener('change', function () {
+                selectAll.addEventListener('change', function() {
                     rowCheckboxes.forEach(checkbox => {
                         checkbox.checked = this.checked;
                     });
@@ -653,7 +559,7 @@
             }
 
             rowCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function () {
+                checkbox.addEventListener('change', function() {
                     const total = rowCheckboxes.length;
                     const checked = document.querySelectorAll('.row-checkbox:checked').length;
 
@@ -665,7 +571,7 @@
                 });
             });
 
-            deleteSelectedBtn.addEventListener('click', function () {
+            deleteSelectedBtn.addEventListener('click', function() {
                 const checkedRows = document.querySelectorAll('.row-checkbox:checked');
 
                 if (checkedRows.length === 0) {

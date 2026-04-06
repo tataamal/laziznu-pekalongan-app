@@ -34,14 +34,36 @@ class InfaqTransactionController extends Controller
 
         $percentage = 10;
         $net_amount = $validated['gross_amount'] - ($validated['gross_amount'] * $percentage / 100);
+        $hak_amil_mwc = ($validated['gross_amount'] * $percentage / 100);
         
         // 1. Calculate Current Balance for Wilayah
-        $currentBalance = InfaqTransaction::whereHas('user', function($query) {
-            $query->where('wilayah_id', Auth::user()->wilayah_id);
-        })->sum('allowed_budget');
-
-        if ($validated['transaction_type'] === 'Pengeluaran' && $validated['gross_amount'] > $currentBalance) {
-            return back()->withInput()->withErrors(['error' => 'Saldo Infaq Wilayah tidak mencukupi. Saldo saat ini: Rp ' . number_format($currentBalance, 0, ',', '.')]);
+        if ($validated['transaction_type'] === 'Pengeluaran') {
+            if ($validated['infaq_type'] === 'Saldo Koin NU') {
+                $koinNuIncomes = \App\Models\Income::whereHas('user', function($q) {
+                    $q->where('wilayah_id', Auth::user()->wilayah_id);
+                })->where('status', 'validated')->sum('hak_amil_mwc');
+                
+                $koinNuExpenses = InfaqTransaction::whereHas('user', function($query) {
+                    $query->where('wilayah_id', Auth::user()->wilayah_id);
+                })->where('infaq_type', 'Saldo Koin NU')->sum('allowed_budget');
+                
+                $currentBalance = $koinNuIncomes + $koinNuExpenses;
+            } else {
+                $currentBalance = InfaqTransaction::whereHas('user', function($query) {
+                    $query->where('wilayah_id', Auth::user()->wilayah_id);
+                })->where(function($q) {
+                    $q->where('transaction_type', 'Pemasukan')
+                      ->orWhere(function($subQ) {
+                          $subQ->where('transaction_type', 'Pengeluaran')
+                               ->where('infaq_type', '!=', 'Saldo Koin NU');
+                      });
+                })->sum('allowed_budget');
+            }
+            
+            if ($validated['gross_amount'] > $currentBalance) {
+                $label = $validated['infaq_type'] === 'Saldo Koin NU' ? 'Koin NU' : 'Infaq MWC';
+                return back()->withInput()->withErrors(['error' => 'Saldo '. $label .' tidak mencukupi. Saldo saat ini: Rp ' . number_format($currentBalance, 0, ',', '.')]);
+            }
         }
 
         // 2. Determine allowed_budget storage
@@ -64,6 +86,7 @@ class InfaqTransactionController extends Controller
                 'percentage' => $percentage,
                 'net_amount' => (int) $net_amount,
                 'allowed_budget' => (int) $allowed_budget,
+                'hak_amil_mwc' => (int) $hak_amil_mwc,
             ]);
 
             DB::commit();
@@ -89,14 +112,36 @@ class InfaqTransactionController extends Controller
 
         $percentage = 10;
         $net_amount = $validated['gross_amount'] - ($validated['gross_amount'] * $percentage / 100);
+        $hak_amil_mwc = ($validated['gross_amount'] * $percentage / 100);
 
         // Calculate Balance excluding current record to see if change is valid
-        $currentBalanceExcludingMe = InfaqTransaction::whereHas('user', function($query) {
-            $query->where('wilayah_id', Auth::user()->wilayah_id);
-        })->where('id', '!=', $item->id)->sum('allowed_budget');
+        if ($validated['transaction_type'] === 'Pengeluaran') {
+            if ($validated['infaq_type'] === 'Saldo Koin NU') {
+                $koinNuIncomes = \App\Models\Income::whereHas('user', function($q) {
+                    $q->where('wilayah_id', Auth::user()->wilayah_id);
+                })->where('status', 'validated')->sum('hak_amil_mwc');
+                
+                $koinNuExpenses = InfaqTransaction::whereHas('user', function($query) {
+                    $query->where('wilayah_id', Auth::user()->wilayah_id);
+                })->where('id', '!=', $item->id)->where('infaq_type', 'Saldo Koin NU')->sum('allowed_budget');
+                
+                $currentBalanceExcludingMe = $koinNuIncomes + $koinNuExpenses;
+            } else {
+                $currentBalanceExcludingMe = InfaqTransaction::whereHas('user', function($query) {
+                    $query->where('wilayah_id', Auth::user()->wilayah_id);
+                })->where('id', '!=', $item->id)->where(function($q) {
+                    $q->where('transaction_type', 'Pemasukan')
+                      ->orWhere(function($subQ) {
+                          $subQ->where('transaction_type', 'Pengeluaran')
+                               ->where('infaq_type', '!=', 'Saldo Koin NU');
+                      });
+                })->sum('allowed_budget');
+            }
 
-        if ($validated['transaction_type'] === 'Pengeluaran' && $validated['gross_amount'] > $currentBalanceExcludingMe) {
-            return back()->withInput()->withErrors(['error' => 'Saldo Infaq Wilayah tidak mencukupi untuk update ini. Saldo tersedia (tanpa transaksi ini): Rp ' . number_format($currentBalanceExcludingMe, 0, ',', '.')]);
+            if ($validated['gross_amount'] > $currentBalanceExcludingMe) {
+                $label = $validated['infaq_type'] === 'Saldo Koin NU' ? 'Koin NU' : 'Infaq MWC';
+                return back()->withInput()->withErrors(['error' => 'Saldo '. $label .' tidak mencukupi untuk update ini. Saldo tersedia (tanpa transaksi ini): Rp ' . number_format($currentBalanceExcludingMe, 0, ',', '.')]);
+            }
         }
 
         $allowed_budget = ($validated['transaction_type'] === 'Pengeluaran') 
@@ -113,6 +158,7 @@ class InfaqTransactionController extends Controller
             'percentage' => $percentage,
             'net_amount' => (int) $net_amount,
             'allowed_budget' => (int) $allowed_budget,
+            'hak_amil_mwc' => (int) $hak_amil_mwc,
         ]);
 
         return redirect()->route('mwc.infaq-transaction.index')->with('success', 'Data Infaq berhasil diperbarui.');

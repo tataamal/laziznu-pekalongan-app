@@ -26,6 +26,7 @@ class InputPemasukanController extends Controller
     {
         $validated = $request->validate([
             'date' => ['required', 'date'],
+            'jumlah_kaleng_aktif' => ['required', 'integer', 'min:0'],
             'gross_profit' => ['required', 'integer', 'min:0'],
             'operating_expenses' => ['required', 'integer', 'min:0'],
             'hak_amil' => ['required', 'integer', 'min:0'],
@@ -45,6 +46,7 @@ class InputPemasukanController extends Controller
                 'user_id' => Auth::id(),
                 'transaction_code' => $this->generateTransactionCode(),
                 'date' => $validated['date'],
+                'jumlah_kaleng_aktif' => $validated['jumlah_kaleng_aktif'],
                 'gross_profit' => $validated['gross_profit'],
                 'operating_expenses' => $validated['operating_expenses'],
                 'net_income' => $calculated['net_income'],
@@ -97,6 +99,7 @@ class InputPemasukanController extends Controller
 
         $validated = $request->validate([
             'date' => ['required', 'date'],
+            'jumlah_kaleng_aktif' => ['required', 'integer', 'min:0'],
             'gross_profit' => ['required', 'integer', 'min:0'],
             'operating_expenses' => ['required', 'integer', 'min:0'],
             'hak_amil' => ['required', 'integer', 'min:0'],
@@ -114,6 +117,7 @@ class InputPemasukanController extends Controller
 
             $item->update([
                 'date' => $validated['date'],
+                'jumlah_kaleng_aktif' => $validated['jumlah_kaleng_aktif'],
                 'gross_profit' => $validated['gross_profit'],
                 'operating_expenses' => $validated['operating_expenses'],
                 'net_income' => $calculated['net_income'],

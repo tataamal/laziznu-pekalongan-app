@@ -39,7 +39,7 @@
                 <form action="{{ route('ranting.income.store') }}" method="POST" class="space-y-6">
                     @csrf
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="space-y-2">
                             <label for="date" class="text-sm font-medium text-slate-700">
                                 Tanggal/Bulan
@@ -47,6 +47,16 @@
                             <input type="date" name="date" id="date"
                                 value="{{ old('date', now()->format('Y-m-d')) }}"
                                 class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                                required>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="jumlah_kaleng_aktif" class="text-sm font-medium text-slate-700">
+                                Jumlah Kaleng Aktif
+                            </label>
+                            <input type="number" name="jumlah_kaleng_aktif" id="jumlah_kaleng_aktif" min="0" step="1"
+                                value="{{ old('jumlah_kaleng_aktif', 0) }}" placeholder="Masukkan jumlah kaleng"
+                                class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                                 required>
                         </div>
 
@@ -196,6 +206,7 @@
                                 </th>
                                 <th class="px-6 py-4 font-semibold">Kode</th>
                                 <th class="px-6 py-4 font-semibold">Tanggal</th>
+                                <th class="px-6 py-4 font-semibold">Jml Kaleng</th>
                                 <th class="px-6 py-4 font-semibold">Perolehan Total</th>
                                 <th class="px-6 py-4 font-semibold">Perolehan Bersih</th>
                                 <th class="px-6 py-4 font-semibold">Hak Amil</th>
@@ -223,6 +234,7 @@
 
                                     <td class="px-6 py-4 font-medium">{{ $income->transaction_code }}</td>
                                     <td class="px-6 py-4">{{ \Carbon\Carbon::parse($income->date)->format('d/m/Y') }}</td>
+                                    <td class="px-6 py-4">{{ $income->jumlah_kaleng_aktif ?? 0 }}</td>
                                     <td class="px-6 py-4">Rp {{ number_format($income->gross_profit, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4">Rp {{ number_format($income->net_income, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4">Rp {{ number_format($income->hak_amil, 0, ',', '.') }}</td>
@@ -249,6 +261,7 @@
                                                     class="edit-btn p-2 text-slate-400 hover:text-blue-600 transition"
                                                     title="Edit" data-id="{{ $income->id }}"
                                                     data-date="{{ \Carbon\Carbon::parse($income->date)->format('Y-m-d') }}"
+                                                    data-jumlah_kaleng_aktif="{{ $income->jumlah_kaleng_aktif }}"
                                                     data-gross_profit="{{ $income->gross_profit }}"
                                                     data-operating_expenses="{{ $income->operating_expenses }}"
                                                     data-net_income="{{ $income->net_income }}"
@@ -282,7 +295,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-8 text-center text-slate-500 italic">
+                                    <td colspan="11" class="px-6 py-8 text-center text-slate-500 italic">
                                         Belum ada data pemasukan.
                                     </td>
                                 </tr>
@@ -316,10 +329,17 @@
                         @csrf
                         @method('PUT')
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="space-y-2">
                                 <label for="edit_date" class="text-sm font-medium text-slate-700">Tanggal/Bulan</label>
                                 <input type="date" name="date" id="edit_date"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                                    required>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label for="edit_jumlah_kaleng_aktif" class="text-sm font-medium text-slate-700">Jumlah Kaleng Aktif</label>
+                                <input type="number" name="jumlah_kaleng_aktif" id="edit_jumlah_kaleng_aktif" min="0" step="1"
                                     class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                                     required>
                             </div>
@@ -466,6 +486,7 @@
             const editForm = document.getElementById('editForm');
 
             const editDate = document.getElementById('edit_date');
+            const editJumlahKalengAktif = document.getElementById('edit_jumlah_kaleng_aktif');
             const editGrossProfit = document.getElementById('edit_gross_profit');
             const editOperatingExpenses = document.getElementById('edit_operating_expenses');
             const editNetIncome = document.getElementById('edit_net_income');
@@ -509,6 +530,7 @@
                 button.addEventListener('click', function() {
                     editForm.action = this.dataset.update_url;
                     editDate.value = this.dataset.date;
+                    editJumlahKalengAktif.value = this.dataset.jumlah_kaleng_aktif || 0;
                     editGrossProfit.value = this.dataset.gross_profit;
                     editOperatingExpenses.value = this.dataset.operating_expenses;
                     editNetIncome.value = this.dataset.net_income;

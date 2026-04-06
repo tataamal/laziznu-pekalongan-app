@@ -57,35 +57,28 @@
             </div>
         </div>
 
-        {{-- Table Section --}}
-        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden text-sm">
+        {{-- Table Pemasukan Section --}}
+        <div class="mb-4 mt-6 flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-800 ml-2">Data Pemasukan</h3>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden text-sm mb-8">
             <div class="overflow-x-auto">
-                <table class="w-full border-collapse" id="infaqTable">
+                <table class="w-full border-collapse">
                     <thead>
                         <tr class="bg-slate-50/80 border-b border-slate-100">
                             <th class="px-6 py-4 text-center w-12">
-                                <input type="checkbox" id="selectAll"
-                                    class="rounded border-slate-300 text-green-600 focus:ring-green-500">
+                                <input type="checkbox" class="select-all-cb rounded border-slate-300 text-green-600 focus:ring-green-500">
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Info
-                                Transaksi</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jenis
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
-                                Keterangan</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
-                                Penerima</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Total
-                            </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Bersih
-                            </th>
-                            <th
-                                class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500 w-[120px]">
-                                Aksi</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Info Transaksi</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jenis</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Keterangan</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Total</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Bersih</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500 w-[120px]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
-                        @forelse($items as $item)
+                        @forelse($items->where('transaction_type', 'Pemasukan') as $item)
                             <tr class="hover:bg-slate-50/50 transition-colors infaq-row"
                                 data-search="{{ strtolower($item->transaction_code . ' ' . $item->infaq_type . ' ' . $item->description) }}"
                                 data-date="{{ $item->transaction_date }}">
@@ -100,8 +93,7 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-5">
-                                    <span
-                                        class="inline-flex items-center rounded-lg {{ $item->transaction_type === 'Pemasukan' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100' }} border px-2 py-0.5 text-[10px] font-bold mb-1 uppercase">
+                                    <span class="inline-flex items-center rounded-lg bg-green-50 text-green-700 border-green-100 border px-2 py-0.5 text-[10px] font-bold mb-1 uppercase">
                                         {{ $item->transaction_type }}
                                     </span>
                                     <div class="font-semibold text-slate-800">{{ $item->infaq_type }}</div>
@@ -112,30 +104,19 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-5">
-                                    <div class="font-bold text-slate-900">
-                                        {{ number_format($item->penerima_manfaat, 0, ',', '.') }}</div>
-                                    <div class="text-[10px] text-slate-500 uppercase font-medium">Jiwa</div>
+                                    <div class="font-bold text-slate-900">Rp {{ number_format($item->gross_amount, 0, ',', '.') }}</div>
                                 </td>
                                 <td class="px-6 py-5">
-                                    <div class="font-bold text-slate-900">Rp
-                                        {{ number_format($item->gross_amount, 0, ',', '.') }}</div>
-                                </td>
-                                <td class="px-6 py-5">
-                                    <div class="font-bold text-green-700">Rp
-                                        {{ number_format($item->net_amount, 0, ',', '.') }}</div>
+                                    <div class="font-bold text-green-700">Rp {{ number_format($item->net_amount, 0, ',', '.') }}</div>
                                 </td>
                                 <td class="px-6 py-5 text-center">
                                     <div class="flex items-center justify-center gap-2">
-                                        <button onclick="openEditModal({{ json_encode($item) }})"
-                                            class="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-green-700 hover:text-white transition-all shadow-sm border border-slate-200">
+                                        <button onclick="openEditModal({{ json_encode($item) }})" class="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-green-700 hover:text-white transition-all shadow-sm border border-slate-200">
                                             <i class="fas fa-edit text-xs"></i>
                                         </button>
-                                        <form action="{{ route('mwc.infaq-transaction.destroy', $item->id) }}"
-                                            method="POST" id="delete-form-{{ $item->id }}">
+                                        <form action="{{ route('mwc.infaq-transaction.destroy', $item->id) }}" method="POST" id="delete-form-{{ $item->id }}">
                                             @csrf @method('DELETE')
-                                            <button type="button"
-                                                onclick="confirmDelete('delete-form-{{ $item->id }}')"
-                                                class="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-red-600 hover:text-white transition-all shadow-sm border border-slate-200">
+                                            <button type="button" onclick="confirmDelete('delete-form-{{ $item->id }}')" class="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-red-600 hover:text-white transition-all shadow-sm border border-slate-200">
                                                 <i class="fas fa-trash text-xs"></i>
                                             </button>
                                         </form>
@@ -144,8 +125,88 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-20 text-center text-slate-400">Belum ada transaksi
-                                    tercatat.</td>
+                                <td colspan="7" class="px-6 py-20 text-center text-slate-400">Belum ada transaksi pemasukan tercatat.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{-- Table Pengeluaran Section --}}
+        <div class="mb-4 flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-800 ml-2">Data Pengeluaran</h3>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden text-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50/80 border-b border-slate-100">
+                            <th class="px-6 py-4 text-center w-12">
+                                <input type="checkbox" class="select-all-cb rounded border-slate-300 text-green-600 focus:ring-green-500">
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Info Transaksi</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jenis</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Keterangan</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Penerima</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Total</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Bersih</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500 w-[120px]">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse($items->where('transaction_type', 'Pengeluaran') as $item)
+                            <tr class="hover:bg-slate-50/50 transition-colors infaq-row"
+                                data-search="{{ strtolower($item->transaction_code . ' ' . $item->infaq_type . ' ' . $item->description) }}"
+                                data-date="{{ $item->transaction_date }}">
+                                <td class="px-6 py-5 text-center">
+                                    <input type="checkbox" name="ids[]" value="{{ $item->id }}"
+                                        class="row-checkbox rounded border-slate-300 text-green-600 focus:ring-green-500">
+                                </td>
+                                <td class="px-6 py-5">
+                                    <div class="font-bold text-slate-900 leading-tight">{{ $item->transaction_code }}</div>
+                                    <div class="text-[11px] text-slate-500 mt-1 uppercase font-medium">
+                                        {{ \Carbon\Carbon::parse($item->transaction_date)->format('d M Y') }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <span class="inline-flex items-center rounded-lg bg-red-50 text-red-700 border-red-100 border px-2 py-0.5 text-[10px] font-bold mb-1 uppercase">
+                                        {{ $item->transaction_type }}
+                                    </span>
+                                    <div class="font-semibold text-slate-800">{{ $item->infaq_type }}</div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <div class="text-slate-500 max-w-[200px] truncate" title="{{ $item->description }}">
+                                        {{ $item->description ?: '-' }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <div class="font-bold text-slate-900">{{ number_format($item->penerima_manfaat, 0, ',', '.') }}</div>
+                                    <div class="text-[10px] text-slate-500 uppercase font-medium">Jiwa</div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <div class="font-bold text-slate-900">Rp {{ number_format($item->gross_amount, 0, ',', '.') }}</div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <div class="font-bold text-green-700">Rp {{ number_format($item->net_amount, 0, ',', '.') }}</div>
+                                </td>
+                                <td class="px-6 py-5 text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button onclick="openEditModal({{ json_encode($item) }})" class="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-green-700 hover:text-white transition-all shadow-sm border border-slate-200">
+                                            <i class="fas fa-edit text-xs"></i>
+                                        </button>
+                                        <form action="{{ route('mwc.infaq-transaction.destroy', $item->id) }}" method="POST" id="delete-form-{{ $item->id }}">
+                                            @csrf @method('DELETE')
+                                            <button type="button" onclick="confirmDelete('delete-form-{{ $item->id }}')" class="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-red-600 hover:text-white transition-all shadow-sm border border-slate-200">
+                                                <i class="fas fa-trash text-xs"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="px-6 py-20 text-center text-slate-400">Belum ada transaksi pengeluaran tercatat.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -282,7 +343,8 @@
                 modal = document.getElementById('infaqModal');
                 searchInput = document.getElementById('searchInput');
                 tableRows = document.querySelectorAll('.infaq-row');
-                selectAll = document.getElementById('selectAll');
+                // Not used
+
                 rowCheckboxes = document.querySelectorAll('.row-checkbox');
                 bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
 
@@ -309,15 +371,17 @@
                 const grossInput = document.getElementById('gross_amount');
                 if (grossInput) grossInput.addEventListener('input', calculateNet);
 
-                if (selectAll) {
-                    selectAll.addEventListener('change', function() {
-                        rowCheckboxes.forEach(cb => {
-                            if (!cb.closest('tr').classList.contains('hidden')) cb.checked = this
-                                .checked;
+                const selectAllBoxes = document.querySelectorAll('.select-all-cb');
+                selectAllBoxes.forEach(box => {
+                    box.addEventListener('change', function() {
+                        const table = this.closest('table');
+                        const checkboxes = table.querySelectorAll('.row-checkbox');
+                        checkboxes.forEach(cb => {
+                            if (!cb.closest('tr').classList.contains('hidden')) cb.checked = this.checked;
                         });
                         updateBulkBtn();
                     });
-                }
+                });
                 rowCheckboxes.forEach(cb => cb.addEventListener('change', updateBulkBtn));
             });
 

@@ -59,6 +59,7 @@
                         <tr class="bg-slate-50/80 border-b border-slate-100">
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Info Transaksi</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Ranting Asal</th>
+                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jml Kaleng</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Pemasukan Bersih</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jasa Petugas</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Dana Dapat Digunakan</th>
@@ -86,6 +87,9 @@
                                             <div class="font-semibold text-slate-800 text-sm">{{ $item->user->name }}</div>
                                         </div>
                                     </div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <div class="font-bold text-sm text-slate-800">{{ $item->jumlah_kaleng_aktif ?? 0 }} Kaleng Aktif</div>
                                 </td>
                                 <td class="px-6 py-5">
                                     <div class="font-bold text-sm text-green-700">Rp {{ number_format($item->net_income, 0, ',', '.') }}</div>
@@ -140,7 +144,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-20 text-center">
+                                <td colspan="10" class="px-6 py-20 text-center">
                                     <div class="flex flex-col items-center justify-center opacity-40">
                                         <div class="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center mb-4">
                                             <i class="fas fa-inbox text-3xl text-slate-400"></i>
@@ -172,6 +176,7 @@
                             <tr class="bg-slate-50/80 border-b border-slate-100">
                                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Info Transaksi</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Ranting</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jml Kaleng</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Perolehan Total</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jasa Petugas</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Perolehan Bersih</th>
@@ -190,6 +195,7 @@
                                         <div class="text-[10px] text-slate-500 mt-0.5">{{ \Carbon\Carbon::parse($item->date)->format('d M Y') }}</div>
                                     </td>
                                     <td class="px-6 py-4 font-medium text-slate-700 text-xs">{{ $item->user->name }}</td>
+                                    <td class="px-6 py-4 font-bold text-slate-800 text-xs">{{ $item->jumlah_kaleng_aktif ?? 0 }} Kaleng</td>
                                     <td class="px-6 py-4 font-bold text-green-700 text-xs">Rp {{ number_format($item->gross_profit, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4 font-medium text-slate-800 text-xs">Rp {{ number_format($item->operating_expenses, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4 font-bold text-green-700 text-xs">Rp {{ number_format($item->net_income, 0, ',', '.') }}</td>
@@ -211,7 +217,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-10 text-center text-slate-400 italic text-sm">Belum ada riwayat approval.</td>
+                                    <td colspan="11" class="px-6 py-10 text-center text-slate-400 italic text-sm">Belum ada riwayat approval.</td>
                                 </tr>
                             @endforelse
                         </tbody>

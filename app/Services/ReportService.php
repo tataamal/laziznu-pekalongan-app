@@ -23,23 +23,19 @@ class ReportService
 
         $data = collect();
 
-        // 1. Fetch from Distribution (Koin NU)
+        // 1. Fetch from Distribution (Koin NU Events) dan Infaq Koin NU
         if ($sourceType === 'semua' || $sourceType === 'koin_nu') {
-            $query = Distribution::with('user.wilayah');
+            $queryDist = Distribution::with('user.wilayah');
 
-            if ($startDate) {
-                $query->where('date', '>=', $startDate);
-            }
-            if ($endDate) {
-                $query->where('date', '<=', $endDate);
-            }
+            if ($startDate) $queryDist->where('date', '>=', $startDate);
+            if ($endDate) $queryDist->where('date', '<=', $endDate);
             if ($wilayahId) {
-                $query->whereHas('user', function ($q) use ($wilayahId) {
+                $queryDist->whereHas('user', function ($q) use ($wilayahId) {
                     $q->where('wilayah_id', $wilayahId);
                 });
             }
 
-            $distributions = $query->get()->map(function ($item) {
+            $distributions = $queryDist->get()->map(function ($item) {
                 return [
                     'date' => $item->date,
                     'transaction_code' => $item->transaction_code,
@@ -52,13 +48,40 @@ class ReportService
                 ];
             });
 
-            $data = $data->concat($distributions);
+            // Tambahkan Pengeluaran InfaqTransaction yg tipenya Saldo Koin NU
+            $queryInfaqKoin = InfaqTransaction::with('user.wilayah')
+                ->where('transaction_type', 'Pengeluaran')
+                ->where('infaq_type', 'Saldo Koin NU');
+
+            if ($startDate) $queryInfaqKoin->where('transaction_date', '>=', $startDate);
+            if ($endDate) $queryInfaqKoin->where('transaction_date', '<=', $endDate);
+            if ($wilayahId) {
+                $queryInfaqKoin->whereHas('user', function ($q) use ($wilayahId) {
+                    $q->where('wilayah_id', $wilayahId);
+                });
+            }
+
+            $infaqKoinNU = $queryInfaqKoin->get()->map(function ($item) {
+                return [
+                    'date' => $item->transaction_date,
+                    'transaction_code' => $item->transaction_code,
+                    'penerima_manfaat' => $item->penerima_manfaat,
+                    'event_name' => $item->description ?: '-',
+                    'amount' => $item->gross_amount,
+                    'type' => $item->infaq_type,
+                    'wilayah' => $item->user->wilayah->nama_wilayah ?? '-',
+                    'status' => 'Selesai',
+                ];
+            });
+
+            $data = $data->concat($distributions)->concat($infaqKoinNU);
         }
 
         // 2. Fetch from InfaqTransaction (Infaq Lainnya)
         if ($sourceType === 'semua' || $sourceType === 'infaq_lainnya') {
             $query = InfaqTransaction::with('user.wilayah')
-                ->where('transaction_type', 'Pengeluaran');
+                ->where('transaction_type', 'Pengeluaran')
+                ->where('infaq_type', '!=', 'Saldo Koin NU');
 
             if ($startDate) {
                 $query->where('transaction_date', '>=', $startDate);
@@ -77,11 +100,11 @@ class ReportService
                     'date' => $item->transaction_date,
                     'transaction_code' => $item->transaction_code,
                     'penerima_manfaat' => $item->penerima_manfaat,
-                    'event_name' => $item->infaq_type . ' - ' . $item->description,
+                    'event_name' => $item->description ?: '-',
                     'amount' => $item->gross_amount,
-                    'type' => 'Infaq Lainnya',
+                    'type' => $item->infaq_type,
                     'wilayah' => $item->user->wilayah->nama_wilayah ?? '-',
-                    'status' => 'Selesai', // Infaq transactions are usually immediate
+                    'status' => 'Selesai',
                 ];
             });
 

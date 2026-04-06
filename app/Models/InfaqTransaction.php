@@ -20,6 +20,8 @@ class InfaqTransaction extends Model
         'percentage',
         'net_amount',
         'allowed_budget',
+        'hak_amil_mwc',
+        'hak_amil_pc',
     ];
 
     public function user()

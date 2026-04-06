@@ -39,8 +39,22 @@ class MwcDashboardController extends Controller
             })->where('status', 'on_process')->count();
 
         // Stats Calculation
-        $totalInfaqMwc = $infaqTransactions->sum('allowed_budget');
-        $totalKoinNuWilayah = $rantingIncomes->sum('hak_amil_mwc');
+        $totalInfaqMwc = $infaqTransactions->filter(function($trx) {
+            return $trx->transaction_type === 'Pemasukan' || 
+                   ($trx->transaction_type === 'Pengeluaran' && $trx->infaq_type !== 'Saldo Koin NU');
+        })->sum('allowed_budget');
+
+        $koinNuExpenses = $infaqTransactions->filter(function($trx) {
+            return $trx->transaction_type === 'Pengeluaran' && $trx->infaq_type === 'Saldo Koin NU';
+        })->sum('allowed_budget'); // allowed_budget is negative for Pengeluaran
+
+        $totalKoinNuWilayah = $rantingIncomes->sum('hak_amil_mwc') + $koinNuExpenses;
+
+        $hakAmilInfaq = \App\Models\InfaqTransaction::where('user_id', $user->id)
+            ->where('transaction_type', 'Pemasukan')
+            ->sum('hak_amil_mwc');
+            
+        $hakAmilKoin = $rantingIncomes->sum('hak_amil_mwc') * 0.20;
 
         // --- CHART DATA ---
 
@@ -156,7 +170,8 @@ class MwcDashboardController extends Controller
         return view('mwc.dashboard', compact(
             'wilayahName', 'totalInfaqMwc', 'totalKoinNuWilayah', 
             'pendingIncomesCount', 'pendingDistributionsCount',
-            'chartDataJson', 'latestTransactions'
+            'chartDataJson', 'latestTransactions',
+            'hakAmilInfaq', 'hakAmilKoin'
         ));
     }
 }

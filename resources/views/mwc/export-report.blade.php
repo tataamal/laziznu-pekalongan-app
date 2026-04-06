@@ -43,7 +43,7 @@
                             <span>Tampilkan Preview</span>
                         </button>
                         @if($distributions->isNotEmpty())
-                            <button type="submit" form="export-form" class="flex-1 bg-zinc-800 hover:bg-zinc-900 text-white font-bold py-3 px-6 rounded-2xl transition shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                            <button type="button" onclick="submitExport()" class="flex-1 bg-zinc-800 hover:bg-zinc-900 text-white font-bold py-3 px-6 rounded-2xl transition shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                                 <i class="fas fa-file-excel"></i>
                                 <span>Export ke Excel</span>
                             </button>
@@ -138,4 +138,13 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function submitExport() {
+            document.querySelector('#export-form input[name="start_date"]').value = document.getElementById('start_date').value;
+            document.querySelector('#export-form input[name="end_date"]').value = document.getElementById('end_date').value;
+            document.querySelector('#export-form input[name="source_type"]').value = document.getElementById('source_type').value;
+            document.getElementById('export-form').submit();
+        }
+    </script>
 @endsection

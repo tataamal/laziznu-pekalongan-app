@@ -10,6 +10,7 @@ class Income extends Model
         'user_id',
         'transaction_code',
         'date',
+        'jumlah_kaleng_aktif',  
         'gross_profit',
         'operating_expenses',
         'net_income',

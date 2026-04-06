@@ -17,10 +17,27 @@ class PcDashboardController extends Controller
         $userId = Auth::id();
 
         // 1. Data untuk Card
-        $totalSaldoPc = InfaqTransaction::where('user_id', $userId)->sum('allowed_budget');
+        $pcInfaqs = InfaqTransaction::where('user_id', $userId)->get();
+
+        $totalSaldoPc = $pcInfaqs->filter(function($trx) {
+            return $trx->transaction_type === 'Pemasukan' || 
+                   ($trx->transaction_type === 'Pengeluaran' && $trx->infaq_type !== 'Saldo Koin NU');
+        })->sum('allowed_budget');
+
+        $koinNuExpenses = $pcInfaqs->filter(function($trx) {
+            return $trx->transaction_type === 'Pengeluaran' && $trx->infaq_type === 'Saldo Koin NU';
+        })->sum('allowed_budget'); // allowed_budget is negative
+
+        $totalHakAmilPcKoinNu = Income::where('status', 'validated')->sum('hak_amil_pc') + $koinNuExpenses;
+        
+        $saldoHakAmilInfaqPC = $pcInfaqs->filter(function($trx) {
+            return $trx->transaction_type === 'Pemasukan';
+        })->sum('hak_amil_pc');
+
+        $koinNuSeluruhWilayah = Income::where('status', 'validated')->sum('hak_amil_mwc');
+
         $totalMwcUsers = User::where('role', 'mwc')->count();
         $totalRantingUsers = User::where('role', 'ranting')->count();
-        $totalHakAmilPcKoinNu = Income::where('status', 'validated')->sum('hak_amil_pc');
 
         // 2. Data untuk Trend (6 Bulan Terakhir)
         $months = collect(range(5, 0))->map(function($i) { return now()->subMonths($i)->format('Y-m'); });
@@ -97,7 +114,8 @@ class PcDashboardController extends Controller
         ]);
 
         return view('pc.dashboard', compact(
-            'totalSaldoPc', 'totalHakAmilPcKoinNu', 'totalMwcUsers', 'totalRantingUsers',
+            'totalSaldoPc', 'totalHakAmilPcKoinNu', 'saldoHakAmilInfaqPC', 'koinNuSeluruhWilayah',
+            'totalMwcUsers', 'totalRantingUsers',
             'chartDataJson', 'latestTransactions'
         ));
     }

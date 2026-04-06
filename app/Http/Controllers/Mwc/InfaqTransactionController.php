@@ -27,10 +27,12 @@ class InfaqTransactionController extends Controller
             'transaction_date' => ['required', 'date'],
             'transaction_type' => ['required', 'in:Pemasukan,Pengeluaran'],
             'infaq_type' => ['required', 'string', 'max:255'],
-            'penerima_manfaat' => ['required', 'integer', 'min:0'],
+            'penerima_manfaat' => ['nullable', 'integer', 'min:0'],
             'description' => ['nullable', 'string'],
             'gross_amount' => ['required', 'integer', 'min:0']
         ]);
+
+        $penerimaManfaat = $validated['penerima_manfaat'] ?? 0;
 
         $percentage = 10;
         $net_amount = $validated['gross_amount'] - ($validated['gross_amount'] * $percentage / 100);
@@ -80,7 +82,7 @@ class InfaqTransactionController extends Controller
                 'transaction_date' => $validated['transaction_date'],
                 'transaction_type' => $validated['transaction_type'],
                 'infaq_type' => $validated['infaq_type'],
-                'penerima_manfaat' => $validated['penerima_manfaat'],
+                'penerima_manfaat' => $penerimaManfaat,
                 'description' => $validated['description'],
                 'gross_amount' => $validated['gross_amount'],
                 'percentage' => $percentage,
@@ -105,10 +107,12 @@ class InfaqTransactionController extends Controller
             'transaction_date' => ['required', 'date'],
             'transaction_type' => ['required', 'in:Pemasukan,Pengeluaran'],
             'infaq_type' => ['required', 'string', 'max:255'],
-            'penerima_manfaat' => ['required', 'integer', 'min:0'],
+            'penerima_manfaat' => ['nullable', 'integer', 'min:0'],
             'description' => ['nullable', 'string'],
             'gross_amount' => ['required', 'integer', 'min:0'],
         ]);
+
+        $penerimaManfaat = $validated['penerima_manfaat'] ?? 0;
 
         $percentage = 10;
         $net_amount = $validated['gross_amount'] - ($validated['gross_amount'] * $percentage / 100);
@@ -152,7 +156,7 @@ class InfaqTransactionController extends Controller
             'transaction_date' => $validated['transaction_date'],
             'transaction_type' => $validated['transaction_type'],
             'infaq_type' => $validated['infaq_type'],
-            'penerima_manfaat' => $validated['penerima_manfaat'],
+            'penerima_manfaat' => $penerimaManfaat,
             'description' => $validated['description'],
             'gross_amount' => $validated['gross_amount'],
             'percentage' => $percentage,

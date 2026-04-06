@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Pc;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Income;
+use App\Models\Distribution;
 use App\Models\Wilayah;
 
 class DataTransaksiRanting extends Controller
@@ -14,16 +15,34 @@ class DataTransaksiRanting extends Controller
         $wilayahId = $request->query('wilayah_id');
         $wilayahs = Wilayah::orderBy('nama_wilayah')->get();
 
-        $items = Income::with(['user', 'user.wilayah'])
-            ->whereHas('user', function($query) use ($wilayahId) {
-                $query->where('role', 'ranting');
-                if ($wilayahId) {
-                    $query->where('wilayah_id', $wilayahId);
-                }
-            })
-            ->latest()
-            ->get();
+        $transactionType = $request->query('transaction_type');
 
-        return view('pc.data-transaksi-ranting', compact('items', 'wilayahs', 'wilayahId'));
+        $pemasukans = collect();
+        if ($transactionType !== 'Pengeluaran') {
+            $pemasukans = Income::with(['user', 'user.wilayah'])
+                ->whereHas('user', function($query) use ($wilayahId) {
+                    $query->where('role', 'ranting');
+                    if ($wilayahId) {
+                        $query->where('wilayah_id', $wilayahId);
+                    }
+                })
+                ->latest()
+                ->get();
+        }
+
+        $pengeluarans = collect();
+        if ($transactionType !== 'Pemasukan') {
+            $pengeluarans = Distribution::with(['user', 'user.wilayah'])
+                ->whereHas('user', function($query) use ($wilayahId) {
+                    $query->where('role', 'ranting');
+                    if ($wilayahId) {
+                        $query->where('wilayah_id', $wilayahId);
+                    }
+                })
+                ->latest()
+                ->get();
+        }
+
+        return view('pc.data-transaksi-ranting', compact('pemasukans', 'pengeluarans', 'wilayahs', 'wilayahId'));
     }
 }

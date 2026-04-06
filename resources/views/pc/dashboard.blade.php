@@ -8,25 +8,43 @@
         @vite('resources/js/pc-dashboard.js')
     @endpush
 
-    <section class="grid grid-cols-1 gap-4 md:grid-cols-4">
+    <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {{-- Card 1: Saldo Infaq PC --}}
         <div class="rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm">
             <div class="text-sm font-medium text-white/90">Total Saldo Infaq PC</div>
             <div class="mt-4 text-3xl font-bold">Rp {{ number_format($totalSaldoPc, 0, ',', '.') }}</div>
             <div class="mt-3 text-xs text-white/80">Saldo akumulasi dari Infaq PC</div>
         </div>
 
+        {{-- Card 2: Hak Amil Infaq --}}
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Hak Amil KOIN NU</div>
-            <div class="mt-4 text-3xl font-bold tracking-tight text-green-700">Rp {{ number_format($totalHakAmilPcKoinNu, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Total saldo hak amil PC</div>
+            <div class="text-sm font-medium text-zinc-600">Hak Amil Infaq PC</div>
+            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($saldoHakAmilInfaqPC ?? 0, 0, ',', '.') }}</div>
+            <div class="mt-3 text-xs text-zinc-500">Total hak amil dari transaksi infaq PC</div>
         </div>
 
+        {{-- Card 3: Hak Amil Koin --}}
+        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <div class="text-sm font-medium text-zinc-600">Saldo KOIN NU Khusus PC</div>
+            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($totalHakAmilPcKoinNu ?? 0, 0, ',', '.') }}</div>
+            <div class="mt-3 text-xs text-zinc-500">Total saldo hak amil PC (dari Koin NU)</div>
+        </div>
+
+        {{-- Card 4: KOIN NU Seluruh Wilayah --}}
+        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <div class="text-sm font-medium text-zinc-600">Saldo KOIN NU Seluruh Wilayah</div>
+            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($koinNuSeluruhWilayah ?? 0, 0, ',', '.') }}</div>
+            <div class="mt-3 text-xs text-zinc-500">Akumulasi Hak Amil MWC seluruh ranting</div>
+        </div>
+
+        {{-- Card 5: Total Pengguna MWC --}}
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
             <div class="text-sm font-medium text-zinc-600">Total Pengguna MWC</div>
             <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">{{ $totalMwcUsers }}</div>
             <div class="mt-3 text-xs text-zinc-500">Jumlah user dengan role MWC</div>
         </div>
 
+        {{-- Card 6: Total Pengguna Ranting --}}
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
             <div class="text-sm font-medium text-zinc-600">Total Pengguna Ranting</div>
             <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">{{ $totalRantingUsers }}</div>

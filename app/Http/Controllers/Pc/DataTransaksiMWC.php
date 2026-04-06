@@ -14,16 +14,26 @@ class DataTransaksiMWC extends Controller
         $wilayahId = $request->query('wilayah_id');
         $wilayahs = Wilayah::orderBy('nama_wilayah')->get();
 
-        $items = InfaqTransaction::with(['user', 'user.wilayah'])
+        $transactionType = $request->query('transaction_type');
+
+        $query = InfaqTransaction::with(['user', 'user.wilayah'])
             ->whereHas('user', function($query) use ($wilayahId) {
                 $query->where('role', 'mwc');
                 if ($wilayahId) {
                     $query->where('wilayah_id', $wilayahId);
                 }
             })
-            ->latest()
-            ->get();
+            ->latest();
 
-        return view('pc.data-transaksi-mwc', compact('items', 'wilayahs', 'wilayahId'));
+        if ($transactionType) {
+            $query->where('transaction_type', $transactionType);
+        }
+
+        $items = $query->get();
+
+        $pemasukans = $transactionType === 'Pengeluaran' ? collect() : $items->where('transaction_type', 'Pemasukan');
+        $pengeluarans = $transactionType === 'Pemasukan' ? collect() : $items->where('transaction_type', 'Pengeluaran');
+
+        return view('pc.data-transaksi-mwc', compact('items', 'pemasukans', 'pengeluarans', 'wilayahs', 'wilayahId'));
     }
 }

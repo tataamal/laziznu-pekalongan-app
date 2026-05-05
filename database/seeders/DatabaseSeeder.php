@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             WilayahSeeder::class,
             RantingSeeder::class,
             UserSeeder::class,
+            TransactionSeeder::class,
         ]);
     }   
 }

@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Income;
-use App\Models\Distribution;
-use App\Models\InfaqTransaction;
+use App\Models\koin_nu_transaction;
+use App\Models\koin_nu_distribution;
+use App\Models\infaq_pc_transactions;
+use App\Models\infaq_pc_distributions;
+use App\Models\infaq_mwc_transactions;
+use App\Models\infaq_mwc_distributions;
 use App\Models\Wilayah;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
 class LandingController extends Controller
@@ -18,7 +22,7 @@ class LandingController extends Controller
         $month = $request->get('month', date('m'));
         $year = $request->get('year', date('Y'));
         $wilayahId = $request->get('wilayah_id', 1);
-        $status = $request->get('status', 'validated');
+        $status = $request->get('status', 'approved');
 
         $wilayahs = Wilayah::all();
         $months = [
@@ -43,7 +47,7 @@ class LandingController extends Controller
     {
         $month = $request->get('month', date('m'));
         $year = $request->get('year', date('Y'));
-        $status = $request->get('status', 'validated');
+        $status = $request->get('status', 'approved');
         
         return response()->json($this->getIncomeData($month, $year, $status));
     }
@@ -52,7 +56,7 @@ class LandingController extends Controller
     {
         $month = $request->get('month', date('m'));
         $year = $request->get('year', date('Y'));
-        $status = $request->get('status', 'validated');
+        $status = $request->get('status', 'approved');
 
         return response()->json($this->getDistributionData($month, $year, $status));
     }
@@ -66,9 +70,9 @@ class LandingController extends Controller
         return response()->json($this->getInfaqStatsData($month, $year, $wilayahId));
     }
 
-    public function getIncomeData($month, $year, $status = 'validated')
+    public function getIncomeData($month, $year, $status = 'approved')
     {
-        $query = Income::with('user')
+        $query = koin_nu_transaction::with('user')
             ->whereMonth('date', $month)
             ->whereYear('date', $year);
 
@@ -89,15 +93,15 @@ class LandingController extends Controller
             }
             return [
                 'ranting' => $rantingName,
-                'total' => $items->sum('net_income'),
+                'total' => $items->sum('pemasukan_koin_nu_kotor'),
                 'sources' => $items->pluck('status')->unique()->values()->all(),
             ];
         })->values();
 
-        $totalAll = Income::whereMonth('date', $month)
+        $totalAll = koin_nu_transaction::whereMonth('date', $month)
             ->whereYear('date', $year)
-            ->where('status', 'validated')
-            ->sum('net_income');
+            ->where('status', 'approved')
+            ->sum('pemasukan_koin_nu_kotor');
 
         return [
             'items' => $grouped,
@@ -105,9 +109,9 @@ class LandingController extends Controller
         ];
     }
 
-    public function getDistributionData($month, $year, $status = 'validated')
+    public function getDistributionData($month, $year, $status = 'approved')
     {
-        $query = Distribution::with('user')
+        $query = koin_nu_distribution::with('user')
             ->whereMonth('date', $month)
             ->whereYear('date', $year);
 
@@ -128,15 +132,15 @@ class LandingController extends Controller
             }
             return [
                 'ranting' => $rantingName,
-                'total' => $items->sum('cost_amount'),
-                'pillars' => $items->pluck('pilar_type')->unique()->values()->all(),
+                'total' => $items->sum('jumlah_pentasarufan'),
+                'pillars' => $items->pluck('jenis_pilar')->unique()->values()->all(),
             ];
         })->values();
 
-        $totalAll = Distribution::whereMonth('date', $month)
+        $totalAll = koin_nu_distribution::whereMonth('date', $month)
             ->whereYear('date', $year)
-            ->where('status', 'validated')
-            ->sum('cost_amount');
+            ->where('status', 'approved')
+            ->sum('jumlah_pentasarufan');
 
         return [
             'items' => $grouped,
@@ -147,51 +151,45 @@ class LandingController extends Controller
     public function getInfaqStatsData($month, $year, $wilayahId)
     {
         // PC Stats
-        $pcIncomeQuery = InfaqTransaction::whereHas('user', function ($q) {
-                $q->where('role', 'pc');
-            })
-            ->where('transaction_type', 'Pemasukan')
-            ->whereMonth('transaction_date', $month)
-            ->whereYear('transaction_date', $year);
+        $pcIncomeQuery = infaq_pc_transactions::query()
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year);
 
-        $pcIncome = $pcIncomeQuery->sum('gross_amount');
+        $pcIncome = $pcIncomeQuery->sum('pemasukan_infaq_kotor');
 
-        $pcExpenseQuery = InfaqTransaction::whereHas('user', function ($q) {
-                $q->where('role', 'pc');
-            })
-            ->where('transaction_type', 'Pengeluaran')
-            ->whereMonth('transaction_date', $month)
-            ->whereYear('transaction_date', $year);
+        $pcExpenseQuery = infaq_pc_distributions::query()
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year);
 
-        $pcExpense = $pcExpenseQuery->sum('gross_amount');
+        $pcExpense = $pcExpenseQuery->sum('jumlah_total_distribusi');
 
         // MWC Stats
-        $mwcIncomeQuery = InfaqTransaction::whereHas('user', function ($q) use ($wilayahId) {
-                $q->where('role', 'mwc');
-                if ($wilayahId != 'all') {
-                    $q->where('wilayah_id', $wilayahId);
-                }
-            })
-            ->where('transaction_type', 'Pemasukan')
-            ->whereMonth('transaction_date', $month)
-            ->whereYear('transaction_date', $year);
+        $mwcIncomeQuery = infaq_mwc_transactions::query()
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year);
 
-        $mwcIncome = $mwcIncomeQuery->sum('gross_amount');
+        if ($wilayahId != 'all') {
+            $mwcIncomeQuery->whereHas('user', function ($q) use ($wilayahId) {
+                $q->where('wilayah_id', $wilayahId);
+            });
+        }
 
-        $mwcExpenseQuery = InfaqTransaction::whereHas('user', function ($q) use ($wilayahId) {
-                $q->where('role', 'mwc');
-                if ($wilayahId != 'all') {
-                    $q->where('wilayah_id', $wilayahId);
-                }
-            })
-            ->where('transaction_type', 'Pengeluaran')
-            ->whereMonth('transaction_date', $month)
-            ->whereYear('transaction_date', $year);
+        $mwcIncome = $mwcIncomeQuery->sum('pemasukan_infaq_kotor');
 
-        $mwcExpense = $mwcExpenseQuery->sum('gross_amount');
+        $mwcExpenseQuery = infaq_mwc_distributions::query()
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year);
+
+        if ($wilayahId != 'all') {
+            $mwcExpenseQuery->whereHas('user', function ($q) use ($wilayahId) {
+                $q->where('wilayah_id', $wilayahId);
+            });
+        }
+
+        $mwcExpense = $mwcExpenseQuery->sum('jumlah_total_distribusi');
 
         // Debug Log
-        \Illuminate\Support\Facades\Log::info("Dashboard Infaq Stats: Month=$month, Year=$year, Wilayah=$wilayahId, PC Income=$pcIncome, PC Expense=$pcExpense, MWC Income=$mwcIncome, MWC Expense=$mwcExpense");
+        Log::info("Dashboard Infaq Stats: Month=$month, Year=$year, Wilayah=$wilayahId, PC Income=$pcIncome, PC Expense=$pcExpense, MWC Income=$mwcIncome, MWC Expense=$mwcExpense");
 
         return [
             'pc' => [

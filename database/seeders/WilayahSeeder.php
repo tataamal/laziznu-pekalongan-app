@@ -35,8 +35,8 @@ class WilayahSeeder extends Seeder
             Wilayah::create([
                 'nama_wilayah' => $nama,
                 'alamat' => 'Jl. ' . $nama,
-                'pic' => null,
-                'telp_pic' => null,
+                'pic' => 'Admin',
+                'no_telp' => '081234567890',
             ]);
         }
     }

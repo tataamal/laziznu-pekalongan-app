@@ -39,7 +39,7 @@ class RantingSeeder extends Seeder
         foreach ($list as $index => $nama) {
             DataRanting::create([
                 'wilayah_id' => $wilayahIds[$index % 3],
-                'nama' => $nama,
+                'nama_ranting' => $nama,
                 'kode_ranting' => $alphabets[$index % 26],
                 'alamat' => 'Jl. ' . $nama,
             ]);

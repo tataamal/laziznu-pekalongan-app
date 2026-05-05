@@ -68,7 +68,7 @@
                     <i class="fa-solid fa-mosque text-3xl md:text-4xl text-green-700"></i>
                 </div>
                 <h2 class="text-[#014421] text-3xl md:text-4xl font-extrabold tracking-tight">
-                    Profil LAZIZNU PC Kabupaten Pekalongan
+                    Profil LAZISNU PC Kabupaten Pekalongan
                 </h2>
             </div>
 
@@ -249,8 +249,8 @@
             
             <div class="flex flex-wrap gap-3">
                 <select id="filter-status" class="bg-white border border-zinc-200 rounded-xl px-4 py-2 text-sm font-semibold text-zinc-700 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all">
-                    <option value="validated" {{ $status == 'validated' ? 'selected' : '' }}>Validated</option>
-                    <option value="on_process" {{ $status == 'on_process' ? 'selected' : '' }}>On Process</option>
+                    <option value="approved" {{ $status == 'approved' ? 'selected' : '' }}>approved</option>
+                    <option value="pending" {{ $status == 'pending' ? 'selected' : '' }}>pending</option>
                     <option value="rejected" {{ $status == 'rejected' ? 'selected' : '' }}>Rejected</option>
                     <option value="all" {{ $status == 'all' ? 'selected' : '' }}>Semua Status</option>
                 </select>
@@ -383,11 +383,13 @@
                 <div class="mt-8 grid grid-cols-2 gap-4 text-center border-t border-zinc-50 pt-6">
                     <div>
                         <span id="mwc-ratio-income" class="block text-2xl font-black text-[#90be6d]">{{ $infaqStats['mwc']['ratio_income'] }}%</span>
-                        <span class="text-xs text-zinc-400 uppercase font-bold tracking-widest">Perolehan</span>
+                        <span class="text-xs text-zinc-400 uppercase font-bold tracking-widest">Pemasukan Infaq</span>
+                        <span id="mwc-nominal-income" class="block text-sm font-medium text-zinc-500 mt-1">Rp {{ number_format($infaqStats['mwc']['income'], 0, ',', '.') }}</span>
                     </div>
                     <div>
                         <span id="mwc-ratio-expense" class="block text-2xl font-black text-[#014421]">{{ $infaqStats['mwc']['ratio_expense'] }}%</span>
-                        <span class="text-xs text-zinc-400 uppercase font-bold tracking-widest">Pentasarufan</span>
+                        <span class="text-xs text-zinc-400 uppercase font-bold tracking-widest">Jumlah Pentasarufan</span>
+                        <span id="mwc-nominal-expense" class="block text-sm font-medium text-zinc-500 mt-1">Rp {{ number_format($infaqStats['mwc']['expense'], 0, ',', '.') }}</span>
                     </div>
                 </div>
             </div>
@@ -403,11 +405,13 @@
                 <div class="mt-8 grid grid-cols-2 gap-4 text-center border-t border-zinc-50 pt-6">
                     <div>
                         <span id="pc-ratio-income" class="block text-2xl font-black text-[#90be6d]">{{ $infaqStats['pc']['ratio_income'] }}%</span>
-                        <span class="text-xs text-zinc-400 uppercase font-bold tracking-widest">Perolehan</span>
+                        <span class="text-xs text-zinc-400 uppercase font-bold tracking-widest">Pemasukan Infaq</span>
+                        <span id="pc-nominal-income" class="block text-sm font-medium text-zinc-500 mt-1">Rp {{ number_format($infaqStats['pc']['income'], 0, ',', '.') }}</span>
                     </div>
                     <div>
                         <span id="pc-ratio-expense" class="block text-2xl font-black text-[#014421]">{{ $infaqStats['pc']['ratio_expense'] }}%</span>
-                        <span class="text-xs text-zinc-400 uppercase font-bold tracking-widest">Pentasarufan</span>
+                        <span class="text-xs text-zinc-400 uppercase font-bold tracking-widest">Jumlah Pentasarufan</span>
+                        <span id="pc-nominal-expense" class="block text-sm font-medium text-zinc-500 mt-1">Rp {{ number_format($infaqStats['pc']['expense'], 0, ',', '.') }}</span>
                     </div>
                 </div>
             </div>
@@ -423,7 +427,7 @@
                 const config = (data) => ({
                     type: 'pie',
                     data: {
-                        labels: ['Perolehan', 'Pentasarufan'],
+                        labels: ['Pemasukan Infaq', 'Jumlah Pentasarufan'],
                         datasets: [{
                             data: [data.income, data.expense],
                             backgroundColor: ['#90be6d', '#014421'],
@@ -520,12 +524,16 @@
                     mwcChart.update();
                     document.getElementById('mwc-ratio-income').innerText = infaqData.mwc.ratio_income + '%';
                     document.getElementById('mwc-ratio-expense').innerText = infaqData.mwc.ratio_expense + '%';
+                    document.getElementById('mwc-nominal-income').innerText = formatRupiah(infaqData.mwc.income);
+                    document.getElementById('mwc-nominal-expense').innerText = formatRupiah(infaqData.mwc.expense);
 
                     // Update PC Chart
                     pcChart.data.datasets[0].data = [infaqData.pc.income, infaqData.pc.expense];
                     pcChart.update();
                     document.getElementById('pc-ratio-income').innerText = infaqData.pc.ratio_income + '%';
                     document.getElementById('pc-ratio-expense').innerText = infaqData.pc.ratio_expense + '%';
+                    document.getElementById('pc-nominal-income').innerText = formatRupiah(infaqData.pc.income);
+                    document.getElementById('pc-nominal-expense').innerText = formatRupiah(infaqData.pc.expense);
                 } catch (e) { console.error(e); }
             }
 

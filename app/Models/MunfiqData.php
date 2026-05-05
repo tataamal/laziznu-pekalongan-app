@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MunfiqData extends Model
 {
-    protected $table = 'munfiq_data';
+    protected $table = 'data_munfiqs';
 
     protected $fillable = [
         'data_ranting_id',

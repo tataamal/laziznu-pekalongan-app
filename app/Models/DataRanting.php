@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class DataRanting extends Model
 {
-    protected $table = 'data_ranting';
+    protected $table = 'data_rantings';
 
     protected $fillable = [
         'wilayah_id',
-        'nama',
+        'nama_ranting',
         'kode_ranting',
+        'alamat',
     ];
 
     public function wilayah()

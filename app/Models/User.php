@@ -5,19 +5,20 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
     use Notifiable;
 
     protected $fillable = [
+        'wilayah_id',
+        'ranting_id',
         'name',
         'email',
         'password',
         'role',
-        'telpon',
-        'wilayah_id',
-        'ranting_id'
+        'no_telp'
     ];
 
     protected $hidden = [
@@ -28,7 +29,6 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -63,18 +63,25 @@ class User extends Authenticatable
         return $this->role === 'ranting';
     }
 
-    public function incomes()
+    public function koin_nu_transactions(): HasMany
     {
-        return $this->hasMany(Income::class);
+        return $this->hasMany(koin_nu_transaction::class);
     }
 
-    public function distributions()
+    public function koin_nu_distributions(): HasMany
     {
-        return $this->hasMany(Distribution::class);
+        return $this->hasMany(koin_nu_distribution::class);
     }
 
-    public function infaqTransactions()
+    public function infaq_mwc_transactions(): HasMany
     {
-        return $this->hasMany(InfaqTransaction::class);
+        return $this->hasMany(infaq_mwc_transactions::class);
     }
+
+    public function infaq_mwc_distributions(): HasMany
+    {
+        return $this->hasMany(infaq_mwc_distributions::class);
+    }
+
+
 }

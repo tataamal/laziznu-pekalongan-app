@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Wilayah extends Model
 {
-    protected $table = 'wilayah';
+    protected $table = 'wilayahs';
 
     protected $fillable = [
         'nama_wilayah',
         'alamat',
         'pic',
-        'telp_pic',
+        'no_telp',
     ];
 
     public function users(): HasMany

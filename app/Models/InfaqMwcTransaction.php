@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class infaq_mwc_transactions extends Model
+class InfaqMwcTransaction extends Model
 {
     protected $table = "infaq_mwc_transactions";
     protected $fillable = [

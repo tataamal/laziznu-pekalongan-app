@@ -7,10 +7,18 @@ use App\Models\Wilayah;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Illuminate\Support\Facades\Log;
 
-class RantingDataImport implements ToCollection, WithHeadingRow
+class RantingDataImport implements ToCollection, WithHeadingRow, WithMultipleSheets
 {
+    public function sheets(): array
+    {
+        return [
+            0 => $this,
+        ];
+    }
+
     public function collection(Collection $rows)
     {
         if ($rows->isEmpty()) {
@@ -55,7 +63,7 @@ class RantingDataImport implements ToCollection, WithHeadingRow
             
             // Check if Ranting with same name already exists in this Wilayah
             $existingRanting = DataRanting::where('wilayah_id', $wilayah->id)
-                                          ->where('nama', $namaRanting)
+                                          ->where('nama_ranting', $namaRanting)
                                           ->first();
                                           
             if ($existingRanting) {
@@ -79,7 +87,7 @@ class RantingDataImport implements ToCollection, WithHeadingRow
 
             DataRanting::create([
                 'wilayah_id' => $wilayah->id,
-                'nama' => $namaRanting,
+                'nama_ranting' => $namaRanting,
                 'alamat' => empty($alamat) ? null : $alamat,
                 'kode_ranting' => $nextKode,
             ]);

@@ -31,14 +31,14 @@ class ManagementMunfiqController extends Controller
 
     public function create()
     {
-        $rantings = DataRanting::orderBy('nama')->get();
+        $rantings = DataRanting::orderBy('nama_ranting')->get();
         return view('developer.management-munfiq.create', compact('rantings'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'data_ranting_id' => 'required|exists:data_ranting,id',
+            'data_ranting_id' => 'required|exists:data_rantings,id',
             'nama' => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:L,P',
             'alamat' => 'nullable|string',
@@ -80,19 +80,19 @@ class ManagementMunfiqController extends Controller
     public function edit(MunfiqData $management_munfiq)
     {
         $munfiq = $management_munfiq;
-        $rantings = DataRanting::orderBy('nama')->get();
+        $rantings = DataRanting::orderBy('nama_ranting')->get();
         return view('developer.management-munfiq.edit', compact('munfiq', 'rantings'));
     }
 
     public function update(Request $request, MunfiqData $management_munfiq)
     {
         $request->validate([
-            'data_ranting_id' => 'required|exists:data_ranting,id',
+            'data_ranting_id' => 'required|exists:data_rantings,id',
             'nama' => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:L,P',
             'alamat' => 'nullable|string',
             'status' => 'required|in:Aktif,Pasif',
-            'kode_kaleng' => 'required|string|max:255|unique:munfiq_data,kode_kaleng,' . $management_munfiq->id,
+            'kode_kaleng' => 'required|string|max:255|unique:data_munfiqs,kode_kaleng,' . $management_munfiq->id,
         ]);
 
         $management_munfiq->update($request->all());

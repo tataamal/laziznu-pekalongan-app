@@ -21,6 +21,7 @@ class ReportController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only(['start_date', 'end_date', 'wilayah_id', 'source_type']);
+        $filters['is_pc'] = true;
         $wilayah = Wilayah::all();
         
         $distributions = collect();
@@ -34,6 +35,7 @@ class ReportController extends Controller
     public function export(Request $request)
     {
         $filters = $request->only(['start_date', 'end_date', 'wilayah_id', 'source_type']);
+        $filters['is_pc'] = true;
         
         return Excel::download(
             new PentasarufanExport($filters), 

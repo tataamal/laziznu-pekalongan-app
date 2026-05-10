@@ -102,13 +102,13 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'wilayah_id' => 'nullable|exists:wilayahs,id',
+            'ranting_id' => 'required_if:role,ranting|nullable|exists:data_rantings,id',
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'role' => ['required', Rule::in(['pc', 'mwc', 'ranting', 'developer'])],
-            'telpon' => 'nullable|string|max:20',
-            'wilayah_id' => 'nullable|exists:wilayah,id',
-            'ranting_id' => 'required_if:role,ranting|nullable|exists:data_ranting,id',
+            'no_telp' => 'nullable|string|max:20',
         ]);
 
         if ($validated['role'] !== 'ranting') {
@@ -138,12 +138,12 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
+            'wilayah_id' => 'nullable|exists:wilayahs,id',
+            'ranting_id' => 'required_if:role,ranting|nullable|exists:data_rantings,id',
             'name' => 'required|string|max:255',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'role' => ['required', Rule::in(['pc', 'mwc', 'ranting', 'developer'])],
-            'telpon' => 'nullable|string|max:20',
-            'wilayah_id' => 'nullable|exists:wilayah,id',
-            'ranting_id' => 'required_if:role,ranting|nullable|exists:data_ranting,id',
+            'no_telp' => 'nullable|string|max:20',
         ]);
 
         if ($validated['role'] !== 'ranting') {
@@ -222,15 +222,8 @@ class UserController extends Controller
     /**
      * Download Excel template.
      */
-    public function downloadTemplate(): BinaryFileResponse
+    public function downloadTemplate()
     {
-        $path = public_path('templates/template_import_user.xlsx');
-
-        if (!file_exists($path)) {
-            // Alternatively generate a dynamic export, but static file is often requested
-            abort(404, 'Template file not found.');
-        }
-
-        return response()->download($path);
+        return Excel::download(new \App\Exports\UsersTemplateExport, 'Template_Import_User_' . time() . '.xlsx');
     }
 }

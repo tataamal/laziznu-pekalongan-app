@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class koin_nu_transaction extends Model
+class KoinNuTransaction extends Model
 {
     protected $table = "koin_nu_transactions";
 
     protected $fillable = [
         "user_id",
+        "ranting_id",
+        "wilayah_id",
         "transaction_code",
         "date",
         "jumlah_kaleng",
@@ -31,5 +33,15 @@ class koin_nu_transaction extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function ranting()
+    {
+        return $this->belongsTo(DataRanting::class);
+    }
+
+    public function wilayah()
+    {
+        return $this->belongsTo(Wilayah::class);
     }
 }

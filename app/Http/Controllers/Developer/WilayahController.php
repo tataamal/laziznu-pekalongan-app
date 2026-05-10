@@ -21,7 +21,7 @@ class WilayahController extends Controller
             $query->where('nama_wilayah', 'like', "%{$search}%")
                   ->orWhere('alamat', 'like', "%{$search}%")
                   ->orWhere('pic', 'like', "%{$search}%")
-                  ->orWhere('telp_pic', 'like', "%{$search}%");
+                  ->orWhere('no_telp', 'like', "%{$search}%");
         }
         
         $wilayahs = $query->latest()->paginate(10)->withQueryString();
@@ -35,7 +35,7 @@ class WilayahController extends Controller
             'nama_wilayah' => 'required|string|max:255|unique:wilayah,nama_wilayah',
             'alamat'       => 'nullable|string',
             'pic'          => 'nullable|string|max:255',
-            'telp_pic'     => 'nullable|string|max:20',
+            'no_telp'     => 'nullable|string|max:20',
         ]);
 
         $wilayah = Wilayah::create($validated);
@@ -54,10 +54,10 @@ class WilayahController extends Controller
     public function update(Request $request, Wilayah $wilayah)
     {
         $validated = $request->validate([
-            'nama_wilayah' => 'required|string|max:255|unique:wilayah,nama_wilayah,' . $wilayah->id,
+            'nama_wilayah' => 'required|string|max:255|unique:wilayahs,nama_wilayah,' . $wilayah->id,
             'alamat'       => 'nullable|string',
             'pic'          => 'nullable|string|max:255',
-            'telp_pic'     => 'nullable|string|max:20',
+            'no_telp'     => 'nullable|string|max:20',
         ]);
 
         $wilayah->update($validated);
@@ -163,14 +163,8 @@ class WilayahController extends Controller
     /**
      * Download Excel template.
      */
-    public function downloadTemplate(): BinaryFileResponse
+    public function downloadTemplate()
     {
-        $path = public_path('templates/template_import_wilayah.xlsx');
-        
-        if (!file_exists($path)) {
-            abort(404, 'Template file not found.');
-        }
-
-        return response()->download($path);
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\WilayahTemplateExport, 'Template_Import_Wilayah_' . time() . '.xlsx');
     }
 }

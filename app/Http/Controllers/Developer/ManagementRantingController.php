@@ -39,8 +39,9 @@ class ManagementRantingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'wilayah_id' => 'required|exists:wilayah,id',
-            'nama' => 'required|string|max:255',
+            'wilayah_id' => 'required|exists:wilayahs,id',
+            'nama_ranting' => 'required|string|max:255',
+            'alamat' => 'required|string|max:255',
         ]);
 
         $lastRanting = DataRanting::orderBy('id', 'desc')->first();
@@ -75,9 +76,9 @@ class ManagementRantingController extends Controller
     public function update(Request $request, DataRanting $management_ranting)
     {
         $request->validate([
-            'wilayah_id' => 'required|exists:wilayah,id',
-            'nama' => 'required|string|max:255',
-            'kode_ranting' => 'required|string|max:255|unique:data_ranting,kode_ranting,' . $management_ranting->id,
+            'wilayah_id' => 'required|exists:wilayahs,id',
+            'nama_ranting' => 'required|string|max:255',
+            'kode_ranting' => 'required|string|max:255|unique:data_rantings,kode_ranting,' . $management_ranting->id,
         ]);
 
         $management_ranting->update($request->all());
@@ -110,7 +111,7 @@ class ManagementRantingController extends Controller
 
     public function template()
     {
-        return Excel::download(new RantingTemplateExport, 'template-data-ranting.xlsx');
+        return Excel::download(new RantingTemplateExport, 'template-data-ranting-' . time() . '.xlsx');
     }
 
     public function import(Request $request)

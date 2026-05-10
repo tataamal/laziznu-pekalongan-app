@@ -21,9 +21,9 @@
         </div>
 
         <div>
-            <label for="nama" class="block text-sm font-medium text-zinc-700">Nama Ranting <span class="text-red-500">*</span></label>
-            <input type="text" name="nama" id="nama" value="{{ old('nama', $dataRanting->nama) }}" class="mt-1 block w-full rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 text-sm outline-none ring-0 placeholder:text-zinc-400 focus:border-green-300" required>
-            @error('nama') <span class="mt-1 block text-xs text-red-500">{{ $message }}</span> @enderror
+            <label for="nama_ranting" class="block text-sm font-medium text-zinc-700">Nama Ranting <span class="text-red-500">*</span></label>
+            <input type="text" name="nama_ranting" id="nama_ranting" value="{{ old('nama_ranting', $dataRanting->nama_ranting) }}" class="mt-1 block w-full rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 text-sm outline-none ring-0 placeholder:text-zinc-400 focus:border-green-300" required>
+            @error('nama_ranting') <span class="mt-1 block text-xs text-red-500">{{ $message }}</span> @enderror
         </div>
 
         <div>

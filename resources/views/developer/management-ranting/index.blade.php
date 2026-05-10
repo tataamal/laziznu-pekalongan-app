@@ -77,7 +77,7 @@
                             <input type="checkbox" value="{{ $ranting->id }}" class="row-checkbox h-4 w-4 rounded border-zinc-300 text-green-600 focus:ring-green-500 cursor-pointer" onchange="toggleBulkActions()">
                         </td>
                         <td class="px-5 py-4">{{ $dataRantings->firstItem() + $index }}</td>
-                        <td class="px-5 py-4 font-medium text-zinc-900">{{ $ranting->nama }}</td>
+                        <td class="px-5 py-4 font-medium text-zinc-900">{{ $ranting->nama_ranting }}</td>
                         <td class="px-5 py-4">{{ $ranting->kode_ranting }}</td>
                         <td class="px-5 py-4">{{ $ranting->wilayah->nama_wilayah ?? '-' }}</td>
                         <td class="px-5 py-4 text-right">

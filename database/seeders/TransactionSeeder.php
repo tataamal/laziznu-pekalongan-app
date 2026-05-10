@@ -5,12 +5,12 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use App\Models\koin_nu_transaction;
-use App\Models\koin_nu_distribution;
+use App\Models\KoinNuTransaction;
+use App\Models\KoinNuDistribution;
 use App\Models\infaq_pc_transactions;
 use App\Models\infaq_pc_distributions;
-use App\Models\infaq_mwc_transactions;
-use App\Models\infaq_mwc_distributions;
+use App\Models\InfaqMwcTransaction;
+use App\Models\InfaqMwcDistribution;
 use Carbon\Carbon;
 
 class TransactionSeeder extends Seeder
@@ -20,74 +20,83 @@ class TransactionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Pastikan ada user ranting untuk testing
-        $user = User::firstOrCreate(
-            ['email' => 'ranting@example.com'],
-            [
-                'name' => 'Admin Ranting A',
-                'password' => bcrypt('password'),
-                'role' => 'ranting',
-                'no_telp' => '08123456789',
-            ]
-        );
+        $user = User::where('role', 'ranting')->first();
 
-        $incomeCount = koin_nu_transaction::count();
+        if (!$user || !$user->ranting || !$user->wilayah) {
+            $this->command->warn('TransactionSeeder dilewati: user ranting tidak valid.');
+            return;
+        }
+
+        $ranting = $user->ranting;
+        $wilayah = $user->wilayah;
         $baseDate = Carbon::now()->subMonths(5);
         $jasa_petugas_per_kaleng = 1000;
+        $statuses = ['approved', 'approved', 'approved', 'pending', 'rejected'];
+        $pilars = ['NU Care Cerdas', 'NU Care Sehat', 'NU Care Hijau', 'NU Care Berdaya', 'NU Care Damai'];
+
+        $incomeCount = KoinNuTransaction::count();
 
         for ($i = 1; $i <= 15; $i++) {
             $incomeCount++;
-            $transactionCode = 'ICM' . str_pad($incomeCount, 5, '0', STR_PAD_LEFT);
-            $pemasukan_koin_nu_kotor = 100000;
-            $jumlah_kaleng = rand(1,20);
+            $jumlah_kaleng = rand(1, 20);
+            $pemasukan_koin_nu_kotor = rand(50, 200) * 1000;
             $jasa_petugas = $jasa_petugas_per_kaleng * $jumlah_kaleng;
             $pemasukan_koin_nu_bersih = $pemasukan_koin_nu_kotor - $jasa_petugas;
-            $koin_nu_for_ranting = $pemasukan_koin_nu_bersih * 0.6;
-            $koin_nu_for_mwc = $pemasukan_koin_nu_bersih * 0.35;
-            $koin_nu_for_pc = $pemasukan_koin_nu_bersih * 0.05;
-            $hak_amil_ranting = $koin_nu_for_ranting * 0.2;
-            $hak_amil_mwc = $koin_nu_for_mwc * 0.2;
-            $hak_amil_pc = $koin_nu_for_pc * 0.2;
-            $dana_dapat_digunakan_ranting = $koin_nu_for_ranting - $hak_amil_ranting;
-            $dana_dapat_digunakan_mwc = $koin_nu_for_mwc - $hak_amil_mwc;
-            $dana_dapat_digunakan_pc = $koin_nu_for_pc - $hak_amil_pc;
-            $status = 'approved';
 
-            koin_nu_transaction::create([
+            // Pembagian dengan residual allocation supaya selalu balance
+            $koin_nu_mwc = (int) round($pemasukan_koin_nu_bersih * 0.35);
+            $koin_nu_pc = (int) round($pemasukan_koin_nu_bersih * 0.05);
+            $koin_nu_ranting = $pemasukan_koin_nu_bersih - $koin_nu_mwc - $koin_nu_pc;
+
+            $hak_amil_ranting = (int) round($koin_nu_ranting * 0.2);
+            $hak_amil_mwc = (int) round($koin_nu_mwc * 0.2);
+            $hak_amil_pc = (int) round($koin_nu_pc * 0.2);
+
+            $dana_dapat_digunakan_ranting = $koin_nu_ranting - $hak_amil_ranting;
+            $dana_dapat_digunakan_mwc = $koin_nu_mwc - $hak_amil_mwc;
+            $dana_dapat_digunakan_pc = $koin_nu_pc - $hak_amil_pc;
+
+            KoinNuTransaction::create([
                 'user_id' => $user->id,
-                'transaction_code' => $transactionCode,
+                'ranting_id' => $ranting->id,
+                'wilayah_id' => $wilayah->id,
+                'transaction_code' => 'ICM' . str_pad($incomeCount, 5, '0', STR_PAD_LEFT),
                 'date' => $baseDate->copy()->addDays(rand(0, 150)),
                 'jumlah_kaleng' => $jumlah_kaleng,
                 'pemasukan_koin_nu_kotor' => $pemasukan_koin_nu_kotor,
                 'jasa_petugas' => $jasa_petugas,
                 'pemasukan_koin_nu_bersih' => $pemasukan_koin_nu_bersih,
-                'koin_nu_ranting' => $koin_nu_for_ranting,
-                'koin_nu_mwc' => $koin_nu_for_mwc,
-                'koin_nu_pc' => $koin_nu_for_pc,
+                'koin_nu_ranting' => $koin_nu_ranting,
+                'koin_nu_mwc' => $koin_nu_mwc,
+                'koin_nu_pc' => $koin_nu_pc,
                 'hak_amil_ranting' => $hak_amil_ranting,
                 'hak_amil_mwc' => $hak_amil_mwc,
                 'hak_amil_pc' => $hak_amil_pc,
                 'dana_dapat_digunakan_ranting' => $dana_dapat_digunakan_ranting,
                 'dana_dapat_digunakan_mwc' => $dana_dapat_digunakan_mwc,
                 'dana_dapat_digunakan_pc' => $dana_dapat_digunakan_pc,
-                'status' => $status,
+                'status' => $statuses[array_rand($statuses)],
             ]);
         }
 
         $pilars = ['NU Care Cerdas', 'NU Care Sehat', 'NU Care Hijau', 'NU Care Berdaya', 'NU Care Damai'];
-        
+
         // 1. Koin NU Distribution
-        $distKoinCount = koin_nu_distribution::count();
+        $distKoinCount = KoinNuDistribution::count();
         for ($i = 1; $i <= 10; $i++) {
             $distKoinCount++;
-            koin_nu_distribution::create([
+            KoinNuDistribution::create([
                 'user_id' => $user->id,
                 'distribution_code' => 'DKN' . str_pad($distKoinCount, 5, '0', STR_PAD_LEFT),
                 'date' => $baseDate->copy()->addDays(rand(0, 150)),
                 'jenis_pilar' => $pilars[array_rand($pilars)],
-                'deskripsi' => 'Pentasarufan Koin NU Ranting ' . $i,
-                'jumlah_pentasarufan' => rand(100000, 500000),
-                'jumlah_penerima_manfaat' => rand(5, 20),
+                'deskripsi' => 'Pentasarufan Koin NU ' . $i,
+                'jumlah_pentasarufan_ranting' => rand(100000, 500000),
+                'jumlah_pentasarufan_mwc' => rand(100000, 500000),
+                'jumlah_pentasarufan_pc' => rand(100000, 500000),
+                'jumlah_penerima_manfaat_ranting' => rand(5, 20),
+                'jumlah_penerima_manfaat_mwc' => rand(5, 20),
+                'jumlah_penerima_manfaat_pc' => rand(5, 20),
                 'file_dokumentasi' => 'default.jpg',
                 'status' => 'approved',
             ]);
@@ -106,8 +115,9 @@ class TransactionSeeder extends Seeder
                 $amil = $bersih * 0.2;
                 $digunakan = $bersih - $amil;
 
-                infaq_mwc_transactions::create([
+                InfaqMwcTransaction::create([
                     'user_id' => $userMwc->id,
+                    'wilayah_id' => $wilayah->id,
                     'transaction_code' => 'IMW' . str_pad($i, 5, '0', STR_PAD_LEFT),
                     'date' => $baseDate->copy()->addDays(rand(0, 150)),
                     'jenis_infaq' => 'Infaq Umum',
@@ -119,8 +129,9 @@ class TransactionSeeder extends Seeder
                     'infaq_yang_dapat_digunakan' => $digunakan,
                 ]);
 
-                infaq_mwc_distributions::create([
+                InfaqMwcDistribution::create([
                     'user_id' => $userMwc->id,
+                    'wilayah_id' => $wilayah->id,
                     'distribution_code' => 'DMW' . str_pad($i, 5, '0', STR_PAD_LEFT),
                     'date' => $baseDate->copy()->addDays(rand(0, 150)),
                     'jenis_pilar' => $pilars[array_rand($pilars)],

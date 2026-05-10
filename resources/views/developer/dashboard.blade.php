@@ -60,8 +60,8 @@
                 <h3 class="text-sm font-semibold text-zinc-900">Rekapitulasi Perolehan KOIN NU</h3>
                 <div class="flex flex-wrap gap-2">
                     <select id="filter-status" class="bg-zinc-50 border border-zinc-200 rounded-lg px-2 py-1 text-xs font-semibold text-zinc-700 focus:ring-1 focus:ring-green-500 outline-none w-24">
-                        <option value="validated" {{ $status == 'validated' ? 'selected' : '' }}>Validated</option>
-                        <option value="on_process" {{ $status == 'on_process' ? 'selected' : '' }}>On Process</option>
+                        <option value="approved" {{ $status == 'approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="pending" {{ $status == 'pending' ? 'selected' : '' }}>Pending</option>
                         <option value="rejected" {{ $status == 'rejected' ? 'selected' : '' }}>Rejected</option>
                         <option value="all" {{ $status == 'all' ? 'selected' : '' }}>Semua Status</option>
                     </select>

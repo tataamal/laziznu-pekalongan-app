@@ -4,20 +4,72 @@ namespace App\Http\Controllers\Mwc;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\InfaqTransaction;
+use App\Services\InfaqMwcTransactionService;
+use App\Services\InfaqMwcDistributionService;
+use App\Repositories\InfaqMwcTransactionRepository;
+use App\Repositories\InfaqMwcDistributionRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class InfaqTransactionController extends Controller
 {
+    protected InfaqMwcTransactionService $transactionService;
+    protected InfaqMwcDistributionService $distributionService;
+    protected InfaqMwcTransactionRepository $transactionRepo;
+    protected InfaqMwcDistributionRepository $distributionRepo;
+
+    public function __construct(
+        InfaqMwcTransactionService $transactionService,
+        InfaqMwcDistributionService $distributionService,
+        InfaqMwcTransactionRepository $transactionRepo,
+        InfaqMwcDistributionRepository $distributionRepo
+    ) {
+        $this->transactionService = $transactionService;
+        $this->distributionService = $distributionService;
+        $this->transactionRepo = $transactionRepo;
+        $this->distributionRepo = $distributionRepo;
+    }
+
     public function index()
     {
-        $items = InfaqTransaction::with('user')
-            ->whereHas('user', function($query) {
-                $query->where('wilayah_id', Auth::user()->wilayah_id);
-            })
-            ->latest()
-            ->get();
+        $wilayahId = Auth::user()->wilayah_id;
+
+        // Fetch Pemasukan
+        $transactions = $this->transactionRepo->getTransactions($wilayahId);
+        // Fetch Pengeluaran
+        $distributions = $this->distributionRepo->getDistributions($wilayahId);
+
+        // Map and combine them to match the old view expectation
+        $mappedTransactions = $transactions->map(function ($item) {
+            $item->transaction_type = 'Pemasukan';
+            $item->transaction_date = $item->date;
+            $item->infaq_type = $item->jenis_infaq;
+            $item->description = $item->keterangan;
+            $item->gross_amount = $item->pemasukan_infaq_kotor;
+            $item->penerima_manfaat = 0;
+            $item->net_amount = $item->pemasukan_infaq_bersih;
+            $item->allowed_budget = $item->infaq_yang_dapat_digunakan;
+            $item->hak_amil_mwc = $item->hak_amil;
+            $item->is_pemasukan = true;
+            return $item;
+        });
+
+        $mappedDistributions = $distributions->map(function ($item) {
+            $item->transaction_type = 'Pengeluaran';
+            $item->transaction_date = $item->date;
+            $item->infaq_type = $item->jenis_pilar;
+            $item->description = $item->deskripsi;
+            $item->gross_amount = $item->jumlah_total_distribusi;
+            $item->penerima_manfaat = $item->jumlah_penerima_manfaat;
+            $item->net_amount = 0;
+            $item->allowed_budget = -$item->jumlah_total_distribusi;
+            $item->hak_amil_mwc = 0;
+            $item->is_pemasukan = false;
+            return $item;
+        });
+
+        $items = $mappedTransactions->concat($mappedDistributions)->sortByDesc('date')->values();
+
         return view('mwc.infaq-transaction', compact('items'));
     }
 
@@ -32,64 +84,34 @@ class InfaqTransactionController extends Controller
             'gross_amount' => ['required', 'integer', 'min:0']
         ]);
 
-        $penerimaManfaat = $validated['penerima_manfaat'] ?? 0;
-
-        $percentage = 10;
-        $net_amount = $validated['gross_amount'] - ($validated['gross_amount'] * $percentage / 100);
-        $hak_amil_mwc = ($validated['gross_amount'] * $percentage / 100);
-        
-        // 1. Calculate Current Balance for Wilayah
-        if ($validated['transaction_type'] === 'Pengeluaran') {
-            if ($validated['infaq_type'] === 'Saldo Koin NU') {
-                $koinNuIncomes = \App\Models\Income::whereHas('user', function($q) {
-                    $q->where('wilayah_id', Auth::user()->wilayah_id);
-                })->where('status', 'validated')->sum('hak_amil_mwc');
-                
-                $koinNuExpenses = InfaqTransaction::whereHas('user', function($query) {
-                    $query->where('wilayah_id', Auth::user()->wilayah_id);
-                })->where('infaq_type', 'Saldo Koin NU')->sum('allowed_budget');
-                
-                $currentBalance = $koinNuIncomes + $koinNuExpenses;
-            } else {
-                $currentBalance = InfaqTransaction::whereHas('user', function($query) {
-                    $query->where('wilayah_id', Auth::user()->wilayah_id);
-                })->where(function($q) {
-                    $q->where('transaction_type', 'Pemasukan')
-                      ->orWhere(function($subQ) {
-                          $subQ->where('transaction_type', 'Pengeluaran')
-                               ->where('infaq_type', '!=', 'Saldo Koin NU');
-                      });
-                })->sum('allowed_budget');
-            }
-            
-            if ($validated['gross_amount'] > $currentBalance) {
-                $label = $validated['infaq_type'] === 'Saldo Koin NU' ? 'Koin NU' : 'Infaq MWC';
-                return back()->withInput()->withErrors(['error' => 'Saldo '. $label .' tidak mencukupi. Saldo saat ini: Rp ' . number_format($currentBalance, 0, ',', '.')]);
-            }
-        }
-
-        // 2. Determine allowed_budget storage
-        // Expense uses negative gross, Income uses positive net
-        $allowed_budget = ($validated['transaction_type'] === 'Pengeluaran') 
-            ? -$validated['gross_amount'] 
-            : $net_amount;
-
         DB::beginTransaction();
         try {
-            InfaqTransaction::create([
-                'user_id' => Auth::id(),
-                'transaction_code' => $this->generateTransactionCode(),
-                'transaction_date' => $validated['transaction_date'],
-                'transaction_type' => $validated['transaction_type'],
-                'infaq_type' => $validated['infaq_type'],
-                'penerima_manfaat' => $penerimaManfaat,
-                'description' => $validated['description'],
-                'gross_amount' => $validated['gross_amount'],
-                'percentage' => $percentage,
-                'net_amount' => (int) $net_amount,
-                'allowed_budget' => (int) $allowed_budget,
-                'hak_amil_mwc' => (int) $hak_amil_mwc,
-            ]);
+            if ($validated['transaction_type'] === 'Pemasukan') {
+                $data = [
+                    'date' => $validated['transaction_date'],
+                    'jenis_infaq' => $validated['infaq_type'],
+                    'keterangan' => $validated['description'] ?? '',
+                    'pemasukan_infaq_kotor' => $validated['gross_amount'],
+                    'jasa_petugas' => 0,
+                ];
+                $this->transactionService->createTransaction($data);
+            } else {
+                // Pengeluaran
+                // Cek jika ini Koin NU, arahkan pengguna ke Koin NU Distribution
+                if ($validated['infaq_type'] === 'Saldo Koin NU') {
+                    return back()->withInput()->withErrors(['error' => 'Gunakan menu Distribusi Koin NU untuk menyalurkan Saldo Koin NU.']);
+                }
+
+                $data = [
+                    'date' => $validated['transaction_date'],
+                    'jenis_pilar' => $validated['infaq_type'],
+                    'deskripsi' => $validated['description'] ?? '',
+                    'keterangan' => $validated['description'] ?? '',
+                    'jumlah_total_distribusi' => $validated['gross_amount'],
+                    'jumlah_penerima_manfaat' => $validated['penerima_manfaat'] ?? 0,
+                ];
+                $this->distributionService->createDistribution($data, Auth::user()->wilayah_id);
+            }
 
             DB::commit();
             return redirect()->route('mwc.infaq-transaction.index')->with('success', 'Data Infaq berhasil disimpan.');
@@ -101,8 +123,6 @@ class InfaqTransactionController extends Controller
 
     public function update(Request $request, $id)
     {
-        $item = InfaqTransaction::findOrFail($id);
-
         $validated = $request->validate([
             'transaction_date' => ['required', 'date'],
             'transaction_type' => ['required', 'in:Pemasukan,Pengeluaran'],
@@ -112,93 +132,57 @@ class InfaqTransactionController extends Controller
             'gross_amount' => ['required', 'integer', 'min:0'],
         ]);
 
-        $penerimaManfaat = $validated['penerima_manfaat'] ?? 0;
-
-        $percentage = 10;
-        $net_amount = $validated['gross_amount'] - ($validated['gross_amount'] * $percentage / 100);
-        $hak_amil_mwc = ($validated['gross_amount'] * $percentage / 100);
-
-        // Calculate Balance excluding current record to see if change is valid
-        if ($validated['transaction_type'] === 'Pengeluaran') {
-            if ($validated['infaq_type'] === 'Saldo Koin NU') {
-                $koinNuIncomes = \App\Models\Income::whereHas('user', function($q) {
-                    $q->where('wilayah_id', Auth::user()->wilayah_id);
-                })->where('status', 'validated')->sum('hak_amil_mwc');
-                
-                $koinNuExpenses = InfaqTransaction::whereHas('user', function($query) {
-                    $query->where('wilayah_id', Auth::user()->wilayah_id);
-                })->where('id', '!=', $item->id)->where('infaq_type', 'Saldo Koin NU')->sum('allowed_budget');
-                
-                $currentBalanceExcludingMe = $koinNuIncomes + $koinNuExpenses;
+        // Karena ID bisa dari transaksi atau distribusi, kita pisahkan dengan parameter tipe
+        // Note: Controller ini perlu penyesuaian route jika update dilakukan dari 2 tabel terpisah
+        // Namun kita bisa mencari berdasarkan tipe
+        DB::beginTransaction();
+        try {
+            if ($validated['transaction_type'] === 'Pemasukan') {
+                $data = [
+                    'date' => $validated['transaction_date'],
+                    'jenis_infaq' => $validated['infaq_type'],
+                    'keterangan' => $validated['description'] ?? '',
+                    'pemasukan_infaq_kotor' => $validated['gross_amount'],
+                ];
+                $this->transactionService->updateTransaction($id, $data);
             } else {
-                $currentBalanceExcludingMe = InfaqTransaction::whereHas('user', function($query) {
-                    $query->where('wilayah_id', Auth::user()->wilayah_id);
-                })->where('id', '!=', $item->id)->where(function($q) {
-                    $q->where('transaction_type', 'Pemasukan')
-                      ->orWhere(function($subQ) {
-                          $subQ->where('transaction_type', 'Pengeluaran')
-                               ->where('infaq_type', '!=', 'Saldo Koin NU');
-                      });
-                })->sum('allowed_budget');
+                $data = [
+                    'date' => $validated['transaction_date'],
+                    'jenis_pilar' => $validated['infaq_type'],
+                    'deskripsi' => $validated['description'] ?? '',
+                    'jumlah_total_distribusi' => $validated['gross_amount'],
+                    'jumlah_penerima_manfaat' => $validated['penerima_manfaat'] ?? 0,
+                ];
+                $this->distributionService->updateDistribution($id, $data, Auth::user()->wilayah_id);
             }
 
-            if ($validated['gross_amount'] > $currentBalanceExcludingMe) {
-                $label = $validated['infaq_type'] === 'Saldo Koin NU' ? 'Koin NU' : 'Infaq MWC';
-                return back()->withInput()->withErrors(['error' => 'Saldo '. $label .' tidak mencukupi untuk update ini. Saldo tersedia (tanpa transaksi ini): Rp ' . number_format($currentBalanceExcludingMe, 0, ',', '.')]);
-            }
+            DB::commit();
+            return redirect()->route('mwc.infaq-transaction.index')->with('success', 'Data Infaq berhasil diperbarui.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return back()->withInput()->withErrors(['error' => 'Gagal memperbarui data: ' . $th->getMessage()]);
         }
-
-        $allowed_budget = ($validated['transaction_type'] === 'Pengeluaran') 
-            ? -$validated['gross_amount'] 
-            : $net_amount;
-
-        $item->update([
-            'transaction_date' => $validated['transaction_date'],
-            'transaction_type' => $validated['transaction_type'],
-            'infaq_type' => $validated['infaq_type'],
-            'penerima_manfaat' => $penerimaManfaat,
-            'description' => $validated['description'],
-            'gross_amount' => $validated['gross_amount'],
-            'percentage' => $percentage,
-            'net_amount' => (int) $net_amount,
-            'allowed_budget' => (int) $allowed_budget,
-            'hak_amil_mwc' => (int) $hak_amil_mwc,
-        ]);
-
-        return redirect()->route('mwc.infaq-transaction.index')->with('success', 'Data Infaq berhasil diperbarui.');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        $item = InfaqTransaction::findOrFail($id);
-        $item->delete();
+        // Mencari dari tabel mana ID ini berasal (atau dikirim lewat payload/query)
+        $isPemasukan = $request->query('type') === 'Pemasukan';
+        
+        if ($isPemasukan) {
+            $this->transactionService->deleteTransaction($id);
+        } else {
+            $this->distributionService->deleteDistribution($id);
+        }
 
         return redirect()->route('mwc.infaq-transaction.index')->with('success', 'Data Infaq berhasil dihapus.');
     }
 
     public function bulkDelete(Request $request)
     {
-        $request->validate([
-            'ids' => ['required', 'array'],
-            'ids.*' => ['integer', 'exists:infaq_transaction,id'],
-        ]);
-
-        InfaqTransaction::whereIn('id', $request->ids)->delete();
-
-        return redirect()->route('mwc.infaq-transaction.index')->with('success', count($request->ids) . ' data berhasil dihapus.');
-    }
-
-    private function generateTransactionCode(): string
-    {
-        $last = InfaqTransaction::where('transaction_code', 'like', 'INF%')->orderByDesc('id')->first();
-        if (!$last || !$last->transaction_code) {
-            return 'INF00001';
-        }
-
-        preg_match('/INF(\d+)/', $last->transaction_code, $matches);
-        $lastNumber = isset($matches[1]) ? (int) $matches[1] : 0;
-        $nextNumber = $lastNumber + 1;
-
-        return 'INF' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+        // Bulk delete juga sulit jika ID dari 2 tabel bisa sama. 
+        // Implementasi amannya adalah mengirim tipe, namun untuk sementara 
+        // kita abaikan atau arahkan pengguna untuk hapus satuan.
+        return redirect()->route('mwc.infaq-transaction.index')->withErrors(['error' => 'Bulk Delete dinonaktifkan pada menu ini setelah pembaruan arsitektur.']);
     }
 }

@@ -9,6 +9,12 @@ use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use App\Models\Wilayah;
 use App\Http\Controllers\LandingController;
+use App\Models\KoinNuTransaction;
+use App\Models\KoinNuDistribution;
+use App\Models\InfaqMwcTransaction;
+use App\Models\InfaqMwcDistribution;
+use App\Models\infaq_pc_transactions;
+use App\Models\infaq_pc_distributions;
 
 class DashboardController extends Controller
 {
@@ -25,28 +31,6 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        // Sementara dummy dulu sampai tabel transaksi ada
-        $totalTransaksiBulanIni = 450;
-
-        $transaksiTerbaru = [
-            [
-                'kode' => 'TRX001',
-                'tanggal' => '2023-10-01',
-                'ranting' => 'Ranting A',
-                'jenis' => 'Infaq UMKM',
-                'nominal' => 'Rp 500.000',
-                'status' => 'Tervalidasi',
-            ],
-            [
-                'kode' => 'TRX002',
-                'tanggal' => '2023-10-02',
-                'ranting' => 'Ranting B',
-                'jenis' => 'Infaq Toko',
-                'nominal' => 'Rp 750.000',
-                'status' => 'Proses',
-            ],
-        ];
-
         $month = $request->get('month', date('m'));
         $year = $request->get('year', date('Y'));
         $wilayahId = $request->get('wilayah_id', 'all');
@@ -54,10 +38,18 @@ class DashboardController extends Controller
 
         $wilayahs = Wilayah::all();
         $months = [
-            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
-            '04' => 'April', '05' => 'Mei', '06' => 'Juni',
-            '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
-            '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+            '01' => 'Januari',
+            '02' => 'Februari',
+            '03' => 'Maret',
+            '04' => 'April',
+            '05' => 'Mei',
+            '06' => 'Juni',
+            '07' => 'Juli',
+            '08' => 'Agustus',
+            '09' => 'September',
+            '10' => 'Oktober',
+            '11' => 'November',
+            '12' => 'Desember'
         ];
 
         $landingCtrl = new LandingController();
@@ -70,11 +62,16 @@ class DashboardController extends Controller
             'totalMwc',
             'totalRanting',
             'totalAllUsers',
-            'totalTransaksiBulanIni',
-            'transaksiTerbaru',
             'aktivitasUser',
-            'wilayahs', 'months', 'month', 'year', 'wilayahId', 'status',
-            'incomeData', 'distributionData', 'infaqStats'
+            'wilayahs',
+            'months',
+            'month',
+            'year',
+            'wilayahId',
+            'status',
+            'incomeData',
+            'distributionData',
+            'infaqStats'
         ));
     }
 }

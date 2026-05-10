@@ -97,7 +97,7 @@
                         </td>
                         <td class="px-5 py-4">
                             <div>{{ $user->wilayah->nama_wilayah ?? '-' }}</div>
-                            <div class="text-xs text-zinc-500">{{ $user->ranting->nama ?? '-' }}</div>
+                            <div class="text-xs text-zinc-500">{{ $user->ranting->nama_ranting ?? '-' }}</div>
                         </td>
                         <td class="px-5 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
@@ -164,13 +164,13 @@
                     </div>
                     <div>
                         <label class="mb-1 block text-sm font-medium text-zinc-700">No. Telpon</label>
-                        <input type="text" name="telpon" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
+                        <input type="text" name="no_telp" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="mb-1 block text-sm font-medium text-zinc-700">Wilayah</label>
-                        <select name="wilayah_id" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
+                        <select name="wilayah_id" id="create_wilayah_id" onchange="filterRanting('create')" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
                             <option value="">Pilih Wilayah (Opsional)</option>
                             @foreach($wilayahs as $wilayah)
                                 <option value="{{ $wilayah->id }}">{{ $wilayah->nama_wilayah }}</option>
@@ -182,7 +182,7 @@
                         <select name="ranting_id" id="create_ranting_id" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
                             <option value="">Pilih Ranting</option>
                             @foreach($rantings as $ranting)
-                                <option value="{{ $ranting->id }}">{{ $ranting->nama }}</option>
+                                <option value="{{ $ranting->id }}" data-wilayah="{{ $ranting->wilayah_id }}">{{ $ranting->nama_ranting }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -236,7 +236,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="mb-1 block text-sm font-medium text-zinc-700">Wilayah</label>
-                        <select name="wilayah_id" id="edit_wilayah_id" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
+                        <select name="wilayah_id" id="edit_wilayah_id" onchange="filterRanting('edit')" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
                             <option value="">Pilih Wilayah (Opsional)</option>
                             @foreach($wilayahs as $wilayah)
                                 <option value="{{ $wilayah->id }}">{{ $wilayah->nama_wilayah }}</option>
@@ -248,7 +248,7 @@
                         <select name="ranting_id" id="edit_ranting_id" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
                             <option value="">Pilih Ranting</option>
                             @foreach($rantings as $ranting)
-                                <option value="{{ $ranting->id }}">{{ $ranting->nama }}</option>
+                                <option value="{{ $ranting->id }}" data-wilayah="{{ $ranting->wilayah_id }}">{{ $ranting->nama_ranting }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -425,7 +425,34 @@
             document.getElementById('edit_ranting_id').value = user.ranting_id || '';
             
             toggleRantingVisibility('edit');
+            filterRanting('edit');
+            document.getElementById('edit_ranting_id').value = user.ranting_id || '';
             document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function filterRanting(prefix) {
+            const wilayahId = document.getElementById(prefix + '_wilayah_id').value;
+            const rantingSelect = document.getElementById(prefix + '_ranting_id');
+            const options = rantingSelect.querySelectorAll('option');
+
+            options.forEach(option => {
+                if (option.value === '') {
+                    option.style.display = 'block';
+                    return;
+                }
+                const optionWilayahId = option.getAttribute('data-wilayah');
+                if (!wilayahId || optionWilayahId === wilayahId) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+
+            // Reset selection if the currently selected option is hidden
+            const selectedOption = rantingSelect.options[rantingSelect.selectedIndex];
+            if (selectedOption && selectedOption.style.display === 'none') {
+                rantingSelect.value = '';
+            }
         }
 
         function openDeleteModal(id) {

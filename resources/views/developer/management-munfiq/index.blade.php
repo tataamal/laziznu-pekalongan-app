@@ -81,7 +81,7 @@
                         <td class="px-5 py-4">{{ $munfiqs->firstItem() + $index }}</td>
                         <td class="px-5 py-4 font-mono font-medium text-zinc-900">{{ $munfiq->kode_kaleng }}</td>
                         <td class="px-5 py-4 font-medium text-zinc-900">{{ $munfiq->nama }}</td>
-                        <td class="px-5 py-4">{{ $munfiq->data_ranting->nama ?? '-' }}</td>
+                        <td class="px-5 py-4">{{ $munfiq->data_ranting->nama_ranting ?? '-' }}</td>
                         <td class="px-5 py-4">{{ $munfiq->jenis_kelamin }}</td>
                         <td class="px-5 py-4">
                             @if($munfiq->status === 'Aktif')

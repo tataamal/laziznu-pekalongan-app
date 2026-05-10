@@ -37,12 +37,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/developer/dashboard', [DashboardController::class, 'index'])->name('developer.dashboard');
         Route::post('developer/users/bulk-update-wilayah', [UserController::class, 'bulkUpdateWilayah'])->name('developer.users.bulk-update-wilayah');
         Route::post('developer/users/bulk-delete', [UserController::class, 'bulkDelete'])->name('developer.users.bulk-delete');
-        Route::resource('developer/users', UserController::class)->names('developer.users');
+        Route::get('developer/users-template-download', [UserController::class, 'downloadTemplate'])->name('developer.users.template');
         Route::post('developer/users/import', [UserController::class, 'import'])->name('developer.users.import');
-        Route::get('developer/users/template/download', [UserController::class, 'downloadTemplate'])->name('developer.users.template');
+        Route::resource('developer/users', UserController::class)->names('developer.users');
         Route::post('developer/wilayah/bulk-delete', [WilayahController::class, 'bulkDelete'])->name('developer.wilayah.bulk-delete');
         Route::post('developer/wilayah/import', [WilayahController::class, 'import'])->name('developer.wilayah.import');
-        Route::get('developer/wilayah/template/download', [WilayahController::class, 'downloadTemplate'])->name('developer.wilayah.template');
+        Route::get('developer/wilayah-template-download', [WilayahController::class, 'downloadTemplate'])->name('developer.wilayah.template');
         Route::resource('developer/wilayah', WilayahController::class)->names('developer.wilayah');
         Route::post('developer/management-ranting/import', [ManagementRantingController::class, 'import'])->name('developer.management-ranting.import');
         Route::get('developer/management-ranting/template', [ManagementRantingController::class, 'template'])->name('developer.management-ranting.template');

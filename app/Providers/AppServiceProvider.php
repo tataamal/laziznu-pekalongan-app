@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Models\KoinNuTransaction;
+use App\Observers\KoinNuTransactionObserver;
+use App\Repositories\KoinNuTransactionRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -11,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(KoinNuTransactionRepository::class);
     }
 
     /**
@@ -19,6 +22,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        KoinNuTransaction::observe(KoinNuTransactionObserver::class);
     }
 }

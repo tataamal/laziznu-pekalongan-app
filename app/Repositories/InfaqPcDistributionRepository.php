@@ -1,0 +1,91 @@
+<?php
+
+namespace App\Repositories;
+
+use App\Models\InfaqPcDistribution;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
+
+class InfaqPcDistributionRepository
+{
+    private const CACHE_TTL = 900;
+
+    private function getCacheVersion(): int
+    {
+        return (int) Cache::rememberForever("cache_version:infaq_pc_dist", fn() => 1);
+    }
+
+    public function bumpCacheVersion(): void
+    {
+        $key = "cache_version:infaq_pc_dist";
+
+        if (!Cache::has($key)) {
+            Cache::forever($key, 1);
+            return;
+        }
+
+        Cache::increment($key);
+    }
+
+    public function getDistributions(
+        ?string $jenisPilar = null,
+        ?string $startDate = null,
+        ?string $endDate = null
+    ): Collection {
+        return InfaqPcDistribution::query()
+            ->when($jenisPilar, fn($q) => $q->where('jenis_pilar', $jenisPilar))
+            ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
+            ->orderByDesc('date')
+            ->get();
+    }
+
+    // ============================================================
+    // CRUD METHODS
+    // ============================================================
+
+    public function findById(int $id): ?InfaqPcDistribution
+    {
+        return InfaqPcDistribution::find($id);
+    }
+
+    public function create(array $data): InfaqPcDistribution
+    {
+        $distribution = InfaqPcDistribution::create($data);
+        $this->bumpCacheVersion();
+        return $distribution;
+    }
+
+    public function update(int $id, array $data): bool
+    {
+        $distribution = $this->findById($id);
+        if (!$distribution) {
+            return false;
+        }
+
+        $updated = $distribution->update($data);
+
+        if ($updated) {
+            $this->bumpCacheVersion();
+        }
+
+        return $updated;
+    }
+
+    public function delete(int $id): bool
+    {
+        $distribution = $this->findById($id);
+        if (!$distribution) {
+            return false;
+        }
+
+        $deleted = $distribution->delete();
+
+        if ($deleted) {
+            $this->bumpCacheVersion();
+        }
+
+        return $deleted;
+    }
+}

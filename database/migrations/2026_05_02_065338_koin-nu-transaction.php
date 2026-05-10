@@ -12,7 +12,9 @@ return new class extends Migration {
     {
         Schema::create("koin_nu_transactions", function (Blueprint $table) {
             $table->id();
-            $table->foreignId("user_id")->constrained("users")->onDelete("cascade");
+            $table->foreignId("user_id")->constrained("users")->restrictOnDelete();
+            $table->foreignId("ranting_id")->nullable()->constrained("data_rantings")->nullOnDelete();
+            $table->foreignId("wilayah_id")->nullable()->constrained("wilayahs")->nullOnDelete();
             $table->string("transaction_code")->unique();
             $table->date("date");
             $table->integer("jumlah_kaleng");
@@ -29,6 +31,13 @@ return new class extends Migration {
             $table->integer("hak_amil_mwc");
             $table->integer("hak_amil_pc");
             $table->enum("status", ["pending", "approved", "rejected"])->default("pending");
+
+            // Indexes for reporting & filtering
+            $table->index(["ranting_id", "date"]);
+            $table->index(["wilayah_id", "date"]);
+            $table->index(["user_id", "date"]);
+            $table->index(["status", "date"]);
+
             $table->timestamps();
         });
     }

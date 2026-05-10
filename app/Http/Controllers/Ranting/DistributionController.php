@@ -4,16 +4,26 @@ namespace App\Http\Controllers\Ranting;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Distribution;
-use App\Models\Income;
+use App\Services\KoinNuDistributionService;
+use App\Repositories\KoinNuDistributionRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class DistributionController extends Controller
 {
+    protected KoinNuDistributionService $service;
+    protected KoinNuDistributionRepository $repository;
+
+    public function __construct(KoinNuDistributionService $service, KoinNuDistributionRepository $repository)
+    {
+        $this->service = $service;
+        $this->repository = $repository;
+    }
+
     public function index()
     {
-        $items = Distribution::latest()->get();
+        $rantingId = Auth::user()->ranting_id;
+        $items = $this->repository->getDistributionsRanting($rantingId);
 
         return view('ranting.distribution.index', compact('items'));
     }
@@ -26,40 +36,32 @@ class DistributionController extends Controller
             'pilar_type' => ['required', 'string'],
             'cost_amount' => ['required', 'integer', 'min:0'],
             'penerima_manfaat' => ['required', 'integer', 'min:0'],
-            'documentation_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'documentation_file' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
-
-        $totalAllowed = Income::where('user_id', Auth::id())->sum('allowed_budget');
-        $totalSpent = Distribution::where('user_id', Auth::id())->sum('cost_amount');
-
-        if (($totalSpent + $validated['cost_amount']) > $totalAllowed) {
-            $remaining = max($totalAllowed - $totalSpent, 0);
-            return back()
-                ->withInput()
-                ->withErrors(['error' => 'Saldo tidak mencukupi. Sisa saldo yang dapat digunakan: Rp ' . number_format($remaining, 0, ',', '.')]);
-        }
 
         DB::beginTransaction();
 
         try {
             $data = [
-                'user_id' => Auth::id(),
-                'transaction_code' => $this->generateTransactionCode(),
                 'date' => $validated['date'],
-                'event_name' => $validated['event_name'],
-                'pilar_type' => $validated['pilar_type'],
-                'cost_amount' => $validated['cost_amount'],
-                'penerima_manfaat' => $validated['penerima_manfaat'],
-                'status' => 'on_process',
+                'deskripsi' => $validated['event_name'],
+                'jenis_pilar' => $validated['pilar_type'],
+                'jumlah_pentasarufan_ranting' => $validated['cost_amount'],
+                'jumlah_pentasarufan_mwc' => 0,
+                'jumlah_pentasarufan_pc' => 0,
+                'jumlah_penerima_manfaat_ranting' => $validated['penerima_manfaat'],
+                'jumlah_penerima_manfaat_mwc' => 0,
+                'jumlah_penerima_manfaat_pc' => 0,
             ];
 
             if ($request->hasFile('documentation_file')) {
-                $data['documentation_file'] = $this->saveDocumentationFile(
+                $data['file_dokumentasi'] = $this->saveDocumentationFile(
                     $request->file('documentation_file')
                 );
             }
 
-            Distribution::create($data);
+            $rantingId = Auth::user()->ranting_id;
+            $this->service->createDistribution($data, $rantingId);
 
             DB::commit();
 
@@ -77,9 +79,9 @@ class DistributionController extends Controller
 
     public function update(Request $request, $id)
     {
-        $item = Distribution::findOrFail($id);
+        $item = $this->repository->findById($id);
 
-        if ($item->status === 'validated') {
+        if ($item->status === 'approved') {
             return redirect()
                 ->route('ranting.distribution.index')
                 ->withErrors(['error' => 'Data sudah divalidasi, tidak dapat diubah.']);
@@ -94,38 +96,27 @@ class DistributionController extends Controller
             'documentation_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
-        $totalAllowed = Income::where('user_id', Auth::id())->sum('allowed_budget');
-        $totalSpent = Distribution::where('user_id', Auth::id())
-            ->where('id', '!=', $id)
-            ->sum('cost_amount');
-
-        if (($totalSpent + $validated['cost_amount']) > $totalAllowed) {
-            $remaining = max($totalAllowed - $totalSpent, 0);
-            return back()
-                ->withInput()
-                ->withErrors(['error' => 'Saldo tidak mencukupi. Sisa saldo yang dapat digunakan: Rp ' . number_format($remaining, 0, ',', '.')]);
-        }
-
         DB::beginTransaction();
 
         try {
             $data = [
                 'date' => $validated['date'],
-                'event_name' => $validated['event_name'],
-                'pilar_type' => $validated['pilar_type'],
-                'cost_amount' => $validated['cost_amount'],
-                'penerima_manfaat' => $validated['penerima_manfaat'],
+                'deskripsi' => $validated['event_name'],
+                'jenis_pilar' => $validated['pilar_type'],
+                'jumlah_pentasarufan_ranting' => $validated['cost_amount'],
+                'jumlah_penerima_manfaat_ranting' => $validated['penerima_manfaat'],
             ];
 
             if ($request->hasFile('documentation_file')) {
-                $this->deleteDocumentationFile($item->documentation_file);
+                $this->deleteDocumentationFile($item->file_dokumentasi);
 
-                $data['documentation_file'] = $this->saveDocumentationFile(
+                $data['file_dokumentasi'] = $this->saveDocumentationFile(
                     $request->file('documentation_file')
                 );
             }
 
-            $item->update($data);
+            $rantingId = Auth::user()->ranting_id;
+            $this->service->updateDistribution($id, $data, $rantingId);
 
             DB::commit();
 
@@ -143,17 +134,17 @@ class DistributionController extends Controller
 
     public function destroy($id)
     {
-        $item = Distribution::findOrFail($id);
+        $item = $this->repository->findById($id);
 
-        if ($item->status === 'validated') {
+        if ($item->status === 'approved') {
             return redirect()
                 ->route('ranting.distribution.index')
                 ->withErrors(['error' => 'Data sudah divalidasi, tidak dapat dihapus.']);
         }
 
-        $this->deleteDocumentationFile($item->documentation_file);
+        $this->deleteDocumentationFile($item->file_dokumentasi);
 
-        $item->delete();
+        $this->service->deleteDistribution($id);
 
         return redirect()
             ->route('ranting.distribution.index')
@@ -164,26 +155,27 @@ class DistributionController extends Controller
     {
         $request->validate([
             'ids' => ['required', 'array'],
-            'ids.*' => ['integer', 'exists:distributions,id'],
+            'ids.*' => ['integer', 'exists:koin_nu_distributions,id'],
         ]);
 
-        $items = Distribution::whereIn('id', $request->ids)
-            ->where('status', '!=', 'validated')
-            ->get();
-
-        foreach ($items as $item) {
-            $this->deleteDocumentationFile($item->documentation_file);
-            $item->delete();
+        $deletedCount = 0;
+        foreach ($request->ids as $id) {
+            $item = $this->repository->findById($id);
+            if ($item && $item->status !== 'approved') {
+                $this->deleteDocumentationFile($item->file_dokumentasi);
+                $this->service->deleteDistribution($id);
+                $deletedCount++;
+            }
         }
 
         return redirect()
             ->route('ranting.distribution.index')
-            ->with('success', count($items) . ' data berhasil dihapus.');
+            ->with('success', $deletedCount . ' data berhasil dihapus.');
     }
 
     private function saveDocumentationFile($file): string
     {
-        $basePath = env('UPLOAD_PUBLIC_PATH');
+        $basePath = env('UPLOAD_PUBLIC_PATH', public_path());
         $destination = rtrim($basePath, '/') . '/distributions';
     
         if (!file_exists($destination)) {
@@ -232,30 +224,11 @@ class DistributionController extends Controller
             return;
         }
     
-        $basePath = env('UPLOAD_PUBLIC_PATH');
+        $basePath = env('UPLOAD_PUBLIC_PATH', public_path());
         $fullPath = rtrim($basePath, '/') . '/' . ltrim($path, '/');
     
         if (file_exists($fullPath)) {
             @unlink($fullPath);
         }
     }
-
-    private function generateTransactionCode(): string
-    {
-        $last = Distribution::where('transaction_code', 'like', 'DST%')->orderByDesc('id')->first();
-
-        if (!$last || !$last->transaction_code) {
-            return 'DST00001';
-        }
-
-        preg_match('/DST(\d+)/', $last->transaction_code, $matches);
-
-        $lastNumber = isset($matches[1]) ? (int) $matches[1] : 0;
-        $nextNumber = $lastNumber + 1;
-
-        $digitLength = max(5, strlen((string) $nextNumber));
-
-        return 'DST' . str_pad($nextNumber, $digitLength, '0', STR_PAD_LEFT);
-    }
-    
 }

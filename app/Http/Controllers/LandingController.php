@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\koin_nu_transaction;
-use App\Models\koin_nu_distribution;
+use App\Models\KoinNuTransaction;
+use App\Models\KoinNuDistribution;
 use App\Models\infaq_pc_transactions;
 use App\Models\infaq_pc_distributions;
-use App\Models\infaq_mwc_transactions;
-use App\Models\infaq_mwc_distributions;
+use App\Models\InfaqMwcTransaction;
+use App\Models\InfaqMwcDistribution;
 use App\Models\Wilayah;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -26,10 +26,18 @@ class LandingController extends Controller
 
         $wilayahs = Wilayah::all();
         $months = [
-            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
-            '04' => 'April', '05' => 'Mei', '06' => 'Juni',
-            '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
-            '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+            '01' => 'Januari',
+            '02' => 'Februari',
+            '03' => 'Maret',
+            '04' => 'April',
+            '05' => 'Mei',
+            '06' => 'Juni',
+            '07' => 'Juli',
+            '08' => 'Agustus',
+            '09' => 'September',
+            '10' => 'Oktober',
+            '11' => 'November',
+            '12' => 'Desember'
         ];
 
         // Initial data for view
@@ -38,8 +46,15 @@ class LandingController extends Controller
         $infaqStats = $this->getInfaqStatsData($month, $year, $wilayahId);
 
         return view('dashboard', compact(
-            'wilayahs', 'months', 'month', 'year', 'wilayahId', 'status',
-            'incomeData', 'distributionData', 'infaqStats'
+            'wilayahs',
+            'months',
+            'month',
+            'year',
+            'wilayahId',
+            'status',
+            'incomeData',
+            'distributionData',
+            'infaqStats'
         ));
     }
 
@@ -48,7 +63,7 @@ class LandingController extends Controller
         $month = $request->get('month', date('m'));
         $year = $request->get('year', date('Y'));
         $status = $request->get('status', 'approved');
-        
+
         return response()->json($this->getIncomeData($month, $year, $status));
     }
 
@@ -72,7 +87,7 @@ class LandingController extends Controller
 
     public function getIncomeData($month, $year, $status = 'approved')
     {
-        $query = koin_nu_transaction::with('user')
+        $query = KoinNuTransaction::with('user')
             ->whereMonth('date', $month)
             ->whereYear('date', $year);
 
@@ -83,7 +98,7 @@ class LandingController extends Controller
         $incomes = $query->orderBy('date', 'desc')->get();
 
         // Group by user (Ranting)
-        $grouped = $incomes->groupBy(function($item) use ($status) {
+        $grouped = $incomes->groupBy(function ($item) use ($status) {
             return $status === 'all' ? $item->user_id . '_' . $item->status : $item->user_id;
         })->map(function ($items) use ($status) {
             $user = $items->first()->user;
@@ -98,7 +113,7 @@ class LandingController extends Controller
             ];
         })->values();
 
-        $totalAll = koin_nu_transaction::whereMonth('date', $month)
+        $totalAll = KoinNuTransaction::whereMonth('date', $month)
             ->whereYear('date', $year)
             ->where('status', 'approved')
             ->sum('pemasukan_koin_nu_kotor');
@@ -111,7 +126,7 @@ class LandingController extends Controller
 
     public function getDistributionData($month, $year, $status = 'approved')
     {
-        $query = koin_nu_distribution::with('user')
+        $query = KoinNuDistribution::with('user')
             ->whereMonth('date', $month)
             ->whereYear('date', $year);
 
@@ -122,7 +137,7 @@ class LandingController extends Controller
         $distributions = $query->orderBy('date', 'desc')->get();
 
         // Group by user (Ranting)
-        $grouped = $distributions->groupBy(function($item) use ($status) {
+        $grouped = $distributions->groupBy(function ($item) use ($status) {
             return $status === 'all' ? $item->user_id . '_' . $item->status : $item->user_id;
         })->map(function ($items) use ($status) {
             $user = $items->first()->user;
@@ -132,15 +147,15 @@ class LandingController extends Controller
             }
             return [
                 'ranting' => $rantingName,
-                'total' => $items->sum('jumlah_pentasarufan'),
+                'total' => $items->sum('jumlah_pentasarufan_ranting'),
                 'pillars' => $items->pluck('jenis_pilar')->unique()->values()->all(),
             ];
         })->values();
 
-        $totalAll = koin_nu_distribution::whereMonth('date', $month)
+        $totalAll = KoinNuDistribution::whereMonth('date', $month)
             ->whereYear('date', $year)
             ->where('status', 'approved')
-            ->sum('jumlah_pentasarufan');
+            ->sum('jumlah_pentasarufan_ranting');
 
         return [
             'items' => $grouped,
@@ -164,7 +179,7 @@ class LandingController extends Controller
         $pcExpense = $pcExpenseQuery->sum('jumlah_total_distribusi');
 
         // MWC Stats
-        $mwcIncomeQuery = infaq_mwc_transactions::query()
+        $mwcIncomeQuery = InfaqMwcTransaction::query()
             ->whereMonth('date', $month)
             ->whereYear('date', $year);
 
@@ -176,7 +191,7 @@ class LandingController extends Controller
 
         $mwcIncome = $mwcIncomeQuery->sum('pemasukan_infaq_kotor');
 
-        $mwcExpenseQuery = infaq_mwc_distributions::query()
+        $mwcExpenseQuery = InfaqMwcDistribution::query()
             ->whereMonth('date', $month)
             ->whereYear('date', $year);
 
@@ -193,14 +208,14 @@ class LandingController extends Controller
 
         return [
             'pc' => [
-                'income' => (float)$pcIncome,
-                'expense' => (float)$pcExpense,
+                'income' => (float) $pcIncome,
+                'expense' => (float) $pcExpense,
                 'ratio_income' => $pcIncome + $pcExpense > 0 ? round(($pcIncome / ($pcIncome + $pcExpense)) * 100, 1) : 0,
                 'ratio_expense' => $pcIncome + $pcExpense > 0 ? round(($pcExpense / ($pcIncome + $pcExpense)) * 100, 1) : 0,
             ],
             'mwc' => [
-                'income' => (float)$mwcIncome,
-                'expense' => (float)$mwcExpense,
+                'income' => (float) $mwcIncome,
+                'expense' => (float) $mwcExpense,
                 'ratio_income' => $mwcIncome + $mwcExpense > 0 ? round(($mwcIncome / ($mwcIncome + $mwcExpense)) * 100, 1) : 0,
                 'ratio_expense' => $mwcIncome + $mwcExpense > 0 ? round(($mwcExpense / ($mwcIncome + $mwcExpense)) * 100, 1) : 0,
             ]

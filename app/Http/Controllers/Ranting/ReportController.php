@@ -16,7 +16,7 @@ class ReportController extends Controller
         
         $distributions = collect();
         if ($request->hasAny(['start_date', 'end_date'])) {
-            $query = Distribution::with('user.wilayah')->where('user_id', auth()->id());
+            $query = \App\Models\KoinNuDistribution::with('wilayah')->where('ranting_id', auth()->id());
             
             if (!empty($filters['start_date'])) {
                 $query->where('date', '>=', $filters['start_date']);
@@ -29,12 +29,12 @@ class ReportController extends Controller
             $distributions = $query->orderBy('date', 'desc')->get()->map(function ($item) {
                 return [
                     'date' => $item->date,
-                    'transaction_code' => $item->transaction_code,
-                    'penerima_manfaat' => $item->penerima_manfaat,
-                    'event_name' => $item->event_name,
-                    'amount' => $item->cost_amount,
+                    'transaction_code' => $item->distribution_code,
+                    'penerima_manfaat' => $item->jumlah_penerima_manfaat_ranting,
+                    'event_name' => $item->deskripsi,
+                    'amount' => $item->jumlah_pentasarufan_ranting,
                     'type' => 'Koin NU',
-                    'wilayah' => $item->user->wilayah->nama_wilayah ?? '-',
+                    'wilayah' => auth()->user()->wilayah->nama_wilayah ?? '-',
                     'status' => $item->status,
                 ];
             });
@@ -48,7 +48,7 @@ class ReportController extends Controller
         $filters = $request->only(['start_date', 'end_date']);
         
         // Use the same logic to fetch the distributions
-        $query = Distribution::with('user.wilayah')->where('user_id', auth()->id());
+        $query = \App\Models\KoinNuDistribution::with('wilayah')->where('ranting_id', auth()->id());
             
         if (!empty($filters['start_date'])) {
             $query->where('date', '>=', $filters['start_date']);
@@ -60,12 +60,12 @@ class ReportController extends Controller
         $distributions = $query->orderBy('date', 'desc')->get()->map(function ($item) {
             return [
                 'date' => $item->date,
-                'transaction_code' => $item->transaction_code,
-                'penerima_manfaat' => $item->penerima_manfaat,
-                'event_name' => $item->event_name,
-                'amount' => $item->cost_amount,
+                'transaction_code' => $item->distribution_code,
+                'penerima_manfaat' => $item->jumlah_penerima_manfaat_ranting,
+                'event_name' => $item->deskripsi,
+                'amount' => $item->jumlah_pentasarufan_ranting,
                 'type' => 'Koin NU',
-                'wilayah' => $item->user->wilayah->nama_wilayah ?? '-',
+                'wilayah' => auth()->user()->wilayah->nama_wilayah ?? '-',
                 'status' => $item->status,
             ];
         });

@@ -4,15 +4,28 @@ namespace App\Http\Controllers\Ranting;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Income;
+use App\Services\KoinNuTransactionService;
+use App\Repositories\KoinNuTransactionRepository;
+use App\Models\KoinNuTransaction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class InputPemasukanController extends Controller
 {
+    protected KoinNuTransactionService $service;
+    protected KoinNuTransactionRepository $repository;
+
+    public function __construct(KoinNuTransactionService $service, KoinNuTransactionRepository $repository)
+    {
+        $this->service = $service;
+        $this->repository = $repository;
+    }
+
     public function index()
     {
-        $items = Income::latest()->get();
+        // Get all transactions for the current ranting
+        $rantingId = Auth::user()->ranting_id;
+        $items = $this->repository->getKoinNuRanting($rantingId);
 
         return view('ranting.income.index', compact('items'));
     }
@@ -29,34 +42,21 @@ class InputPemasukanController extends Controller
             'jumlah_kaleng_aktif' => ['required', 'integer', 'min:0'],
             'gross_profit' => ['required', 'integer', 'min:0'],
             'operating_expenses' => ['required', 'integer', 'min:0'],
-            'hak_amil' => ['required', 'integer', 'min:0'],
-            'hak_amil_mwc' => ['required', 'integer', 'min:0'],
-            'hak_amil_pc' => ['required', 'integer', 'min:0'],
+            // hak_amil tidak wajib dikirim karena otomatis dihitung Service
         ]);
 
         DB::beginTransaction();
-
         try {
-            $calculated = $this->calculateFields(
-                $validated['gross_profit'],
-                $validated['operating_expenses']
-            );
-
-            Income::create([
-                'user_id' => Auth::id(),
-                'transaction_code' => $this->generateTransactionCode(),
+            // Map request data to service data format
+            $data = [
                 'date' => $validated['date'],
-                'jumlah_kaleng_aktif' => $validated['jumlah_kaleng_aktif'],
-                'gross_profit' => $validated['gross_profit'],
-                'operating_expenses' => $validated['operating_expenses'],
-                'net_income' => $calculated['net_income'],
-                'percentage' => $calculated['percentage'],
-                'allowed_budget' => $calculated['allowed_budget'],
-                'hak_amil' => $calculated['hak_amil'],
-                'hak_amil_mwc' => $calculated['hak_amil_mwc'],
-                'hak_amil_pc' => $calculated['hak_amil_pc'],
-                'status' => 'on_process',
-            ]);
+                'jumlah_kaleng' => $validated['jumlah_kaleng_aktif'],
+                'pemasukan_koin_nu_kotor' => $validated['gross_profit'],
+                'jasa_petugas' => $validated['operating_expenses'],
+                'status' => 'pending',
+            ];
+
+            $this->service->createTransaction($data);
 
             DB::commit();
 
@@ -74,24 +74,26 @@ class InputPemasukanController extends Controller
 
     public function show($id)
     {
-        $item = Income::findOrFail($id);
+        $item = $this->repository->findById($id);
 
         return view('ranting.income.show', compact('item'));
     }
 
     public function edit($id)
     {
-        $item = Income::findOrFail($id);
-        $items = Income::latest()->get();
+        $item = $this->repository->findById($id);
+        
+        $rantingId = Auth::user()->ranting_id;
+        $items = $this->repository->getKoinNuRanting($rantingId);
 
         return view('ranting.income.index', compact('item', 'items'));
     }
 
     public function update(Request $request, $id)
     {
-        $item = Income::findOrFail($id);
+        $item = $this->repository->findById($id);
 
-        if ($item->status === 'validated') {
+        if ($item->status === 'approved') {
             return redirect()
                 ->route('ranting.income.index')
                 ->withErrors(['error' => 'Data sudah divalidasi, Hanya bisa dihapus oleh user MWC']);
@@ -102,32 +104,19 @@ class InputPemasukanController extends Controller
             'jumlah_kaleng_aktif' => ['required', 'integer', 'min:0'],
             'gross_profit' => ['required', 'integer', 'min:0'],
             'operating_expenses' => ['required', 'integer', 'min:0'],
-            'hak_amil' => ['required', 'integer', 'min:0'],
-            'hak_amil_mwc' => ['required', 'integer', 'min:0'],
-            'hak_amil_pc' => ['required', 'integer', 'min:0'],
         ]);
 
         DB::beginTransaction();
 
         try {
-            $calculated = $this->calculateFields(
-                $validated['gross_profit'],
-                $validated['operating_expenses']
-            );
-
-            $item->update([
+            $data = [
                 'date' => $validated['date'],
-                'jumlah_kaleng_aktif' => $validated['jumlah_kaleng_aktif'],
-                'gross_profit' => $validated['gross_profit'],
-                'operating_expenses' => $validated['operating_expenses'],
-                'net_income' => $calculated['net_income'],
-                'percentage' => $calculated['percentage'],
-                'allowed_budget' => $calculated['allowed_budget'],
-                'hak_amil' => $calculated['hak_amil'],
-                'hak_amil_mwc' => $calculated['hak_amil_mwc'],
-                'hak_amil_pc' => $calculated['hak_amil_pc'],
-                // status tidak diubah, tetap mengikuti data sebelumnya
-            ]);
+                'jumlah_kaleng' => $validated['jumlah_kaleng_aktif'],
+                'pemasukan_koin_nu_kotor' => $validated['gross_profit'],
+                'jasa_petugas' => $validated['operating_expenses'],
+            ];
+
+            $this->service->updateTransaction($id, $data);
 
             DB::commit();
 
@@ -145,8 +134,7 @@ class InputPemasukanController extends Controller
 
     public function destroy($id)
     {
-        $item = Income::findOrFail($id);
-        $item->delete();
+        $this->service->deleteTransaction($id);
 
         return redirect()
             ->route('ranting.income.index')
@@ -157,55 +145,20 @@ class InputPemasukanController extends Controller
     {
         $request->validate([
             'ids' => ['required', 'array'],
-            'ids.*' => ['integer', 'exists:incomes,id'],
+            'ids.*' => ['integer', 'exists:koin_nu_transactions,id'],
         ]);
 
-        $deletedCount = Income::whereIn('id', $request->ids)
-            ->where('status', '!=', 'validated')
-            ->delete();
+        $deletedCount = 0;
+        foreach ($request->ids as $id) {
+            $item = $this->repository->findById($id);
+            if ($item && $item->status !== 'approved') {
+                $this->service->deleteTransaction($id);
+                $deletedCount++;
+            }
+        }
 
         return redirect()
             ->route('ranting.income.index')
             ->with('success', $deletedCount . ' data berhasil dihapus.');
     }
-
-    private function calculateFields(int $grossProfit, int $operatingExpenses): array
-    {
-        $netIncome = max($grossProfit - $operatingExpenses, 0);
-        $percentage = 60.00;
-        $percentage_mwc = 35.00;
-        $percentage_pc = 5.00;
-        $allowedBudget = (int) round($netIncome * 0.60);
-        $hakAmil = (int) round($allowedBudget * 0.20);
-        $hakAmilMwc = (int) round($netIncome * ($percentage_mwc / 100));
-        $hakAmilPc = (int) round($netIncome * ($percentage_pc / 100));
-
-        return [
-            'net_income' => $netIncome,
-            'percentage' => $percentage,
-            'allowed_budget' => $allowedBudget,
-            'hak_amil' => $hakAmil,
-            'hak_amil_mwc' => $hakAmilMwc,
-            'hak_amil_pc' => $hakAmilPc,
-        ];
-    }
-
-    private function generateTransactionCode(): string
-    {
-        $last = Income::where('transaction_code', 'like', 'ICM%')->orderByDesc('id')->first();
-
-        if (!$last || !$last->transaction_code) {
-            return 'ICM00001';
-        }
-
-        preg_match('/ICM(\d+)/', $last->transaction_code, $matches);
-
-        $lastNumber = isset($matches[1]) ? (int) $matches[1] : 0;
-        $nextNumber = $lastNumber + 1;
-
-        $digitLength = max(5, strlen((string) $nextNumber));
-
-        return 'ICM' . str_pad($nextNumber, $digitLength, '0', STR_PAD_LEFT);
-    }
-
 }

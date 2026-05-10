@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class koin_nu_distribution extends Model
+class InfaqMwcDistribution extends Model
 {
-    protected $table = "koin_nu_distributions";
+    protected $table = "infaq_mwc_distributions";
 
     protected $fillable = [
         "user_id",
@@ -14,12 +14,10 @@ class koin_nu_distribution extends Model
         "date",
         "jenis_pilar",
         "deskripsi",
-        "jumlah_pentasarufan",
         "jumlah_penerima_manfaat",
         "keterangan",
+        "jumlah_total_distribusi",
         "file_dokumentasi",
-        "approved_by",
-        "approved_at",
     ];
 
     public function user()

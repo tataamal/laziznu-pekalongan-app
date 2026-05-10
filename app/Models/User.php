@@ -63,25 +63,27 @@ class User extends Authenticatable
         return $this->role === 'ranting';
     }
 
-    public function koin_nu_transactions(): HasMany
+    public function KoinNuTransactions(): HasMany
     {
-        return $this->hasMany(koin_nu_transaction::class);
+        return $this->hasMany(KoinNuTransaction::class);
     }
 
-    public function koin_nu_distributions(): HasMany
+    public function KoinNuDistributions(): HasMany
     {
-        return $this->hasMany(koin_nu_distribution::class);
+        return $this->hasMany(KoinNuDistribution::class);
     }
 
-    public function infaq_mwc_transactions(): HasMany
+    public function InfaqMwcTransaction(): HasMany
     {
-        return $this->hasMany(infaq_mwc_transactions::class);
+        return $this->hasMany(InfaqMwcTransaction::class);
     }
 
-    public function infaq_mwc_distributions(): HasMany
+    public function InfaqMwcDistribution(): HasMany
     {
-        return $this->hasMany(infaq_mwc_distributions::class);
+        return $this->hasMany(InfaqMwcDistribution::class);
     }
+
+    const EXCEPTION_ROLES = ['developer'];
 
 
 }

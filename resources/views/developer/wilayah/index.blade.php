@@ -70,7 +70,7 @@
                         <td class="px-5 py-4 font-medium text-zinc-900">{{ $wilayah->nama_wilayah }}</td>
                         <td class="px-5 py-4">{{ $wilayah->alamat ?? '-' }}</td>
                         <td class="px-5 py-4">{{ $wilayah->pic ?? '-' }}</td>
-                        <td class="px-5 py-4">{{ $wilayah->telp_pic ?? '-' }}</td>
+                        <td class="px-5 py-4">{{ $wilayah->no_telp ?? '-' }}</td>
                         <td class="px-5 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <button onclick="openEditModal({{ $wilayah->toJson() }})" class="rounded-xl p-2 text-zinc-400 transition hover:bg-zinc-100 hover:text-blue-600">
@@ -127,7 +127,7 @@
                     </div>
                     <div>
                         <label class="mb-1 block text-sm font-medium text-zinc-700">No. Telpon PIC</label>
-                        <input type="text" name="telp_pic" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
+                        <input type="text" name="no_telp" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
                     </div>
                 </div>
                 <div class="mt-6 flex justify-end gap-3">
@@ -165,7 +165,7 @@
                     </div>
                     <div>
                         <label class="mb-1 block text-sm font-medium text-zinc-700">No. Telpon PIC</label>
-                        <input type="text" name="telp_pic" id="edit_telp_pic" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
+                        <input type="text" name="no_telp" id="edit_no_telp" class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-1 focus:ring-green-500">
                     </div>
                 </div>
                 <div class="mt-6 flex justify-end gap-3">
@@ -204,7 +204,7 @@
             </div>
             <div class="mb-6 rounded-2xl bg-blue-50 p-4 text-sm text-blue-700 border border-blue-200">
                 <p class="font-medium mb-1"><i class="fas fa-info-circle mr-1"></i> Format Import</p>
-                <p class="text-xs">Pastikan file Excel (.xlsx) Anda memiliki header kolom: <b>nama_wilayah, alamat, pic, telp_pic</b>. Nama Wilayah wajib diisi.</p>
+                <p class="text-xs">Pastikan file Excel (.xlsx) Anda memiliki header kolom: <b>nama_wilayah, alamat, pic, no_telp</b>. Nama Wilayah wajib diisi.</p>
                 <a href="{{ route('developer.wilayah.template') }}" class="mt-3 inline-flex items-center gap-2 rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-blue-700 shadow-sm border border-blue-200 hover:bg-blue-100 transition">
                     <i class="fas fa-download"></i> Download Template File
                 </a>
@@ -286,7 +286,7 @@
             document.getElementById('edit_nama_wilayah').value = wilayah.nama_wilayah;
             document.getElementById('edit_alamat').value = wilayah.alamat || '';
             document.getElementById('edit_pic').value = wilayah.pic || '';
-            document.getElementById('edit_telp_pic').value = wilayah.telp_pic || '';
+            document.getElementById('edit_no_telp').value = wilayah.no_telp || '';
             document.getElementById('editModal').classList.remove('hidden');
         }
 

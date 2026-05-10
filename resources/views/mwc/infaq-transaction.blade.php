@@ -114,9 +114,9 @@
                                         <button onclick="openEditModal({{ json_encode($item) }})" class="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-green-700 hover:text-white transition-all shadow-sm border border-slate-200">
                                             <i class="fas fa-edit text-xs"></i>
                                         </button>
-                                        <form action="{{ route('mwc.infaq-transaction.destroy', $item->id) }}" method="POST" id="delete-form-{{ $item->id }}">
+                                        <form action="{{ route('mwc.infaq-transaction.destroy', ['infaq_transaction' => $item->id, 'type' => $item->transaction_type]) }}" method="POST" id="delete-form-{{ $item->id }}-{{ $item->transaction_type }}">
                                             @csrf @method('DELETE')
-                                            <button type="button" onclick="confirmDelete('delete-form-{{ $item->id }}')" class="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-red-600 hover:text-white transition-all shadow-sm border border-slate-200">
+                                            <button type="button" onclick="confirmDelete('delete-form-{{ $item->id }}-{{ $item->transaction_type }}')" class="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-red-600 hover:text-white transition-all shadow-sm border border-slate-200">
                                                 <i class="fas fa-trash text-xs"></i>
                                             </button>
                                         </form>
@@ -195,9 +195,9 @@
                                         <button onclick="openEditModal({{ json_encode($item) }})" class="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-green-700 hover:text-white transition-all shadow-sm border border-slate-200">
                                             <i class="fas fa-edit text-xs"></i>
                                         </button>
-                                        <form action="{{ route('mwc.infaq-transaction.destroy', $item->id) }}" method="POST" id="delete-form-{{ $item->id }}">
+                                        <form action="{{ route('mwc.infaq-transaction.destroy', ['infaq_transaction' => $item->id, 'type' => $item->transaction_type]) }}" method="POST" id="delete-form-{{ $item->id }}-{{ $item->transaction_type }}">
                                             @csrf @method('DELETE')
-                                            <button type="button" onclick="confirmDelete('delete-form-{{ $item->id }}')" class="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-red-600 hover:text-white transition-all shadow-sm border border-slate-200">
+                                            <button type="button" onclick="confirmDelete('delete-form-{{ $item->id }}-{{ $item->transaction_type }}')" class="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-600 hover:bg-red-600 hover:text-white transition-all shadow-sm border border-slate-200">
                                                 <i class="fas fa-trash text-xs"></i>
                                             </button>
                                         </form>
@@ -467,7 +467,7 @@
 
             function openEditModal(item) {
                 document.getElementById('modalTitle').textContent = 'Edit Transaksi';
-                document.getElementById('infaqForm').action = "/mwc/infaq-transaction/" + item.id;
+                document.getElementById('infaqForm').action = "/mwc/infaq-transaction/" + item.id + "?type=" + item.transaction_type;
                 document.getElementById('methodField').innerHTML = '@method('PUT')';
 
                 fpModal.setDate(item.transaction_date);

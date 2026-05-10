@@ -95,4 +95,16 @@ class InfaqMwcDistributionRepository
 
         return $deleted;
     }
+
+    // ============================================================
+    // Get Count Data Infaq MWC
+    // ============================================================
+
+    public function getTotalPengeluaran(int $wilayahId, ?string $startDate = null, ?string $endDate = null): float
+    {
+        return InfaqMwcDistribution::where('wilayah_id', $wilayahId)
+            ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
+            ->sum('jumlah_total_distribusi');
+    } 
 }

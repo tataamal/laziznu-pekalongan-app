@@ -50,7 +50,8 @@ class KoinNuDistributionRepository
         int $rantingId,
         ?string $startDate = null,
         ?string $endDate = null,
-        ?string $jenisPilar = null
+        ?string $jenisPilar = null,
+        ?string $status = null
     ): Collection {
         return KoinNuDistribution::query()
             ->select([...$this->commonColumns, 'jumlah_pentasarufan_ranting', 'jumlah_penerima_manfaat_ranting'])
@@ -58,6 +59,7 @@ class KoinNuDistributionRepository
             ->when($jenisPilar, fn($q) => $q->where('jenis_pilar', $jenisPilar))
             ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
             ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
+            ->when($status, fn($q) => $q->where('status', $status))
             ->orderByDesc('date')
             ->get();
     }
@@ -72,6 +74,22 @@ class KoinNuDistributionRepository
             ->select([...$this->commonColumns, 'jumlah_pentasarufan_mwc', 'jumlah_penerima_manfaat_mwc'])
             ->where('wilayah_id', $wilayahId)
             ->when($jenisPilar, fn($q) => $q->where('jenis_pilar', $jenisPilar))
+            ->orderByDesc('date')
+            ->get();
+    }
+
+    public function getAllDistributionsMwc(
+        int $wilayahId,
+        ?string $startDate = null,
+        ?string $endDate = null,
+        ?string $jenisPilar = null
+    ): Collection {
+        return KoinNuDistribution::query()
+            ->select([...$this->commonColumns, 'jumlah_pentasarufan_mwc', 'jumlah_penerima_manfaat_mwc'])
+            ->where('wilayah_id', $wilayahId)
+            ->when($jenisPilar, fn($q) => $q->where('jenis_pilar', $jenisPilar))
+            ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
             ->orderByDesc('date')
             ->get();
     }
@@ -224,4 +242,15 @@ class KoinNuDistributionRepository
 
         return $deleted;
     }
+
+    // ============================================================
+    // GET COUNT PENDING DATA METHODS
+    // ============================================================
+
+    public function getCountPending(int $wilayahId)
+    {
+        return KoinNuDistribution::where('wilayah_id', $wilayahId)->where('status', 'pending')->count();
+    }
+
+    
 }

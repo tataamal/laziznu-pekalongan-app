@@ -16,7 +16,7 @@ class ReportController extends Controller
         
         $distributions = collect();
         if ($request->hasAny(['start_date', 'end_date'])) {
-            $query = \App\Models\KoinNuDistribution::with('wilayah')->where('ranting_id', auth()->id());
+            $query = \App\Models\KoinNuDistribution::with('wilayah')->where('ranting_id', auth()->user()->ranting_id);
             
             if (!empty($filters['start_date'])) {
                 $query->where('date', '>=', $filters['start_date']);
@@ -48,7 +48,7 @@ class ReportController extends Controller
         $filters = $request->only(['start_date', 'end_date']);
         
         // Use the same logic to fetch the distributions
-        $query = \App\Models\KoinNuDistribution::with('wilayah')->where('ranting_id', auth()->id());
+        $query = \App\Models\KoinNuDistribution::with('wilayah')->where('ranting_id', auth()->user()->ranting_id);
             
         if (!empty($filters['start_date'])) {
             $query->where('date', '>=', $filters['start_date']);

@@ -137,6 +137,19 @@ class KoinNuTransactionRepository
     }
 
     /**
+     * Ambil data koin NU MWC yang di-group per ranting.
+     */
+    public function getKoinNuMwcGroupedByRanting(int $wilayahId): Collection
+    {
+        return $this->approvedQuery()
+            ->selectRaw('ranting_id, SUM(koin_nu_mwc) as total_koin')
+            ->where('wilayah_id', $wilayahId)
+            ->groupBy('ranting_id')
+            ->with('ranting:id,nama_ranting')
+            ->get();
+    }
+
+    /**
      * Daftar transaksi level PC (untuk halaman list PC, lihat seluruh data).
      */
     public function getKoinNuPc(
@@ -316,5 +329,13 @@ class KoinNuTransactionRepository
         }
 
         return $deleted;
+    }
+
+    // ============================================================
+    // GET COUNT PENDING DATA METHODS
+    // ============================================================
+    public function getCountPending(int $wilayahId)
+    {
+        return KoinNuTransaction::where('wilayah_id', $wilayahId)->where('status', 'pending')->count();
     }
 }

@@ -23,6 +23,7 @@ class KoinNuDistribution extends Model
         "jumlah_penerima_manfaat_mwc",
         "jumlah_penerima_manfaat_pc",
         "file_dokumentasi",
+        "status",
         "approved_by",
         "approved_at",
     ];

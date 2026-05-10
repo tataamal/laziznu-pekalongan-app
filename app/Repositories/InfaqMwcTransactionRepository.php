@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\InfaqMwcTransaction;
+use App\Models\InfaqMwcDistribution;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -92,5 +93,39 @@ class InfaqMwcTransactionRepository
         }
 
         return $deleted;
+    }
+
+    // ============================================================
+    // Get Count Data Infaq MWC
+    // ============================================================
+
+    public function getTotalPemasukan(int $wilayahId, ?string $startDate = null, ?string $endDate = null): float
+    {
+        return InfaqMwcTransaction::where('wilayah_id', $wilayahId)
+            ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
+            ->sum('pemasukan_infaq_kotor');
+    }
+    
+    public function getHakAmilMwc(
+        int $wilayahId,
+        ?string $startDate = null,
+        ?string $endDate = null,
+    ) {
+        return InfaqMwcTransaction::where('wilayah_id', $wilayahId)
+            ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
+            ->sum('hak_amil');
+    }
+
+    public function getInfaqDapatDigunakanMwc(
+        int $wilayahId,
+        ?string $startDate = null,
+        ?string $endDate = null,
+    ) {
+        return InfaqMwcTransaction::where('wilayah_id', $wilayahId)
+            ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
+            ->sum('infaq_yang_dapat_digunakan');
     }
 }

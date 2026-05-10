@@ -83,7 +83,7 @@
                     <thead class="sticky top-0 z-10 bg-white shadow-sm outline outline-1 outline-zinc-100">
                         <tr class="text-left text-xs uppercase tracking-wide text-zinc-500">
                             <th class="px-3 py-3 font-semibold bg-white">Ranting</th>
-                            <th class="px-3 py-3 font-semibold bg-white">Jumlah (Rp)</th>
+                            <th class="px-3 py-3 font-semibold bg-white">Jumlah Pemasukan Koin NU Utuh</th>
                             <th class="px-3 py-3 font-semibold text-right bg-white">Keterangan</th>
                         </tr>
                     </thead>

@@ -23,7 +23,7 @@ class DistributionController extends Controller
     public function index()
     {
         $rantingId = Auth::user()->ranting_id;
-        $items = $this->repository->getDistributionsRanting($rantingId);
+        $items = $this->repository->getDistributionsRanting($rantingId, 'all');
 
         return view('ranting.distribution.index', compact('items'));
     }
@@ -32,11 +32,11 @@ class DistributionController extends Controller
     {
         $validated = $request->validate([
             'date' => ['required', 'date'],
-            'event_name' => ['required', 'string', 'max:255'],
-            'pilar_type' => ['required', 'string'],
-            'cost_amount' => ['required', 'integer', 'min:0'],
-            'penerima_manfaat' => ['required', 'integer', 'min:0'],
-            'documentation_file' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'deskripsi' => ['required', 'string', 'max:255'],
+            'jenis_pilar' => ['required', 'string'],
+            'jumlah_pentasarufan_ranting' => ['required', 'integer', 'min:0'],
+            'jumlah_penerima_manfaat_ranting' => ['required', 'integer', 'min:0'],
+            'file_dokumentasi' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         DB::beginTransaction();
@@ -44,19 +44,19 @@ class DistributionController extends Controller
         try {
             $data = [
                 'date' => $validated['date'],
-                'deskripsi' => $validated['event_name'],
-                'jenis_pilar' => $validated['pilar_type'],
-                'jumlah_pentasarufan_ranting' => $validated['cost_amount'],
+                'deskripsi' => $validated['deskripsi'],
+                'jenis_pilar' => $validated['jenis_pilar'],
+                'jumlah_pentasarufan_ranting' => $validated['jumlah_pentasarufan_ranting'],
                 'jumlah_pentasarufan_mwc' => 0,
                 'jumlah_pentasarufan_pc' => 0,
-                'jumlah_penerima_manfaat_ranting' => $validated['penerima_manfaat'],
-                'jumlah_penerima_manfaat_mwc' => 0,
+                'jumlah_penerima_manfaat_ranting' => $validated['jumlah_penerima_manfaat_ranting'],
+                'jumlah_penerima_manfaat_mwc' => 0, 
                 'jumlah_penerima_manfaat_pc' => 0,
             ];
 
-            if ($request->hasFile('documentation_file')) {
+            if ($request->hasFile('file_dokumentasi')) {
                 $data['file_dokumentasi'] = $this->saveDocumentationFile(
-                    $request->file('documentation_file')
+                    $request->file('file_dokumentasi')
                 );
             }
 
@@ -89,11 +89,11 @@ class DistributionController extends Controller
 
         $validated = $request->validate([
             'date' => ['required', 'date'],
-            'event_name' => ['required', 'string', 'max:255'],
-            'pilar_type' => ['required', 'string'],
-            'cost_amount' => ['required', 'integer', 'min:0'],
-            'penerima_manfaat' => ['required', 'integer', 'min:0'],
-            'documentation_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'deskripsi' => ['required', 'string', 'max:255'],
+            'jenis_pilar' => ['required', 'string'],
+            'jumlah_pentasarufan_ranting' => ['required', 'integer', 'min:0'],
+            'jumlah_penerima_manfaat_ranting' => ['required', 'integer', 'min:0'],
+            'file_dokumentasi' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         DB::beginTransaction();
@@ -101,17 +101,17 @@ class DistributionController extends Controller
         try {
             $data = [
                 'date' => $validated['date'],
-                'deskripsi' => $validated['event_name'],
-                'jenis_pilar' => $validated['pilar_type'],
-                'jumlah_pentasarufan_ranting' => $validated['cost_amount'],
-                'jumlah_penerima_manfaat_ranting' => $validated['penerima_manfaat'],
+                'deskripsi' => $validated['deskripsi'],
+                'jenis_pilar' => $validated['jenis_pilar'],
+                'jumlah_pentasarufan_ranting' => $validated['jumlah_pentasarufan_ranting'],
+                'jumlah_penerima_manfaat_ranting' => $validated['jumlah_penerima_manfaat_ranting'],
             ];
 
-            if ($request->hasFile('documentation_file')) {
+            if ($request->hasFile('file_dokumentasi')) {
                 $this->deleteDocumentationFile($item->file_dokumentasi);
 
                 $data['file_dokumentasi'] = $this->saveDocumentationFile(
-                    $request->file('documentation_file')
+                    $request->file('file_dokumentasi')
                 );
             }
 

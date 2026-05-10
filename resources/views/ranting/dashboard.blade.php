@@ -8,29 +8,41 @@
         @vite('resources/js/ranting-dashboard.js')
     @endpush
 
-    <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         <div class="rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm">
-            <div class="text-sm font-medium text-white/90">Total Pemasukan KOIN NU</div>
+            <div class="text-sm font-medium text-white/90">Total Pemasukan KOIN NU Awal</div>
             <div class="mt-4 text-3xl font-bold">Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-white/80">TotalS Pemasukan KOIN NU</div>
+            <div class="mt-3 text-xs text-white/80">Pemasukan Koin Nu Sebelum Dipotong Jasa Petugas</div>
         </div>
 
-        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Total Pengeluaran KOIN NU</div>
-            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($totalExpense, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Total pentasarufan sejauh ini</div>
+        <div class="rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm">
+            <div class="text-sm font-medium text-white/90">Total Pemasukan KOIN NU Bersih</div>
+            <div class="mt-4 text-3xl font-bold">Rp {{ number_format($totalIncomeBersih, 0, ',', '.') }}</div>
+            <div class="mt-3 text-xs text-white/80">Pemasukan Koin Nu setelah Dipotong Jasa Petugas</div>
+        </div>
+
+        <div class="rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm">
+            <div class="text-sm font-medium text-white/90">KOIN NU Ranting</div>
+            <div class="mt-4 text-3xl font-bold">Rp {{ number_format($totalKoinNuRanting, 0, ',', '.') }}</div>
+            <div class="mt-3 text-xs text-white/80">60% dari total pemasukan bersih Koin NU</div>
         </div>
 
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
             <div class="text-sm font-medium text-zinc-600">Dana yang Dapat Digunakan</div>
             <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($usableFund, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Sisa saldo saat ini</div>
+            <div class="mt-3 text-xs text-zinc-500">Saldo yang dapat digunakan untuk pentasarufan</div>
         </div>
 
         <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
             <div class="text-sm font-medium text-zinc-600">Hak Amil</div>
             <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($totalHakAmil, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Hak amil dari total pemasukan</div>
+            <div class="mt-3 text-xs text-zinc-500">20% dari Total Pemasukan Bersih</div>
+        </div>
+
+        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <div class="text-sm font-medium text-zinc-600">Total Pengeluaran KOIN NU</div>
+            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($totalExpense, 0, ',', '.') }}</div>
+            <div class="mt-3 text-xs text-zinc-500">Akumulasi Pentasarufan KOIN NU</div>
         </div>
     </section>
 

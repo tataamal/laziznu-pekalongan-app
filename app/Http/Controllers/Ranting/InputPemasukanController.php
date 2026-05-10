@@ -25,7 +25,7 @@ class InputPemasukanController extends Controller
     {
         // Get all transactions for the current ranting
         $rantingId = Auth::user()->ranting_id;
-        $items = $this->repository->getKoinNuRanting($rantingId);
+        $items = $this->repository->getKoinNuRanting($rantingId, 'all');
 
         return view('ranting.income.index', compact('items'));
     }
@@ -39,10 +39,9 @@ class InputPemasukanController extends Controller
     {
         $validated = $request->validate([
             'date' => ['required', 'date'],
-            'jumlah_kaleng_aktif' => ['required', 'integer', 'min:0'],
-            'gross_profit' => ['required', 'integer', 'min:0'],
-            'operating_expenses' => ['required', 'integer', 'min:0'],
-            // hak_amil tidak wajib dikirim karena otomatis dihitung Service
+            'jumlah_kaleng' => ['required', 'integer', 'min:0'],
+            'pemasukan_koin_nu_kotor' => ['required', 'integer', 'min:0'],
+            'jasa_petugas' => ['required', 'integer', 'min:0'],
         ]);
 
         DB::beginTransaction();
@@ -50,9 +49,9 @@ class InputPemasukanController extends Controller
             // Map request data to service data format
             $data = [
                 'date' => $validated['date'],
-                'jumlah_kaleng' => $validated['jumlah_kaleng_aktif'],
-                'pemasukan_koin_nu_kotor' => $validated['gross_profit'],
-                'jasa_petugas' => $validated['operating_expenses'],
+                'jumlah_kaleng' => $validated['jumlah_kaleng'],
+                'pemasukan_koin_nu_kotor' => $validated['pemasukan_koin_nu_kotor'],
+                'jasa_petugas' => $validated['jasa_petugas'],
                 'status' => 'pending',
             ];
 
@@ -101,9 +100,9 @@ class InputPemasukanController extends Controller
 
         $validated = $request->validate([
             'date' => ['required', 'date'],
-            'jumlah_kaleng_aktif' => ['required', 'integer', 'min:0'],
-            'gross_profit' => ['required', 'integer', 'min:0'],
-            'operating_expenses' => ['required', 'integer', 'min:0'],
+            'jumlah_kaleng' => ['required', 'integer', 'min:0'],
+            'pemasukan_koin_nu_kotor' => ['required', 'integer', 'min:0'],
+            'jasa_petugas' => ['required', 'integer', 'min:0'],
         ]);
 
         DB::beginTransaction();
@@ -111,9 +110,9 @@ class InputPemasukanController extends Controller
         try {
             $data = [
                 'date' => $validated['date'],
-                'jumlah_kaleng' => $validated['jumlah_kaleng_aktif'],
-                'pemasukan_koin_nu_kotor' => $validated['gross_profit'],
-                'jasa_petugas' => $validated['operating_expenses'],
+                'jumlah_kaleng' => $validated['jumlah_kaleng'],
+                'pemasukan_koin_nu_kotor' => $validated['pemasukan_koin_nu_kotor'],
+                'jasa_petugas' => $validated['jasa_petugas'],
             ];
 
             $this->service->updateTransaction($id, $data);

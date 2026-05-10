@@ -97,10 +97,11 @@ class KoinNuTransactionRepository
      */
     public function getKoinNuRanting(
         int $rantingId,
+        ?string $status = null,
         ?string $startDate = null,
         ?string $endDate = null
     ): Collection {
-        return $this->approvedQuery($startDate, $endDate)
+        return KoinNuTransaction::query()
             ->select([
                 ...$this->commonColumns,
                 'koin_nu_ranting',
@@ -108,6 +109,9 @@ class KoinNuTransactionRepository
                 'hak_amil_ranting',
             ])
             ->where('ranting_id', $rantingId)
+            ->when($status && $status !== 'all', fn($q) => $q->where('status', $status))
+            ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
             ->orderByDesc('date')
             ->get();
     }

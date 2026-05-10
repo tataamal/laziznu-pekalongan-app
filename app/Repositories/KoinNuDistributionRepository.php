@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Repositories;
+
 use App\Models\KoinNuDistribution;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,7 +18,6 @@ class KoinNuDistributionRepository
         'date',
         'jenis_pilar',
         'deskripsi',
-        'jasa_petugas',
         'file_dokumentasi',
         'status'
     ];
@@ -51,10 +52,12 @@ class KoinNuDistributionRepository
         ?string $endDate = null,
         ?string $jenisPilar = null
     ): Collection {
-        return $this->approvedQuery($startDate, $endDate)
+        return KoinNuDistribution::query()
             ->select([...$this->commonColumns, 'jumlah_pentasarufan_ranting', 'jumlah_penerima_manfaat_ranting'])
             ->where('ranting_id', $rantingId)
             ->when($jenisPilar, fn($q) => $q->where('jenis_pilar', $jenisPilar))
+            ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
             ->orderByDesc('date')
             ->get();
     }

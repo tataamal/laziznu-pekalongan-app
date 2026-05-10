@@ -5,38 +5,41 @@ namespace App\Http\Controllers\Ranting;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Models\Income;
 use App\Models\Distribution;
+use App\Models\KoinNuTransaction;
+use App\Models\KoinNuDistribution;
 
 class RantingDashboardController extends Controller
 {
     public function index()
     {
         $userId = auth()->id();
-        $incomes = Income::with('user')->where('user_id', $userId)->get();
-        $distributions = Distribution::with('user')->where('user_id', $userId)->get();
+        $incomes = KoinNuTransaction::with('user')->where('user_id', $userId)->get();
+        $distributions = KoinNuDistribution::with('user')->where('user_id', $userId)->get();
 
-        $totalIncome = $incomes->where('status', 'validated')->sum('net_income');
-        $totalExpense = $distributions->where('status', 'validated')->sum('cost_amount');
-        $totalHakAmil = $incomes->where('status', 'validated')->sum('hak_amil');
+        $totalIncome = $incomes->where('status', 'approved')->sum('pemasukan_koin_nu_kotor');
+        $totalExpense = $distributions->where('status', 'approved')->sum('jumlah_pentasarufan_ranting');
+        $totalHakAmil = $incomes->where('status', 'approved')->sum('hak_amil_ranting');
+        $totalIncomeBersih = $incomes->where('status', 'approved')->sum('pemasukan_koin_nu_bersih');
+        $totalKoinNuRanting = $incomes->where('status', 'approved')->sum('koin_nu_ranting');
         
         $startOfMonth = now()->startOfMonth();
         $transactionsThisMonth = $incomes->where('date', '>=', $startOfMonth->format('Y-m-d'))->count() + 
                                  $distributions->where('date', '>=', $startOfMonth->format('Y-m-d'))->count();
         
-        $usableFund = $totalIncome - $totalExpense;
+        $usableFund = $incomes->where('status', 'approved')->sum('dana_dapat_digunakan_ranting');
         $months = collect(range(5, 0))->map(function($i) { return now()->subMonths($i)->format('Y-m'); });
         $barLabels = $months->map(function($m) { return Carbon::createFromFormat('Y-m', $m)->translatedFormat('M'); });
         $barData = $months->map(function($m) use ($incomes) { 
-            return $incomes->where('status', 'validated')->filter(function($inc) use ($m) { 
+            return $incomes->where('status', 'approved')->filter(function($inc) use ($m) { 
                 return Carbon::parse($inc->date)->format('Y-m') === $m; 
-            })->sum('net_income'); 
+            })->sum('pemasukan_koin_nu_kotor'); 
         });
 
-        $validatedDistributions = $distributions->where('status', 'validated');
-        $pieLabels = $validatedDistributions->pluck('pilar_type')->unique()->values();
+        $validatedDistributions = $distributions->where('status', 'approved');
+        $pieLabels = $validatedDistributions->pluck('jenis_pilar')->unique()->values();
         $pieData = $pieLabels->map(function($type) use ($validatedDistributions) {
-            return $validatedDistributions->where('pilar_type', $type)->sum('cost_amount');
+            return $validatedDistributions->where('jenis_pilar', $type)->sum('jumlah_pentasarufan_ranting');
         });
 
         if ($pieData->sum() === 0) {
@@ -47,8 +50,8 @@ class RantingDashboardController extends Controller
             $hasPieData = true;
         }
 
-        $incomeDates = $incomes->where('status', 'validated')->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('Y-m-d'); });
-        $distributionDates = $distributions->where('status', 'validated')->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('Y-m-d'); });
+        $incomeDates = $incomes->where('status', 'approved')->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('Y-m-d'); });
+        $distributionDates = $distributions->where('status', 'approved')->pluck('date')->map(function($d) { return \Carbon\Carbon::parse($d)->format('Y-m-d'); });
 
         $allDates = $incomeDates->merge($distributionDates)->unique();
         
@@ -59,17 +62,17 @@ class RantingDashboardController extends Controller
             'labels' => $displayDates->map(function($d) { return \Carbon\Carbon::parse($d)->format('d-m-Y'); }),
             'income' => [
                 'data' => $displayDates->map(function($date) use ($incomes) {
-                    return $incomes->where('status', 'validated')->filter(function($inc) use ($date) {
+                    return $incomes->where('status', 'approved')->filter(function($inc) use ($date) {
                         return \Carbon\Carbon::parse($inc->date)->format('Y-m-d') === $date;
-                    })->sum('net_income');
+                    })->sum('pemasukan_koin_nu_kotor');
                 }),
             ],
             'distribution' => [
                 'labels' => $displayDates->map(function($date) use ($distributions) {
-                    $dist = $distributions->where('status', 'validated')->filter(function($dst) use ($date) {
+                    $dist = $distributions->where('status', 'approved')->filter(function($dst) use ($date) {
                         return \Carbon\Carbon::parse($dst->date)->format('Y-m-d') === $date;
                     });
-                    return $dist->count() > 0 ? $dist->pluck('pilar_type')->implode(', ') : '-';
+                    return $dist->count() > 0 ? $dist->pluck('jenis_pilar')->implode(', ') : '-';
                 }),
                 'data' => $displayDates->map(function($date) use ($distributions) {
                     return $distributions->where('status', 'validated')->filter(function($dst) use ($date) {
@@ -122,7 +125,7 @@ class RantingDashboardController extends Controller
         $latestTransactions = $latestTransactions->sortByDesc('tanggal')->values();
 
         return view('ranting.dashboard', compact(
-            'totalIncome', 'totalExpense', 'totalHakAmil', 'transactionsThisMonth', 'usableFund', 
+            'totalIncome', 'totalIncomeBersih', 'totalKoinNuRanting', 'totalExpense', 'totalHakAmil', 'transactionsThisMonth', 'usableFund', 
             'chartDataJson', 'latestTransactions'
         ));
     }

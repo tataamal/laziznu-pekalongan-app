@@ -24,7 +24,7 @@ class KoinNuTransactionService
         $transactionData['user_id'] = Auth::id();
         
         // Asumsi data ranting_id dan wilayah_id sudah ada di $data jika dari controller ranting/mwc
-        if (Auth::user()->hasRole('ranting')) {
+        if (Auth::user()->isRanting()) {
              $transactionData['ranting_id'] = Auth::user()->ranting_id ?? null;
              $transactionData['wilayah_id'] = Auth::user()->wilayah_id ?? null;
         }

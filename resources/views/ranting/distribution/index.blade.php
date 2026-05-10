@@ -35,33 +35,33 @@
                         </div>
 
                         <div class="space-y-2">
-                            <label for="pilar_type" class="text-sm font-medium text-slate-700">
-                                Pilar Pentasarufan
+                            <label for="jenis_pilar" class="text-sm font-medium text-slate-700">
+                                Jenis Pilar
                             </label>
                             <select
-                                name="pilar_type"
-                                id="pilar_type"
+                                name="jenis_pilar"
+                                id="jenis_pilar"
                                 class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                                 required
                             >
-                                <option value="" disabled selected>Pilih Pilar</option>
-                                <option value="NU Care - Cerdas" {{ old('pilar_type') == 'NU Care - Cerdas' ? 'selected' : '' }}>NU Care - Cerdas</option>
-                                <option value="NU Care - Sehat" {{ old('pilar_type') == 'NU Care - Sehat' ? 'selected' : '' }}>NU Care - Sehat</option>
-                                <option value="NU Care - Berdaya" {{ old('pilar_type') == 'NU Care - Berdaya' ? 'selected' : '' }}>NU Care - Berdaya</option>
-                                <option value="NU Care - Hijau" {{ old('pilar_type') == 'NU Care - Hijau' ? 'selected' : '' }}>NU Care - Hijau</option>
-                                <option value="NU Care - Damai" {{ old('pilar_type') == 'NU Care - Damai' ? 'selected' : '' }}>NU Care - Damai</option>
+                                <option value="" disabled selected>Pilih Jenis Pilar</option>
+                                <option value="NU Care - Cerdas" {{ old('jenis_pilar') == 'NU Care - Cerdas' ? 'selected' : '' }}>NU Care - Cerdas</option>
+                                <option value="NU Care - Sehat" {{ old('jenis_pilar') == 'NU Care - Sehat' ? 'selected' : '' }}>NU Care - Sehat</option>
+                                <option value="NU Care - Berdaya" {{ old('jenis_pilar') == 'NU Care - Berdaya' ? 'selected' : '' }}>NU Care - Berdaya</option>
+                                <option value="NU Care - Hijau" {{ old('jenis_pilar') == 'NU Care - Hijau' ? 'selected' : '' }}>NU Care - Hijau</option>
+                                <option value="NU Care - Damai" {{ old('jenis_pilar') == 'NU Care - Damai' ? 'selected' : '' }}>NU Care - Damai</option>
                             </select>
                         </div>
 
                         <div class="space-y-2 md:col-span-2">
-                            <label for="event_name" class="text-sm font-medium text-slate-700">
-                                Nama Kegiatan / Penerima
+                            <label for="deskripsi" class="text-sm font-medium text-slate-700">
+                                Deskripsi Kegiatan / Penerima
                             </label>
                             <input
                                 type="text"
-                                name="event_name"
-                                id="event_name"
-                                value="{{ old('event_name') }}"
+                                name="deskripsi"
+                                id="deskripsi"
+                                value="{{ old('deskripsi') }}"
                                 placeholder="Contoh: Santunan Anak Yatim Desa A"
                                 class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                                 required
@@ -69,16 +69,16 @@
                         </div>
 
                         <div class="space-y-2">
-                            <label for="cost_amount" class="text-sm font-medium text-slate-700">
-                                Nominal Pentasarufan (Rp)
+                            <label for="jumlah_pentasarufan_ranting" class="text-sm font-medium text-slate-700">
+                                Jumlah Pentasarufan (Rp)
                             </label>
                             <input
                                 type="number"
-                                name="cost_amount"
-                                id="cost_amount"
+                                name="jumlah_pentasarufan_ranting"
+                                id="jumlah_pentasarufan_ranting"
                                 min="0"
                                 step="1"
-                                value="{{ old('cost_amount') }}"
+                                value="{{ old('jumlah_pentasarufan_ranting') }}"
                                 placeholder="Masukkan jumlah nominal"
                                 class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                                 required
@@ -86,16 +86,16 @@
                         </div>
 
                         <div class="space-y-2">
-                            <label for="penerima_manfaat" class="text-sm font-medium text-slate-700">
+                            <label for="jumlah_penerima_manfaat_ranting" class="text-sm font-medium text-slate-700">
                                 Jumlah Penerima Manfaat
                             </label>
                             <input
                                 type="number"
-                                name="penerima_manfaat"
-                                id="penerima_manfaat"
+                                name="jumlah_penerima_manfaat_ranting"
+                                id="jumlah_penerima_manfaat_ranting"
                                 min="0"
                                 step="1"
-                                value="{{ old('penerima_manfaat', 0) }}"
+                                value="{{ old('jumlah_penerima_manfaat_ranting', 0) }}"
                                 placeholder="Contoh: 10"
                                 class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                                 required
@@ -103,13 +103,13 @@
                         </div>
 
                         <div class="space-y-2 md:col-span-2">
-                            <label for="documentation_file" class="text-sm font-medium text-slate-700">
+                            <label for="file_dokumentasi" class="text-sm font-medium text-slate-700">
                                 Dokumentasi (Foto/PDF)
                             </label>
                             <input
                                 type="file"
-                                name="documentation_file"
-                                id="documentation_file"
+                                name="file_dokumentasi"
+                                id="file_dokumentasi"
                                 accept="image/*"
                                 class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-800 file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                             >
@@ -174,14 +174,14 @@
                                         class="rounded border-slate-300 text-slate-900 focus:ring-slate-300"
                                     >
                                 </th>
-                                <th class="px-6 py-4 font-semibold min-w-[120px]">Kode</th>
-                                <th class="px-6 py-4 font-semibold min-w-[100px]">Tanggal</th>
-                                <th class="px-6 py-4 font-semibold min-w-[200px]">Kegiatan</th>
-                                <th class="px-6 py-4 font-semibold min-w-[140px]">Nominal</th>
-                                <th class="px-6 py-4 font-semibold min-w-[100px] text-center">Penerima</th>
-                                <th class="px-6 py-4 font-semibold min-w-[100px]">Dokumentasi</th>
-                                <th class="px-6 py-4 font-semibold min-w-[100px]">Status</th>
-                                <th class="px-6 py-4 font-semibold text-right min-w-[100px]">Aksi</th>
+                                <th class="px-6 py-4 font-semibold min-w-[120px] text-center">Kode Transaksi</th>
+                                <th class="px-6 py-4 font-semibold min-w-[100px] text-center">Tanggal</th>
+                                <th class="px-6 py-4 font-semibold min-w-[200px] text-center">Deskripsi</th>
+                                <th class="px-6 py-4 font-semibold min-w-[140px] text-center">Jumlah Pentasarufan</th>
+                                <th class="px-6 py-4 font-semibold min-w-[100px] text-center">Jumlah Penerima Manfaat</th>
+                                <th class="px-6 py-4 font-semibold min-w-[100px] text-center">Dokumentasi</th>
+                                <th class="px-6 py-4 font-semibold min-w-[100px] text-center">Status</th>
+                                <th class="px-6 py-4 font-semibold min-w-[100px] text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -207,26 +207,26 @@
                                         @endif
                                     </td>
 
-                                    <td class="px-6 py-4 font-medium">{{ $dist->transaction_code }}</td>
+                                    <td class="px-6 py-4 font-medium">{{ $dist->distribution_code }}</td>
                                     <td class="px-6 py-4 text-xs">{{ \Carbon\Carbon::parse($dist->date)->format('d/m/Y') }}</td>
-                                    <td class="px-6 py-4 max-w-[200px] truncate" title="{{ $dist->event_name }}">
-                                        <div class="font-medium text-slate-900">{{ $dist->event_name }}</div>
-                                        <div class="text-[10px] text-slate-500">{{ $dist->pilar_type }}</div>
+                                    <td class="px-6 py-4 max-w-[200px] truncate" title="{{ $dist->deskripsi }}">
+                                        <div class="font-medium text-slate-900">{{ $dist->deskripsi }}</div>
+                                        <div class="text-[10px] text-slate-500">{{ $dist->jenis_pilar }}</div>
                                     </td>
-                                    <td class="px-6 py-4 font-semibold">Rp {{ number_format($dist->cost_amount, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4 font-semibold">Rp {{ number_format($dist->jumlah_pentasarufan_ranting, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
-                                            {{ $dist->penerima_manfaat ?? 0 }} Org
+                                            {{ $dist->jumlah_penerima_manfaat_ranting ?? 0 }} Org
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
-                                        @if($dist->documentation_file)
+                                        @if($dist->file_dokumentasi)
                                             <div class="group relative inline-block">
                                                 <img 
-                                                    src="{{ asset('storage/' . $dist->documentation_file) }}" 
+                                                    src="{{ asset($dist->file_dokumentasi) }}" 
                                                     alt="Dokumentasi" 
                                                     class="h-10 w-10 cursor-pointer rounded-lg object-cover ring-1 ring-slate-200 transition hover:ring-green-500"
-                                                    onclick="viewPhoto('{{ asset('storage/' . $dist->documentation_file) }}', '{{ $dist->event_name }}')"
+                                                    onclick="viewPhoto('{{ asset($dist->file_dokumentasi) }}', '{{ $dist->deskripsi }}')"
                                                 >
                                                 <div class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 rounded bg-slate-800 px-2 py-1 text-[10px] text-white opacity-0 transition group-hover:opacity-100">
                                                     Klik untuk lihat
@@ -257,10 +257,10 @@
                                                     title="Edit"
                                                     data-id="{{ $dist->id }}"
                                                     data-date="{{ \Carbon\Carbon::parse($dist->date)->format('Y-m-d') }}"
-                                                    data-pilar_type="{{ $dist->pilar_type }}"
-                                                    data-event_name="{{ $dist->event_name }}"
-                                                    data-cost_amount="{{ $dist->cost_amount }}"
-                                                    data-penerima_manfaat="{{ $dist->penerima_manfaat }}"
+                                                    data-jenis_pilar="{{ $dist->jenis_pilar }}"
+                                                    data-deskripsi="{{ $dist->deskripsi }}"
+                                                    data-jumlah_pentasarufan_ranting="{{ $dist->jumlah_pentasarufan_ranting }}"
+                                                    data-jumlah_penerima_manfaat_ranting="{{ $dist->jumlah_penerima_manfaat_ranting }}"
                                                     data-status="{{ $dist->status }}"
                                                     data-update_url="{{ route('ranting.distribution.update', $dist->id) }}"
                                                 >
@@ -333,14 +333,14 @@
                             </div>
 
                             <div class="space-y-2">
-                                <label for="edit_pilar_type" class="text-sm font-medium text-slate-700">Jenis Pilar</label>
+                                <label for="edit_jenis_pilar" class="text-sm font-medium text-slate-700">Jenis Pilar</label>
                                 <select
-                                    name="pilar_type"
-                                    id="edit_pilar_type"
+                                    name="jenis_pilar"
+                                    id="edit_jenis_pilar"
                                     class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                                     required
                                 >
-                                    <option value="" disabled selected>Pilih Pilar</option>
+                                    <option value="" disabled selected>Pilih Jenis Pilar</option>
                                     <option value="NU Care - Cerdas">NU Care - Cerdas</option>
                                     <option value="NU Care - Sehat">NU Care - Sehat</option>
                                     <option value="NU Care - Berdaya">NU Care - Berdaya</option>
@@ -350,21 +350,21 @@
                             </div>
 
                             <div class="space-y-2 md:col-span-2"> 
-                                <label for="edit_event_name" class="text-sm font-medium text-slate-700">Nama Kegiatan / Penerima</label>
+                                <label for="edit_deskripsi" class="text-sm font-medium text-slate-700">Deskripsi Kegiatan / Penerima</label>
                                 <input
                                     type="text"
-                                    name="event_name"
-                                    id="edit_event_name"
+                                    name="deskripsi"
+                                    id="edit_deskripsi"
                                     class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                                     required
                                 >
                             </div>
                             <div class="space-y-2">
-                                <label for="edit_cost_amount" class="text-sm font-medium text-slate-700">Nominal (Rp)</label>
+                                <label for="edit_jumlah_pentasarufan_ranting" class="text-sm font-medium text-slate-700">Jumlah Pentasarufan (Rp)</label>
                                 <input
                                     type="number"
-                                    name="cost_amount"
-                                    id="edit_cost_amount"
+                                    name="jumlah_pentasarufan_ranting"
+                                    id="edit_jumlah_pentasarufan_ranting"
                                     min="0"
                                     step="1"
                                     class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
@@ -373,11 +373,11 @@
                             </div>
 
                             <div class="space-y-2">
-                                <label for="edit_penerima_manfaat" class="text-sm font-medium text-slate-700">Penerima Manfaat</label>
+                                <label for="edit_jumlah_penerima_manfaat_ranting" class="text-sm font-medium text-slate-700">Jumlah Penerima Manfaat</label>
                                 <input
                                     type="number"
-                                    name="penerima_manfaat"
-                                    id="edit_penerima_manfaat"
+                                    name="jumlah_penerima_manfaat_ranting"
+                                    id="edit_jumlah_penerima_manfaat_ranting"
                                     min="0"
                                     step="1"
                                     class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
@@ -386,11 +386,11 @@
                             </div>
 
                             <div class="space-y-2 md:col-span-2">
-                                <label for="edit_documentation_file" class="text-sm font-medium text-slate-700">Dokumentasi (Baru)</label>
+                                <label for="edit_file_dokumentasi" class="text-sm font-medium text-slate-700">Dokumentasi (Baru)</label>
                                 <input
                                     type="file"
-                                    name="documentation_file"
-                                    id="edit_documentation_file"
+                                    name="file_dokumentasi"
+                                    id="edit_file_dokumentasi"
                                     accept="image/*"
                                     class="w-full text-xs"
                                 >
@@ -429,10 +429,10 @@
             const editForm = document.getElementById('editForm');
 
             const editDate = document.getElementById('edit_date');
-            const editPilarType = document.getElementById('edit_pilar_type');
-            const editEventName = document.getElementById('edit_event_name');
-            const editCostAmount = document.getElementById('edit_cost_amount');
-            const editPenerimaManfaat = document.getElementById('edit_penerima_manfaat');
+            const editJenisPilar = document.getElementById('edit_jenis_pilar');
+            const editDeskripsi = document.getElementById('edit_deskripsi');
+            const editJumlahPentasarufanRanting = document.getElementById('edit_jumlah_pentasarufan_ranting');
+            const editJumlahPenerimaManfaatRanting = document.getElementById('edit_jumlah_penerima_manfaat_ranting');
 
             function openEditModal() {
                 editModal.classList.remove('hidden');
@@ -448,10 +448,10 @@
                 button.addEventListener('click', function () {
                     editForm.action = this.dataset.update_url;
                     editDate.value = this.dataset.date;
-                    editPilarType.value = this.dataset.pilar_type;
-                    editEventName.value = this.dataset.event_name;
-                    editCostAmount.value = this.dataset.cost_amount;
-                    editPenerimaManfaat.value = this.dataset.penerima_manfaat;
+                    editJenisPilar.value = this.dataset.jenis_pilar;
+                    editDeskripsi.value = this.dataset.deskripsi;
+                    editJumlahPentasarufanRanting.value = this.dataset.jumlah_pentasarufan_ranting;
+                    editJumlahPenerimaManfaatRanting.value = this.dataset.jumlah_penerima_manfaat_ranting;
 
                     openEditModal();
                 });

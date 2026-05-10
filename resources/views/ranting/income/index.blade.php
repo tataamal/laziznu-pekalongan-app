@@ -51,11 +51,11 @@
                         </div>
 
                         <div class="space-y-2">
-                            <label for="jumlah_kaleng_aktif" class="text-sm font-medium text-slate-700">
-                                Jumlah Kaleng Aktif
+                            <label for="jumlah_kaleng" class="text-sm font-medium text-slate-700">
+                                Jumlah Kaleng
                             </label>
-                            <input type="number" name="jumlah_kaleng_aktif" id="jumlah_kaleng_aktif" min="0" step="1"
-                                value="{{ old('jumlah_kaleng_aktif', 0) }}" placeholder="Masukkan jumlah kaleng"
+                            <input type="number" name="jumlah_kaleng" id="jumlah_kaleng" min="0" step="1"
+                                value="{{ old('jumlah_kaleng', 0) }}" placeholder="Masukkan jumlah kaleng"
                                 class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                                 required>
                         </div>
@@ -64,99 +64,132 @@
                             <label class="text-sm font-medium text-slate-700">Status</label>
                             <div
                                 class="flex items-center h-[42px] px-4 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-600">
-                                on_process
+                                pending
                             </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="space-y-2">
-                            <label for="gross_profit" class="text-sm font-medium text-slate-700">
-                                Perolehan Total (Rp)
+                            <label for="pemasukan_koin_nu_kotor" class="text-sm font-medium text-slate-700">
+                                Perolehan Koin NU
                             </label>
-                            <input type="number" name="gross_profit" id="gross_profit" min="0" step="1"
-                                value="{{ old('gross_profit') }}" placeholder="Masukkan jumlah total"
+                            <input type="number" name="pemasukan_koin_nu_kotor" id="pemasukan_koin_nu_kotor" min="0" step="1"
+                                value="{{ old('pemasukan_koin_nu_kotor') }}" placeholder="Masukkan Perolehan KOIN NU"
                                 class="calc-input w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                                 required>
                         </div>
 
                         <div class="space-y-2">
-                            <label for="operating_expenses" class="text-sm font-medium text-slate-700">
-                                Jasa Petugas (Rp)
+                            <label for="jasa_petugas" class="text-sm font-medium text-slate-700">
+                                Jasa Petugas
                             </label>
-                            <input type="number" name="operating_expenses" id="operating_expenses" min="0"
-                                step="1" value="{{ old('operating_expenses') }}" placeholder="Masukkan jasa petugas"
+                            <input type="number" name="jasa_petugas" id="jasa_petugas" min="0"
+                                step="1" value="{{ old('jasa_petugas') }}" placeholder="Masukkan jasa petugas"
                                 class="calc-input w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                                 required>
                         </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2">
-                            <label for="net_income" class="text-sm font-medium text-slate-700">
-                                Perolehan Bersih (Rp)
-                            </label>
-                            <input type="number" name="net_income" id="net_income" value="0"
-                                class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
-                                readonly>
-                            <p class="text-xs text-slate-500">Otomatis: Perolehan Total - Jasa Petugas</p>
-                        </div>
 
                         <div class="space-y-2">
-                            <label for="percentage" class="text-sm font-medium text-slate-700">
-                                Presentase (%)
+                            <label for="pemasukan_koin_nu_bersih" class="text-sm font-medium text-slate-700">
+                                Perolehan Bersih
                             </label>
-                            <input type="number" name="percentage" id="percentage" value="60"
+                            <input type="number" name="pemasukan_koin_nu_bersih" id="pemasukan_koin_nu_bersih" value="0"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
                                 readonly>
-                            <p class="text-xs text-slate-500">Otomatis tetap 60% untuk ranting</p>
+                            <p class="text-xs text-slate-500">Perolehan Koin NU - Jasa Petugas</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="space-y-2">
-                            <label for="allowed_budget" class="text-sm font-medium text-slate-700">
-                                Dana dapat Digunakan (Rp)
+                            <label for="koin_nu_ranting" class="text-sm font-medium text-slate-700">
+                                Koin NU Ranting
                             </label>
-                            <input type="number" name="allowed_budget" id="allowed_budget" value="0"
+                            <input type="number" name="koin_nu_ranting" id="koin_nu_ranting" value="0"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
                                 readonly>
-                            <p class="text-xs text-slate-500">Otomatis: Perolehan Bersih × 60%</p>
+                            <p class="text-xs text-slate-500">Koin NU Ranting = 60% dari Perolehan Bersih</p>
                         </div>
-
                         <div class="space-y-2">
-                            <label for="hak_amil" class="text-sm font-medium text-slate-700">
-                                Dana Operasional Amil (Rp)
+                            <label for="koin_nu_mwc" class="text-sm font-medium text-slate-700">
+                                Koin NU MWC
                             </label>
-                            <input type="number" name="hak_amil" id="hak_amil" value="0"
+                            <input type="number" name="koin_nu_mwc" id="koin_nu_mwc" value="0"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
                                 readonly>
-                            <p class="text-xs text-slate-500">Otomatis: Dana dapat Digunakan × 20%</p>
+                            <p class="text-xs text-slate-500">Koin NU MWC = 35% dari Perolehan Bersih</p>
+                        </div>
+                        <div class="space-y-2">
+                            <label for="koin_nu_pc" class="text-sm font-medium text-slate-700">
+                                Koin NU PC
+                            </label>
+                            <input type="number" name="koin_nu_pc" id="koin_nu_pc" value="0"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
+                                readonly>
+                            <p class="text-xs text-slate-500">Koin NU PC = 5% dari Perolehan Bersih</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-2">
+                            <label for="hak_amil_ranting" class="text-sm font-medium text-slate-700">
+                                Hak Amil Ranting
+                            </label>
+                            <input type="number" name="hak_amil_ranting" id="hak_amil_ranting" value="0"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
+                                readonly>
+                            <p class="text-xs text-slate-500">Otomatis: Dana Koin NU Ranting × 20%</p>
+                        </div>
                         <div class="space-y-2">
                             <label for="hak_amil_mwc" class="text-sm font-medium text-slate-700">
-                                Dana Dapat Digunakan MWC (Rp)
+                                Hak Amil MWC
                             </label>
                             <input type="number" name="hak_amil_mwc" id="hak_amil_mwc" value="0"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
                                 readonly>
-                            <p class="text-xs text-slate-500">Otomatis: Perolehan Bersih × 35%</p>
+                            <p class="text-xs text-slate-500">Otomatis: Dana Koin NU MWC × 20%</p>
                         </div>
-
                         <div class="space-y-2">
                             <label for="hak_amil_pc" class="text-sm font-medium text-slate-700">
-                                Dana Dapat Digunakan PC (Rp)
+                                Hak Amil PC
                             </label>
                             <input type="number" name="hak_amil_pc" id="hak_amil_pc" value="0"
                                 class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
                                 readonly>
-                            <p class="text-xs text-slate-500">Otomatis: Perolehan Bersih × 5%</p>
+                            <p class="text-xs text-slate-500">Otomatis: Dana Koin NU PC × 20%</p>
                         </div>
                     </div>
 
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-2">
+                            <label for="dana_dapat_digunakan_ranting" class="text-sm font-medium text-slate-700">
+                                Dana Dapat Digunakan Ranting
+                            </label>
+                            <input type="number" name="dana_dapat_digunakan_ranting" id="dana_dapat_digunakan_ranting" value="0"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
+                                readonly>
+                            <p class="text-xs text-slate-500">Koin NU Ranting - Hak Amil Ranting</p>
+                        </div>
+                        <div class="space-y-2">
+                            <label for="dana_dapat_digunakan_mwc" class="text-sm font-medium text-slate-700">
+                                Dana Dapat Digunakan MWC
+                            </label>
+                            <input type="number" name="dana_dapat_digunakan_mwc" id="dana_dapat_digunakan_mwc" value="0"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
+                                readonly>
+                            <p class="text-xs text-slate-500">Koin NU MWC - Hak Amil MWC</p>
+                        </div>
+                        <div class="space-y-2">
+                            <label for="dana_dapat_digunakan_pc" class="text-sm font-medium text-slate-700">
+                                Dana Dapat Digunakan PC
+                            </label>
+                            <input type="number" name="dana_dapat_digunakan_pc" id="dana_dapat_digunakan_pc" value="0"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
+                                readonly>
+                            <p class="text-xs text-slate-500">Koin NU PC - Hak Amil PC</p>
+                        </div>
+                    </div>
                     <div class="flex items-center justify-end gap-3 pt-2">
                         <button type="reset"
                             class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
@@ -204,22 +237,23 @@
                                     <input type="checkbox" id="selectAll"
                                         class="rounded border-slate-300 text-slate-900 focus:ring-slate-300">
                                 </th>
-                                <th class="px-6 py-4 font-semibold">Kode</th>
-                                <th class="px-6 py-4 font-semibold">Tanggal</th>
-                                <th class="px-6 py-4 font-semibold">Jml Kaleng</th>
-                                <th class="px-6 py-4 font-semibold">Perolehan Total</th>
-                                <th class="px-6 py-4 font-semibold">Perolehan Bersih</th>
-                                <th class="px-6 py-4 font-semibold">Hak Amil</th>
-                                <th class="px-6 py-4 font-semibold">Hak Amil MWC</th>
-                                <th class="px-6 py-4 font-semibold">Hak Amil PC</th>
-                                <th class="px-6 py-4 font-semibold">Status</th>
-                                <th class="px-6 py-4 font-semibold text-right">Aksi</th>
+                                <th class="px-6 py-4 font-semibold text-center">Kode Transaksi</th>
+                                <th class="px-6 py-4 font-semibold text-center">Tanggal</th>
+                                <th class="px-6 py-4 font-semibold text-center">Jumlah Kaleng</th>
+                                <th class="px-6 py-4 font-semibold text-center">Pemasukan Koin NU</th>
+                                <th class="px-6 py-4 font-semibold text-center">Jasa Petugas</th>
+                                <th class="px-6 py-4 font-semibold text-center">Pemasukan Koin NU Bersih</th>
+                                <th class="px-6 py-4 font-semibold text-center">Koin NU Ranting</th>
+                                <th class="px-6 py-4 font-semibold text-center">Hak Amil Ranting</th>
+                                <th class="px-6 py-4 font-semibold text-center">Dana Dapat Digunakan Ranting</th>
+                                <th class="px-6 py-4 font-semibold text-center">Status</th>
+                                <th class="px-6 py-4 font-semibold text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             @forelse($items as $income)
                                 @php
-                                    $isValidated = $income->status === 'validated' || $income->status === 'rejected';
+                                    $isValidated = $income->status === 'approved' || $income->status === 'rejected';
                                 @endphp
                                 <tr class="text-sm text-slate-700 hover:bg-slate-50/50 transition">
                                     <td class="px-6 py-4">
@@ -234,17 +268,18 @@
 
                                     <td class="px-6 py-4 font-medium">{{ $income->transaction_code }}</td>
                                     <td class="px-6 py-4">{{ \Carbon\Carbon::parse($income->date)->format('d/m/Y') }}</td>
-                                    <td class="px-6 py-4">{{ $income->jumlah_kaleng_aktif ?? 0 }}</td>
-                                    <td class="px-6 py-4">Rp {{ number_format($income->gross_profit, 0, ',', '.') }}</td>
-                                    <td class="px-6 py-4">Rp {{ number_format($income->net_income, 0, ',', '.') }}</td>
-                                    <td class="px-6 py-4">Rp {{ number_format($income->hak_amil, 0, ',', '.') }}</td>
-                                    <td class="px-6 py-4">Rp {{ number_format($income->hak_amil_mwc, 0, ',', '.') }}</td>
-                                    <td class="px-6 py-4">Rp {{ number_format($income->hak_amil_pc, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4">{{ $income->jumlah_kaleng ?? 0 }}</td>
+                                    <td class="px-6 py-4">Rp {{ number_format($income->pemasukan_koin_nu_kotor, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4">Rp {{ number_format($income->jasa_petugas, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4">Rp {{ number_format($income->pemasukan_koin_nu_bersih, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4">Rp {{ number_format($income->koin_nu_ranting, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4">Rp {{ number_format($income->hak_amil_ranting, 0, ',', '.') }}</td>
+                                    <td class="px-6 py-4">Rp {{ number_format($income->dana_dapat_digunakan_ranting, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4">
-                                        @if ($income->status === 'validated')
+                                        @if ($income->status === 'approved')
                                             <span
                                                 class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
-                                                validated
+                                                approved
                                             </span>
                                         @else
                                             <span
@@ -261,15 +296,19 @@
                                                     class="edit-btn p-2 text-slate-400 hover:text-blue-600 transition"
                                                     title="Edit" data-id="{{ $income->id }}"
                                                     data-date="{{ \Carbon\Carbon::parse($income->date)->format('Y-m-d') }}"
-                                                    data-jumlah_kaleng_aktif="{{ $income->jumlah_kaleng_aktif }}"
-                                                    data-gross_profit="{{ $income->gross_profit }}"
-                                                    data-operating_expenses="{{ $income->operating_expenses }}"
-                                                    data-net_income="{{ $income->net_income }}"
-                                                    data-percentage="{{ $income->percentage }}"
-                                                    data-allowed_budget="{{ $income->allowed_budget }}"
-                                                    data-hak_amil="{{ $income->hak_amil }}"
+                                                    data-jumlah_kaleng="{{ $income->jumlah_kaleng }}"
+                                                    data-pemasukan_koin_nu_kotor="{{ $income->pemasukan_koin_nu_kotor }}"
+                                                    data-jasa_petugas="{{ $income->jasa_petugas }}"
+                                                    data-pemasukan_koin_nu_bersih="{{ $income->pemasukan_koin_nu_bersih }}"
+                                                    data-koin_nu_ranting="{{ $income->koin_nu_ranting }}"
+                                                    data-koin_nu_mwc="{{ $income->koin_nu_mwc }}"
+                                                    data-koin_nu_pc="{{ $income->koin_nu_pc }}"
+                                                    data-hak_amil_ranting="{{ $income->hak_amil_ranting }}"
                                                     data-hak_amil_mwc="{{ $income->hak_amil_mwc }}"
                                                     data-hak_amil_pc="{{ $income->hak_amil_pc }}"
+                                                    data-dana_dapat_digunakan_ranting="{{ $income->dana_dapat_digunakan_ranting }}"
+                                                    data-dana_dapat_digunakan_mwc="{{ $income->dana_dapat_digunakan_mwc }}"
+                                                    data-dana_dapat_digunakan_pc="{{ $income->dana_dapat_digunakan_pc }}"
                                                     data-status="{{ $income->status }}"
                                                     data-update_url="{{ route('ranting.income.update', $income->id) }}">
                                                     <i class="fas fa-edit"></i>
@@ -338,8 +377,8 @@
                             </div>
 
                             <div class="space-y-2">
-                                <label for="edit_jumlah_kaleng_aktif" class="text-sm font-medium text-slate-700">Jumlah Kaleng Aktif</label>
-                                <input type="number" name="jumlah_kaleng_aktif" id="edit_jumlah_kaleng_aktif" min="0" step="1"
+                                <label for="edit_jumlah_kaleng" class="text-sm font-medium text-slate-700">Jumlah Kaleng</label>
+                                <input type="number" name="jumlah_kaleng" id="edit_jumlah_kaleng" min="0" step="1"
                                     class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                                     required>
                             </div>
@@ -352,75 +391,87 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="space-y-2">
-                                <label for="edit_gross_profit" class="text-sm font-medium text-slate-700">Perolehan Total
-                                    (Rp)</label>
-                                <input type="number" name="gross_profit" id="edit_gross_profit" min="0"
-                                    step="1"
+                                <label for="edit_pemasukan_koin_nu_kotor" class="text-sm font-medium text-slate-700">Perolehan Koin NU</label>
+                                <input type="number" name="pemasukan_koin_nu_kotor" id="edit_pemasukan_koin_nu_kotor" min="0" step="1"
                                     class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                                     required>
                             </div>
 
                             <div class="space-y-2">
-                                <label for="edit_operating_expenses" class="text-sm font-medium text-slate-700">Jasa
-                                    Petugas (Rp)</label>
-                                <input type="number" name="operating_expenses" id="edit_operating_expenses"
-                                    min="0" step="1"
+                                <label for="edit_jasa_petugas" class="text-sm font-medium text-slate-700">Jasa Petugas</label>
+                                <input type="number" name="jasa_petugas" id="edit_jasa_petugas" min="0" step="1"
                                     class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
                                     required>
                             </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label for="edit_net_income" class="text-sm font-medium text-slate-700">Perolehan Bersih
-                                    (Rp)</label>
-                                <input type="number" id="edit_net_income"
-                                    class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
-                                    readonly>
-                            </div>
 
                             <div class="space-y-2">
-                                <label for="edit_percentage" class="text-sm font-medium text-slate-700">Presentase
-                                    (%)</label>
-                                <input type="number" id="edit_percentage"
+                                <label for="edit_pemasukan_koin_nu_bersih" class="text-sm font-medium text-slate-700">Perolehan Bersih</label>
+                                <input type="number" id="edit_pemasukan_koin_nu_bersih"
                                     class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
                                     readonly>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="space-y-2">
-                                <label for="edit_allowed_budget" class="text-sm font-medium text-slate-700">Dana dapat
-                                    Digunakan (Rp)</label>
-                                <input type="number" id="edit_allowed_budget"
+                                <label for="edit_koin_nu_ranting" class="text-sm font-medium text-slate-700">Koin NU Ranting</label>
+                                <input type="number" id="edit_koin_nu_ranting"
                                     class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
                                     readonly>
                             </div>
-
                             <div class="space-y-2">
-                                <label for="edit_hak_amil" class="text-sm font-medium text-slate-700">Dana Operasional
-                                    Amil (Rp)</label>
-                                <input type="number" name="hak_amil" id="edit_hak_amil"
+                                <label for="edit_koin_nu_mwc" class="text-sm font-medium text-slate-700">Koin NU MWC</label>
+                                <input type="number" id="edit_koin_nu_mwc"
+                                    class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
+                                    readonly>
+                            </div>
+                            <div class="space-y-2">
+                                <label for="edit_koin_nu_pc" class="text-sm font-medium text-slate-700">Koin NU PC</label>
+                                <input type="number" id="edit_koin_nu_pc"
                                     class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
                                     readonly>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="space-y-2">
-                                <label for="edit_hak_amil_mwc" class="text-sm font-medium text-slate-700">Hak Amil MWC
-                                    (Rp)</label>
-                                <input type="number" name="hak_amil_mwc" id="edit_hak_amil_mwc"
+                                <label for="edit_hak_amil_ranting" class="text-sm font-medium text-slate-700">Hak Amil Ranting</label>
+                                <input type="number" id="edit_hak_amil_ranting"
                                     class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
                                     readonly>
                             </div>
-
                             <div class="space-y-2">
-                                <label for="edit_hak_amil_pc" class="text-sm font-medium text-slate-700">Hak Amil PC
-                                    (Rp)</label>
-                                <input type="number" name="hak_amil_pc" id="edit_hak_amil_pc"
+                                <label for="edit_hak_amil_mwc" class="text-sm font-medium text-slate-700">Hak Amil MWC</label>
+                                <input type="number" id="edit_hak_amil_mwc"
+                                    class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
+                                    readonly>
+                            </div>
+                            <div class="space-y-2">
+                                <label for="edit_hak_amil_pc" class="text-sm font-medium text-slate-700">Hak Amil PC</label>
+                                <input type="number" id="edit_hak_amil_pc"
+                                    class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
+                                    readonly>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="space-y-2">
+                                <label for="edit_dana_dapat_digunakan_ranting" class="text-sm font-medium text-slate-700">Dana Dapat Digunakan Ranting</label>
+                                <input type="number" id="edit_dana_dapat_digunakan_ranting"
+                                    class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
+                                    readonly>
+                            </div>
+                            <div class="space-y-2">
+                                <label for="edit_dana_dapat_digunakan_mwc" class="text-sm font-medium text-slate-700">Dana Dapat Digunakan MWC</label>
+                                <input type="number" id="edit_dana_dapat_digunakan_mwc"
+                                    class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
+                                    readonly>
+                            </div>
+                            <div class="space-y-2">
+                                <label for="edit_dana_dapat_digunakan_pc" class="text-sm font-medium text-slate-700">Dana Dapat Digunakan PC</label>
+                                <input type="number" id="edit_dana_dapat_digunakan_pc"
                                     class="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-2.5 text-sm text-slate-700"
                                     readonly>
                             </div>
@@ -445,32 +496,46 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const grossProfit = document.getElementById('gross_profit');
-            const operatingExpenses = document.getElementById('operating_expenses');
-            const netIncome = document.getElementById('net_income');
-            const percentage = document.getElementById('percentage');
-            const allowedBudget = document.getElementById('allowed_budget');
-            const hakAmil = document.getElementById('hak_amil');
+            const grossProfit = document.getElementById('pemasukan_koin_nu_kotor');
+            const operatingExpenses = document.getElementById('jasa_petugas');
+            const netIncome = document.getElementById('pemasukan_koin_nu_bersih');
+            const koinNuRanting = document.getElementById('koin_nu_ranting');
+            const koinNuMwc = document.getElementById('koin_nu_mwc');
+            const koinNuPc = document.getElementById('koin_nu_pc');
+            const hakAmilRanting = document.getElementById('hak_amil_ranting');
             const hakAmilMwc = document.getElementById('hak_amil_mwc');
             const hakAmilPc = document.getElementById('hak_amil_pc');
+            const danaRanting = document.getElementById('dana_dapat_digunakan_ranting');
+            const danaMwc = document.getElementById('dana_dapat_digunakan_mwc');
+            const danaPc = document.getElementById('dana_dapat_digunakan_pc');
 
             function calculateCreateForm() {
                 const gross = parseInt(grossProfit.value || 0);
                 const expense = parseInt(operatingExpenses.value || 0);
 
                 const net = Math.max(gross - expense, 0);
-                const percentValue = 60;
-                const allowed = Math.round(net * (percentValue / 100));
-                const amil = Math.round(allowed * 0.20);
-                const amilMwc = Math.round(net * 0.35);
-                const amilPc = Math.round(net * 0.05);
+                const ranting = Math.round(net * 0.60);
+                const mwc = Math.round(net * 0.35);
+                const pc = Math.round(net * 0.05);
+                
+                const amilRanting = Math.round(ranting * 0.20);
+                const amilMwc = Math.round(mwc * 0.20);
+                const amilPc = Math.round(pc * 0.20);
+                
+                const danaR = ranting - amilRanting;
+                const danaM = mwc - amilMwc;
+                const danaP = pc - amilPc;
 
                 netIncome.value = net;
-                percentage.value = percentValue;
-                allowedBudget.value = allowed;
-                hakAmil.value = amil;
+                koinNuRanting.value = ranting;
+                koinNuMwc.value = mwc;
+                koinNuPc.value = pc;
+                hakAmilRanting.value = amilRanting;
                 hakAmilMwc.value = amilMwc;
                 hakAmilPc.value = amilPc;
+                danaRanting.value = danaR;
+                danaMwc.value = danaM;
+                danaPc.value = danaP;
             }
 
             if (grossProfit && operatingExpenses) {
@@ -486,15 +551,19 @@
             const editForm = document.getElementById('editForm');
 
             const editDate = document.getElementById('edit_date');
-            const editJumlahKalengAktif = document.getElementById('edit_jumlah_kaleng_aktif');
-            const editGrossProfit = document.getElementById('edit_gross_profit');
-            const editOperatingExpenses = document.getElementById('edit_operating_expenses');
-            const editNetIncome = document.getElementById('edit_net_income');
-            const editPercentage = document.getElementById('edit_percentage');
-            const editAllowedBudget = document.getElementById('edit_allowed_budget');
-            const editHakAmil = document.getElementById('edit_hak_amil');
+            const editJumlahKaleng = document.getElementById('edit_jumlah_kaleng');
+            const editGrossProfit = document.getElementById('edit_pemasukan_koin_nu_kotor');
+            const editOperatingExpenses = document.getElementById('edit_jasa_petugas');
+            const editNetIncome = document.getElementById('edit_pemasukan_koin_nu_bersih');
+            const editKoinNuRanting = document.getElementById('edit_koin_nu_ranting');
+            const editKoinNuMwc = document.getElementById('edit_koin_nu_mwc');
+            const editKoinNuPc = document.getElementById('edit_koin_nu_pc');
+            const editHakAmilRanting = document.getElementById('edit_hak_amil_ranting');
             const editHakAmilMwc = document.getElementById('edit_hak_amil_mwc');
             const editHakAmilPc = document.getElementById('edit_hak_amil_pc');
+            const editDanaRanting = document.getElementById('edit_dana_dapat_digunakan_ranting');
+            const editDanaMwc = document.getElementById('edit_dana_dapat_digunakan_mwc');
+            const editDanaPc = document.getElementById('edit_dana_dapat_digunakan_pc');
             const editStatus = document.getElementById('edit_status');
 
             function calculateEditForm() {
@@ -502,18 +571,28 @@
                 const expense = parseInt(editOperatingExpenses.value || 0);
 
                 const net = Math.max(gross - expense, 0);
-                const percentValue = 60;
-                const allowed = Math.round(net * (percentValue / 100));
-                const amil = Math.round(allowed * 0.20);
-                const amilMwc = Math.round(net * 0.35);
-                const amilPc = Math.round(net * 0.05);
+                const ranting = Math.round(net * 0.60);
+                const mwc = Math.round(net * 0.35);
+                const pc = Math.round(net * 0.05);
+                
+                const amilRanting = Math.round(ranting * 0.20);
+                const amilMwc = Math.round(mwc * 0.20);
+                const amilPc = Math.round(pc * 0.20);
+                
+                const danaR = ranting - amilRanting;
+                const danaM = mwc - amilMwc;
+                const danaP = pc - amilPc;
 
                 editNetIncome.value = net;
-                editPercentage.value = percentValue;
-                editAllowedBudget.value = allowed;
-                editHakAmil.value = amil;
+                editKoinNuRanting.value = ranting;
+                editKoinNuMwc.value = mwc;
+                editKoinNuPc.value = pc;
+                editHakAmilRanting.value = amilRanting;
                 editHakAmilMwc.value = amilMwc;
                 editHakAmilPc.value = amilPc;
+                editDanaRanting.value = danaR;
+                editDanaMwc.value = danaM;
+                editDanaPc.value = danaP;
             }
 
             function openEditModal() {
@@ -530,18 +609,21 @@
                 button.addEventListener('click', function() {
                     editForm.action = this.dataset.update_url;
                     editDate.value = this.dataset.date;
-                    editJumlahKalengAktif.value = this.dataset.jumlah_kaleng_aktif || 0;
-                    editGrossProfit.value = this.dataset.gross_profit;
-                    editOperatingExpenses.value = this.dataset.operating_expenses;
-                    editNetIncome.value = this.dataset.net_income;
-                    editPercentage.value = this.dataset.percentage;
-                    editAllowedBudget.value = this.dataset.allowed_budget;
-                    editHakAmil.value = this.dataset.hak_amil;
+                    editJumlahKaleng.value = this.dataset.jumlah_kaleng || 0;
+                    editGrossProfit.value = this.dataset.pemasukan_koin_nu_kotor;
+                    editOperatingExpenses.value = this.dataset.jasa_petugas;
+                    editNetIncome.value = this.dataset.pemasukan_koin_nu_bersih;
+                    editKoinNuRanting.value = this.dataset.koin_nu_ranting;
+                    editKoinNuMwc.value = this.dataset.koin_nu_mwc;
+                    editKoinNuPc.value = this.dataset.koin_nu_pc;
+                    editHakAmilRanting.value = this.dataset.hak_amil_ranting;
                     editHakAmilMwc.value = this.dataset.hak_amil_mwc;
                     editHakAmilPc.value = this.dataset.hak_amil_pc;
+                    editDanaRanting.value = this.dataset.dana_dapat_digunakan_ranting;
+                    editDanaMwc.value = this.dataset.dana_dapat_digunakan_mwc;
+                    editDanaPc.value = this.dataset.dana_dapat_digunakan_pc;
                     editStatus.textContent = this.dataset.status;
 
-                    calculateEditForm();
                     openEditModal();
                 });
             });

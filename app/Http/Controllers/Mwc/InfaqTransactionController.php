@@ -33,13 +33,9 @@ class InfaqTransactionController extends Controller
     public function index()
     {
         $wilayahId = Auth::user()->wilayah_id;
-
-        // Fetch Pemasukan
         $transactions = $this->transactionRepo->getTransactions($wilayahId);
-        // Fetch Pengeluaran
         $distributions = $this->distributionRepo->getDistributions($wilayahId);
 
-        // Map and combine them to match the old view expectation
         $mappedTransactions = $transactions->map(function ($item) {
             $item->transaction_type = 'Pemasukan';
             $item->transaction_date = $item->date;
@@ -51,6 +47,7 @@ class InfaqTransactionController extends Controller
             $item->allowed_budget = $item->infaq_yang_dapat_digunakan;
             $item->hak_amil_mwc = $item->hak_amil;
             $item->is_pemasukan = true;
+            $item->jasa_petugas = $item->jasa_petugas;
             return $item;
         });
 
@@ -81,7 +78,9 @@ class InfaqTransactionController extends Controller
             'infaq_type' => ['required', 'string', 'max:255'],
             'penerima_manfaat' => ['nullable', 'integer', 'min:0'],
             'description' => ['nullable', 'string'],
-            'gross_amount' => ['required', 'integer', 'min:0']
+            'gross_amount' => ['required', 'integer', 'min:0'],
+            'jasa_petugas' => ['nullable', 'integer', 'min:0'],
+            'file_dokumentasi' => ['required_if:transaction_type,Pengeluaran', 'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048']
         ]);
 
         DB::beginTransaction();
@@ -92,7 +91,7 @@ class InfaqTransactionController extends Controller
                     'jenis_infaq' => $validated['infaq_type'],
                     'keterangan' => $validated['description'] ?? '',
                     'pemasukan_infaq_kotor' => $validated['gross_amount'],
-                    'jasa_petugas' => 0,
+                    'jasa_petugas' => $validated['jasa_petugas'] ?? 0,
                 ];
                 $this->transactionService->createTransaction($data);
             } else {
@@ -110,6 +109,13 @@ class InfaqTransactionController extends Controller
                     'jumlah_total_distribusi' => $validated['gross_amount'],
                     'jumlah_penerima_manfaat' => $validated['penerima_manfaat'] ?? 0,
                 ];
+
+                if ($request->hasFile('file_dokumentasi')) {
+                    $data['file_dokumentasi'] = $this->saveDocumentationFile(
+                        $request->file('file_dokumentasi')
+                    );
+                }
+
                 $this->distributionService->createDistribution($data, Auth::user()->wilayah_id);
             }
 
@@ -130,6 +136,8 @@ class InfaqTransactionController extends Controller
             'penerima_manfaat' => ['nullable', 'integer', 'min:0'],
             'description' => ['nullable', 'string'],
             'gross_amount' => ['required', 'integer', 'min:0'],
+            'jasa_petugas' => ['nullable', 'integer', 'min:0'],
+            'file_dokumentasi' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048']
         ]);
 
         // Karena ID bisa dari transaksi atau distribusi, kita pisahkan dengan parameter tipe
@@ -143,6 +151,7 @@ class InfaqTransactionController extends Controller
                     'jenis_infaq' => $validated['infaq_type'],
                     'keterangan' => $validated['description'] ?? '',
                     'pemasukan_infaq_kotor' => $validated['gross_amount'],
+                    'jasa_petugas' => $validated['jasa_petugas'] ?? 0,
                 ];
                 $this->transactionService->updateTransaction($id, $data);
             } else {
@@ -153,6 +162,18 @@ class InfaqTransactionController extends Controller
                     'jumlah_total_distribusi' => $validated['gross_amount'],
                     'jumlah_penerima_manfaat' => $validated['penerima_manfaat'] ?? 0,
                 ];
+
+                if ($request->hasFile('file_dokumentasi')) {
+                    $item = $this->distributionRepo->findById($id);
+                    if ($item) {
+                        $this->deleteDocumentationFile($item->file_dokumentasi);
+                    }
+
+                    $data['file_dokumentasi'] = $this->saveDocumentationFile(
+                        $request->file('file_dokumentasi')
+                    );
+                }
+
                 $this->distributionService->updateDistribution($id, $data, Auth::user()->wilayah_id);
             }
 
@@ -184,5 +205,64 @@ class InfaqTransactionController extends Controller
         // Implementasi amannya adalah mengirim tipe, namun untuk sementara 
         // kita abaikan atau arahkan pengguna untuk hapus satuan.
         return redirect()->route('mwc.infaq-transaction.index')->withErrors(['error' => 'Bulk Delete dinonaktifkan pada menu ini setelah pembaruan arsitektur.']);
+    }
+
+    private function saveDocumentationFile($file): string
+    {
+        $basePath = env('UPLOAD_PUBLIC_PATH', public_path());
+        $destination = rtrim($basePath, '/') . '/distributions';
+    
+        if (!file_exists($destination)) {
+            mkdir($destination, 0755, true);
+        }
+    
+        $image = @imagecreatefromstring(file_get_contents($file));
+    
+        if ($image !== false) {
+            if (function_exists('exif_read_data')) {
+                $exif = @exif_read_data($file->getPathname());
+                if (!empty($exif['Orientation'])) {
+                    switch ($exif['Orientation']) {
+                        case 3:
+                            $image = imagerotate($image, 180, 0);
+                            break;
+                        case 6:
+                            $image = imagerotate($image, -90, 0);
+                            break;
+                        case 8:
+                            $image = imagerotate($image, 90, 0);
+                            break;
+                    }
+                }
+            }
+    
+            $filename = uniqid() . '_' . time() . '.webp';
+            $fullPath = $destination . '/' . $filename;
+    
+            imagewebp($image, $fullPath, 80);
+            imagedestroy($image);
+    
+            return 'distributions/' . $filename;
+        }
+    
+        $extension = $file->getClientOriginalExtension();
+        $filename = uniqid() . '_' . time() . '.' . $extension;
+        $file->move($destination, $filename);
+    
+        return 'distributions/' . $filename;
+    }
+
+    private function deleteDocumentationFile(?string $path): void
+    {
+        if (!$path) {
+            return;
+        }
+    
+        $basePath = env('UPLOAD_PUBLIC_PATH', public_path());
+        $fullPath = rtrim($basePath, '/') . '/' . ltrim($path, '/');
+    
+        if (file_exists($fullPath)) {
+            @unlink($fullPath);
+        }
     }
 }

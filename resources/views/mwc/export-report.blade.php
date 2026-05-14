@@ -82,11 +82,12 @@
                         <thead>
                             <tr class="bg-zinc-50/50">
                                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">No</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Tanggal</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Kode</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Tanggal</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Jenis Pilar</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Deskripsi</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Penerima</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Keterangan</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Jenis</th>
                                 <th class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-zinc-500">Nominal</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-zinc-500">Wilayah</th>
                             </tr>
@@ -95,25 +96,24 @@
                             @forelse($distributions as $index => $item)
                                 <tr class="hover:bg-zinc-50/50 transition-colors">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-zinc-900">{{ $index + 1 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-zinc-800">{{ $item['distribution_code'] }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-600">{{ $item['date'] }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-zinc-800">{{ $item['transaction_code'] }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-600">{{ $item['penerima_manfaat'] }}</td>
-                                    <td class="px-6 py-4 text-sm text-zinc-600 max-w-xs truncate" title="{{ $item['event_name'] }}">
-                                        {{ $item['event_name'] }}
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-600">{{ $item['jenis_pilar'] }}</td>
+                                    <td class="px-6 py-4 text-sm text-zinc-600 max-w-xs truncate" title="{{ $item['deskripsi'] }}">
+                                        {{ $item['deskripsi'] }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full {{ $item['type'] === 'Koin NU' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700' }}">
-                                            {{ $item['type'] }}
-                                        </span>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-600">{{ $item['jumlah_penerima_manfaat'] }}</td>
+                                    <td class="px-6 py-4 text-sm text-zinc-600 max-w-xs truncate" title="{{ $item['keterangan'] }}">
+                                        {{ $item['keterangan'] }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-zinc-900 text-right">
-                                        Rp {{ number_format($item['amount'], 0, ',', '.') }}
+                                        Rp {{ number_format($item['jumlah_total_distribusi'], 0, ',', '.') }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-600">{{ $item['wilayah'] }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-600">{{ $item['nama_wilayah'] }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="px-6 py-12 text-center text-zinc-500">
+                                    <td colspan="9" class="px-6 py-12 text-center text-zinc-500">
                                         <div class="flex flex-col items-center gap-2">
                                             <i class="fas fa-folder-open text-4xl text-zinc-200"></i>
                                             <p class="text-sm font-medium">Belum ada data dipilih atau tidak ada data yang sesuai filter.</p>
@@ -125,9 +125,9 @@
                         @if($distributions->isNotEmpty())
                             <tfoot class="bg-zinc-50/50 font-bold border-t-2 border-zinc-100">
                                 <tr>
-                                    <td colspan="6" class="px-6 py-4 text-right text-xs uppercase tracking-wider text-zinc-500">Total Pentasarufan</td>
+                                    <td colspan="7" class="px-6 py-4 text-right text-xs uppercase tracking-wider text-zinc-500">Total Pentasarufan</td>
                                     <td class="px-6 py-4 text-right text-base text-green-700">
-                                        Rp {{ number_format($distributions->sum('amount'), 0, ',', '.') }}
+                                        Rp {{ number_format($distributions->sum('jumlah_total_distribusi'), 0, ',', '.') }}
                                     </td>
                                     <td></td>
                                 </tr>

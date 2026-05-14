@@ -19,8 +19,6 @@ class ReportController extends Controller
 
     public function index(Request $request)
     {
-        // For MWC, we only allow filtering by date and source type.
-        // Wilayah is strictly bound to the authenticated user's wilayah.
         $filters = $request->only(['start_date', 'end_date', 'source_type']);
         $filters['wilayah_id'] = auth()->user()->wilayah_id;
         

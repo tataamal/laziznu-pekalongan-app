@@ -232,7 +232,7 @@
                     </button>
                 </div>
 
-                <form id="infaqForm" method="POST" class="space-y-6">
+                <form id="infaqForm" method="POST" class="space-y-6" enctype="multipart/form-data">
                     @csrf
                     <div id="methodField"></div>
 
@@ -258,11 +258,18 @@
                         </div>
                     </div>
 
-                    <div class="space-y-2">
-                        <label for="infaq_type" class="text-sm font-semibold text-slate-700 ml-1">Jenis Infaq</label>
-                        <select name="infaq_type" id="infaq_type" required
-                            class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 p-3.5 text-sm focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-500/10">
-                        </select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label for="infaq_type" class="text-sm font-semibold text-slate-700 ml-1">Jenis Infaq</label>
+                            <select name="infaq_type" id="infaq_type" required
+                                class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 p-3.5 text-sm focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-500/10">
+                            </select>
+                        </div>
+                        <div class="space-y-2" id="jasaPetugasContainer">
+                            <label for="jasa_petugas" class="text-sm font-semibold text-slate-700 ml-1">Jasa Petugas (Rp)</label>
+                            <input type="number" name="jasa_petugas" id="jasa_petugas" min="0" value="0"
+                                class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 p-3.5 text-sm focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-500/10">
+                        </div>
                     </div>
 
                     {{-- Jenis Pilar (Akan di-hide jika Pemasukan) --}}
@@ -293,6 +300,12 @@
                             (Opsional)</label>
                         <textarea name="description" id="description" rows="2"
                             class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 p-3.5 text-sm focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-500/10"></textarea>
+                    </div>
+
+                    <div class="space-y-2" id="fileDokumentasiContainer">
+                        <label for="file_dokumentasi" class="text-sm font-semibold text-slate-700 ml-1">File Dokumentasi (.jpg, .png)</label>
+                        <input type="file" name="file_dokumentasi" id="file_dokumentasi" accept=".jpg,.jpeg,.png"
+                            class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 p-3.5 text-sm focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-500/10">
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -371,6 +384,9 @@
                 const grossInput = document.getElementById('gross_amount');
                 if (grossInput) grossInput.addEventListener('input', calculateNet);
 
+                const jasaPetugasInput = document.getElementById('jasa_petugas');
+                if (jasaPetugasInput) jasaPetugasInput.addEventListener('input', calculateNet);
+
                 const selectAllBoxes = document.querySelectorAll('.select-all-cb');
                 selectAllBoxes.forEach(box => {
                     box.addEventListener('change', function() {
@@ -394,6 +410,8 @@
                 const infaqTypeSelect = document.getElementById('infaq_type');
                 const percentageContainer = document.getElementById('percentageContainer');
                 const netDisplayContainer = document.getElementById('netDisplayContainer');
+                const jasaPetugasContainer = document.getElementById('jasaPetugasContainer');
+                const fileDokumentasiContainer = document.getElementById('fileDokumentasiContainer');
 
                 if (type === 'Pemasukan') {
                     // Sembunyikan Pilar & Penerima jika Pemasukan
@@ -402,6 +420,8 @@
 
                     percentageContainer.classList.remove('hidden');
                     netDisplayContainer.classList.remove('hidden');
+                    jasaPetugasContainer.classList.remove('hidden');
+                    fileDokumentasiContainer.classList.add('hidden');
                     container.classList.add('hidden');
                     input.value = 0;
                 } else {
@@ -411,6 +431,8 @@
 
                     percentageContainer.classList.add('hidden');
                     netDisplayContainer.classList.add('hidden');
+                    jasaPetugasContainer.classList.add('hidden');
+                    fileDokumentasiContainer.classList.remove('hidden');
                     container.classList.remove('hidden');
                 }
 
@@ -461,6 +483,7 @@
                 fpModal.setDate(new Date()); // Set hari ini
 
                 handleTypeChange();
+                document.getElementById('jasa_petugas').value = 0;
                 calculateNet();
                 modal.classList.remove('hidden');
             }
@@ -480,6 +503,7 @@
                 document.getElementById('penerima_manfaat').value = item.penerima_manfaat;
                 document.getElementById('description').value = item.description;
                 document.getElementById('gross_amount').value = item.gross_amount;
+                document.getElementById('jasa_petugas').value = item.jasa_petugas || 0;
 
                 calculateNet();
                 modal.classList.remove('hidden');
@@ -491,8 +515,14 @@
 
             function calculateNet() {
                 const gross = parseFloat(document.getElementById('gross_amount').value) || 0;
+                const jasaPetugas = parseFloat(document.getElementById('jasa_petugas').value) || 0;
                 const type = document.getElementById('transaction_type').value;
-                const net = type === 'Pemasukan' ? Math.floor(gross - (gross * 0.1)) : gross;
+                
+                let net = gross;
+                if (type === 'Pemasukan') {
+                    const bersih = Math.max(gross - jasaPetugas, 0);
+                    net = Math.floor(bersih - (bersih * 0.1));
+                }
 
                 document.getElementById('netDisplay').textContent = new Intl.NumberFormat('id-ID', {
                     style: 'currency',

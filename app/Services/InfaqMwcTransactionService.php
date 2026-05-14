@@ -18,7 +18,6 @@ class InfaqMwcTransactionService
     public function createTransaction(array $data): InfaqMwcTransaction
     {
         $calculatedData = $this->calculateFields($data['pemasukan_infaq_kotor'], $data['jasa_petugas'] ?? 0);
-        
         $transactionData = array_merge($data, $calculatedData);
         $transactionData['transaction_code'] = $this->generateTransactionCode();
         $transactionData['user_id'] = Auth::id();
@@ -46,11 +45,7 @@ class InfaqMwcTransactionService
     private function calculateFields(int $kotor, int $jasaPetugas): array
     {
         $bersih = max($kotor - $jasaPetugas, 0);
-
-        // Amil 10%
         $hakAmil = (int) round($bersih * 0.10);
-
-        // Dana Dapat Digunakan
         $danaDigunakan = $bersih - $hakAmil;
 
         return [

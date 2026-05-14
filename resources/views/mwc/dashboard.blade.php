@@ -77,7 +77,7 @@
             <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
                 <div class="text-sm font-medium text-zinc-600">Saldo KOIN NU yang dapat digunakan MWC {{ $wilayahName }}</div>
                 <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp
-                    {{ number_format($dana_koin_nu_dapat_digunakan_mwc ?? 0, 0, ',', '.') }}</div>
+                    {{ number_format($dana_koin_nu_dapat_digunakan_mwc - $totalPengeluaranKoinNuMwc ?? 0, 0, ',', '.') }}</div>
                 <div class="mt-3 text-xs text-zinc-500">Total saldo yang dapat digunakan MWC {{ $wilayahName }}</div>
             </div>
 
@@ -108,7 +108,7 @@
             <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
                 <div class="text-sm font-medium text-zinc-600">Infaq yang dapat digunakan MWC {{ $wilayahName }}</div>
                 <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp
-                    {{ number_format($infaq_dapat_digunakan_mwc ?? 0, 0, ',', '.') }}</div>
+                    {{ number_format($infaq_dapat_digunakan_mwc - $totalPengeluaranInfaqMwc ?? 0, 0, ',', '.') }}</div>
                 <div class="mt-3 text-xs text-zinc-500">Total infaq yang dapat digunakan MWC {{ $wilayahName }}</div>
             </div>
         </section>

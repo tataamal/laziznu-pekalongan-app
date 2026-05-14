@@ -21,13 +21,14 @@ class ReportService
         $endDate = $filters['end_date'] ?? null;
         $wilayahId = $filters['wilayah_id'] ?? null;
         $isPc = $filters['is_pc'] ?? false;
+        $isRanting = $filters['is_ranting'] ?? false;
         $sourceType = $filters['source_type'] ?? 'semua'; // semua, koin_nu, infaq_lainnya
 
         $data = collect();
 
         // 1. Fetch from KoinNuDistribution
         if ($sourceType === 'semua' || $sourceType === 'koin_nu') {
-            $queryDist = KoinNuDistribution::with('wilayah');
+            $queryDist = KoinNuDistribution::with(['wilayah', 'ranting']);
 
             if ($startDate) $queryDist->where('date', '>=', $startDate);
             if ($endDate) $queryDist->where('date', '<=', $endDate);
@@ -35,21 +36,37 @@ class ReportService
                 $queryDist->where('wilayah_id', $wilayahId);
             }
 
-            $distributions = $queryDist->get()->map(function ($item) use ($isPc) {
-                $amount = $isPc ? $item->jumlah_pentasarufan_pc : $item->jumlah_pentasarufan_mwc;
-                $penerima = $isPc ? $item->jumlah_penerima_manfaat_pc : $item->jumlah_penerima_manfaat_mwc;
+            if (!$isPc && !$isRanting) {
+                $queryDist->where('jumlah_pentasarufan_mwc', '>', 0);
+            } elseif ($isPc && !$isRanting) {
+                $queryDist->where('jumlah_pentasarufan_pc', '>', 0);
+            } elseif ($isRanting) {
+                $queryDist->where('jumlah_pentasarufan_ranting', '>', 0);
+            }
+
+            $distributions = $queryDist->get()->map(function ($item) use ($isPc, $isRanting) {
+                if ($isRanting) {
+                    $amount = $item->jumlah_pentasarufan_ranting;
+                    $penerima = $item->jumlah_penerima_manfaat_ranting;
+                } elseif ($isPc) {
+                    $amount = $item->jumlah_pentasarufan_pc;
+                    $penerima = $item->jumlah_penerima_manfaat_pc;
+                } else {
+                    $amount = $item->jumlah_pentasarufan_mwc;
+                    $penerima = $item->jumlah_penerima_manfaat_mwc;
+                }
 
                 // Hanya ambil yang ada nilainya di level ini
                 if ($amount > 0) {
                     return [
+                        'distribution_code' => $item->distribution_code ?? '-',
                         'date' => $item->date,
-                        'transaction_code' => $item->distribution_code,
-                        'penerima_manfaat' => $penerima,
-                        'event_name' => $item->deskripsi,
-                        'amount' => $amount,
-                        'type' => 'Koin NU',
-                        'wilayah' => $item->wilayah->nama_wilayah ?? '-',
-                        'status' => $item->status,
+                        'jenis_pilar' => $item->jenis_pilar ?? 'Koin NU',
+                        'deskripsi' => $item->deskripsi,
+                        'jumlah_penerima_manfaat' => $penerima,
+                        'keterangan' => $item->deskripsi,
+                        'jumlah_total_distribusi' => $amount,
+                        'nama_wilayah' => $item->wilayah->nama_wilayah ?? '-',
                     ];
                 }
                 return null;
@@ -85,14 +102,14 @@ class ReportService
 
                 $infaqDistributions = $query->get()->map(function ($item) {
                     return [
+                        'distribution_code' => $item->distribution_code,
                         'date' => $item->date,
-                        'transaction_code' => $item->distribution_code,
-                        'penerima_manfaat' => $item->jumlah_penerima_manfaat,
-                        'event_name' => $item->deskripsi ?: '-',
-                        'amount' => $item->jumlah_total_distribusi,
-                        'type' => $item->jenis_pilar,
-                        'wilayah' => $item->wilayah->nama_wilayah ?? '-',
-                        'status' => 'Selesai',
+                        'jenis_pilar' => $item->jenis_pilar,
+                        'deskripsi' => $item->deskripsi,
+                        'jumlah_penerima_manfaat' => $item->jumlah_penerima_manfaat,
+                        'keterangan' => $item->keterangan ?? '-',
+                        'jumlah_total_distribusi' => $item->jumlah_total_distribusi,
+                        'nama_wilayah' => $item->wilayah->nama_wilayah ?? '-',
                     ];
                 });
             }

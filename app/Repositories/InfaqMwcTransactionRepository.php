@@ -104,7 +104,7 @@ class InfaqMwcTransactionRepository
         return InfaqMwcTransaction::where('wilayah_id', $wilayahId)
             ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
             ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
-            ->sum('pemasukan_infaq_kotor');
+            ->sum('pemasukan_infaq_bersih');
     }
     
     public function getHakAmilMwc(

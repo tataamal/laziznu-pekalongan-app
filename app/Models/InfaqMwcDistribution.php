@@ -18,10 +18,16 @@ class InfaqMwcDistribution extends Model
         "keterangan",
         "jumlah_total_distribusi",
         "file_dokumentasi",
+        "wilayah_id",
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function wilayah()
+    {
+        return $this->belongsTo(Wilayah::class);
     }
 }

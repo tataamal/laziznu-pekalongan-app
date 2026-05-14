@@ -18,6 +18,7 @@ class InfaqMwcTransaction extends Model
         "pemasukan_infaq_bersih",
         "hak_amil",
         "infaq_yang_dapat_digunakan",
+        "wilayah_id",
     ];
 
     public function user()

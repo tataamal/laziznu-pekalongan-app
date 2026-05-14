@@ -136,6 +136,75 @@ class KoinNuTransactionRepository
             ->get();
     }
 
+    public function getRequestApprovalKoinNuMwc(
+        int $wilayahId,
+        ?string $startDate = null,
+        ?string $endDate = null,
+        array $filters = []
+    ): Collection {
+        return KoinNuTransaction::query()
+            ->select([
+                ...$this->commonColumns,
+                'koin_nu_ranting',
+                'koin_nu_mwc',
+                'koin_nu_pc',
+                'dana_dapat_digunakan_ranting',
+                'dana_dapat_digunakan_mwc',
+                'dana_dapat_digunakan_pc',
+                'hak_amil_ranting',
+                'hak_amil_mwc',
+                'hak_amil_pc',
+                'ranting_id',
+            ])
+            ->with('ranting')
+            ->where('wilayah_id', $wilayahId)
+            ->where('status', 'pending')
+            ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
+            ->when(!empty($filters['transaction_code']), fn($q) => $q->where('transaction_code', 'like', '%' . $filters['transaction_code'] . '%'))
+            ->when(!empty($filters['ranting_name']), fn($q) => $q->whereHas('ranting', fn($q2) => $q2->where('nama_ranting', 'like', '%' . $filters['ranting_name'] . '%')))
+            ->orderByDesc('date')
+            ->get();
+    }
+
+    public function getHistoryKoinNuMwc(
+        int $wilayahId,
+        ?string $startDate = null,
+        ?string $endDate = null,
+        array $filters = []
+    ): Collection {
+        return KoinNuTransaction::query()
+            ->select([
+                ...$this->commonColumns,
+                'koin_nu_ranting',
+                'koin_nu_mwc',
+                'koin_nu_pc',
+                'dana_dapat_digunakan_ranting',
+                'dana_dapat_digunakan_mwc',
+                'dana_dapat_digunakan_pc',
+                'hak_amil_ranting',
+                'hak_amil_mwc',
+                'hak_amil_pc',
+                'ranting_id',
+            ])
+            ->where('wilayah_id', $wilayahId)
+            ->with('ranting')
+            ->whereIn('status', ['approved', 'rejected', 'validated'])
+            ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
+            ->when(!empty($filters['transaction_code']), fn($q) => $q->where('transaction_code', 'like', '%' . $filters['transaction_code'] . '%'))
+            ->when(!empty($filters['ranting_name']), fn($q) => $q->whereHas('ranting', fn($q2) => $q2->where('nama_ranting', 'like', '%' . $filters['ranting_name'] . '%')))
+            ->when(!empty($filters['status']) && $filters['status'] !== 'all', function($q) use ($filters) {
+                if ($filters['status'] === 'validated') {
+                    $q->whereIn('status', ['validated', 'approved']);
+                } else {
+                    $q->where('status', $filters['status']);
+                }
+            })
+            ->orderByDesc('date')
+            ->get();
+    }
+
     /**
      * Ambil data koin NU MWC yang di-group per ranting.
      */
@@ -271,7 +340,7 @@ class KoinNuTransactionRepository
     public function create(array $data): KoinNuTransaction
     {
         $transaction = KoinNuTransaction::create($data);
-        
+
         // Invalidate cache since new data is added
         if (isset($data['ranting_id'])) {
             $this->bumpCacheVersion("ranting:{$data['ranting_id']}");

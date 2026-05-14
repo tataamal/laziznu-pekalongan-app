@@ -7,48 +7,95 @@
     <div class="w-full space-y-8">
         {{-- Filter & Search Section --}}
         <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {{-- Global Search --}}
-                <div class="space-y-2">
-                    <label for="searchInput" class="text-xs font-semibold uppercase tracking-wider text-slate-500 ml-1">Cari Laporan</label>
-                    <div class="relative">
-                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input 
-                            type="text" 
-                            id="searchInput" 
-                            placeholder="Cari kode, nama acara, ranting..." 
-                            class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-3 pl-11 pr-4 text-sm transition focus:border-green-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-green-500/10"
-                        >
-                    </div>
-                </div>
-
-                {{-- Date Filter --}}
-                <div class="space-y-2">
-                    <label for="dateFilter" class="text-xs font-semibold uppercase tracking-wider text-slate-500 ml-1">Filter Tanggal</label>
-                    <div class="relative">
-                        <i class="fas fa-calendar-alt absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input 
-                            type="text" 
-                            id="dateFilter" 
-                            placeholder="Pilih rentang tanggal..." 
-                            class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-3 pl-11 pr-4 text-sm transition focus:border-green-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-green-500/10"
-                        >
-                    </div>
-                </div>
-
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h3 class="text-lg font-bold text-slate-800">Filter Data</h3>
                 {{-- Stats Summary --}}
-                <div class="flex items-center justify-end">
-                    <div class="px-6 py-3 bg-amber-50 rounded-2xl border border-amber-100 flex items-center gap-4">
-                        <div class="h-10 w-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div>
-                            <div class="text-[10px] font-bold uppercase text-amber-500 tracking-tight">Menunggu Persetujuan</div>
-                            <div class="text-xl font-bold text-amber-900 leading-none">{{ $items->count() }} <span class="text-xs font-medium text-amber-700/60 uppercase ml-1">Laporan</span></div>
-                        </div>
+                <div class="px-6 py-3 bg-amber-50 rounded-2xl border border-amber-100 flex items-center gap-4">
+                    <div class="h-10 w-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-bold uppercase text-amber-500 tracking-tight">Menunggu Persetujuan</div>
+                        <div class="text-xl font-bold text-amber-900 leading-none">{{ $items->count() }} <span class="text-xs font-medium text-amber-700/60 uppercase ml-1">Laporan</span></div>
                     </div>
                 </div>
             </div>
+
+            <form action="{{ route('mwc.approval-distribution-koin-nu') }}" method="GET">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {{-- Kode Transaksi --}}
+                    <div class="space-y-2">
+                        <label for="transaction_code" class="text-xs font-semibold uppercase tracking-wider text-slate-500 ml-1">Kode Transaksi</label>
+                        <div class="relative">
+                            <i class="fas fa-barcode absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input 
+                                type="text" 
+                                name="transaction_code" 
+                                id="transaction_code" 
+                                value="{{ request('transaction_code') }}"
+                                placeholder="Kode Transaksi" 
+                                class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-3 pl-11 pr-4 text-sm transition focus:border-green-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-green-500/10"
+                            >
+                        </div>
+                    </div>
+
+                    {{-- Nama Ranting --}}
+                    <div class="space-y-2">
+                        <label for="ranting_name" class="text-xs font-semibold uppercase tracking-wider text-slate-500 ml-1">Nama Ranting</label>
+                        <div class="relative">
+                            <i class="fas fa-mosque absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input 
+                                type="text" 
+                                name="ranting_name" 
+                                id="ranting_name" 
+                                value="{{ request('ranting_name') }}"
+                                placeholder="Nama Ranting" 
+                                class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-3 pl-11 pr-4 text-sm transition focus:border-green-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-green-500/10"
+                            >
+                        </div>
+                    </div>
+
+                    {{-- Status --}}
+                    <div class="space-y-2">
+                        <label for="status" class="text-xs font-semibold uppercase tracking-wider text-slate-500 ml-1">Status</label>
+                        <div class="relative">
+                            <i class="fas fa-info-circle absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <select 
+                                name="status" 
+                                id="status" 
+                                class="w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-3 pl-11 pr-4 text-sm transition focus:border-green-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-green-500/10 appearance-none"
+                            >
+                                <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Semua Status</option>
+                                <option value="on_process" {{ request('status') == 'on_process' ? 'selected' : '' }}>Menunggu</option>
+                                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
+                                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Date Filter --}}
+                    <div class="space-y-2">
+                        <label for="date_range" class="text-xs font-semibold uppercase tracking-wider text-slate-500 ml-1">Filter Tanggal</label>
+                        <div class="relative">
+                            <i class="fas fa-calendar-alt absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input 
+                                type="text" 
+                                name="date_range" 
+                                id="date_range" 
+                                value="{{ request('date_range') }}"
+                                placeholder="Pilih rentang tanggal..." 
+                                autocomplete="off"
+                                class="flatpickr-date w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-3 pl-11 pr-4 text-sm transition focus:border-green-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-green-500/10"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end mt-4 gap-2">
+                    <a href="{{ route('mwc.approval-distribution-koin-nu') }}" class="px-4 py-2 bg-slate-100 text-slate-600 text-sm font-semibold rounded-xl hover:bg-slate-200 transition">Reset</a>
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-xl hover:bg-green-700 transition">Cari</button>
+                </div>
+            </form>
         </div>
 
         {{-- Table Section --}}
@@ -67,9 +114,7 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @forelse($items as $item)
-                            <tr class="hover:bg-slate-50/50 transition-colors approval-row" 
-                                data-search="{{ strtolower($item->transaction_code . ' ' . $item->event_name . ' ' . $item->user->name . ' ' . $item->pilar_type) }}"
-                                data-date="{{ $item->date }}">
+                            <tr class="hover:bg-slate-50/50 transition-colors">
                                 <td class="px-6 py-5">
                                     <div class="font-bold text-slate-900 leading-tight">{{ $item->transaction_code }}</div>
                                     <div class="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
@@ -220,58 +265,21 @@
     </div>
 
     @push('vite-scripts')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.getElementById('searchInput');
-            const dateFilter = document.getElementById('dateFilter');
-            const tableRows = document.querySelectorAll('.approval-row');
-
             // Initialize Flatpickr
-            const fp = flatpickr("#dateFilter", {
+            const fp = flatpickr(".flatpickr-date", {
                 mode: "range",
                 dateFormat: "Y-m-d",
-                altInput: true,
-                altFormat: "d M Y",
+                static: true,
                 onChange: function(selectedDates, dateStr, instance) {
-                    filterTable();
+                    if (selectedDates.length === 2) {
+                        instance.element.closest('form').submit();
+                    }
                 }
             });
-
-            function filterTable() {
-                const query = searchInput.value.toLowerCase();
-                const selectedDates = fp.selectedDates;
-                
-                tableRows.forEach(row => {
-                    const searchData = row.getAttribute('data-search');
-                    const rowDateStr = row.getAttribute('data-date');
-                    const rowDate = new Date(rowDateStr);
-                    rowDate.setHours(0,0,0,0);
-
-                    const matchesSearch = searchData.includes(query);
-                    
-                    let matchesDate = true;
-                    if (selectedDates.length === 1) {
-                        const start = new Date(selectedDates[0]);
-                        start.setHours(0,0,0,0);
-                        matchesDate = rowDate.getTime() === start.getTime();
-                    } else if (selectedDates.length === 2) {
-                        const start = new Date(selectedDates[0]);
-                        const end = new Date(selectedDates[1]);
-                        start.setHours(0,0,0,0);
-                        end.setHours(23,59,59,999);
-                        matchesDate = rowDate >= start && rowDate <= end;
-                    }
-
-                    if (matchesSearch && matchesDate) {
-                        row.classList.remove('hidden');
-                    } else {
-                        row.classList.add('hidden');
-                    }
-                });
-            }
-
-            searchInput.addEventListener('input', filterTable);
 
             @if(session('success'))
                 Swal.fire({

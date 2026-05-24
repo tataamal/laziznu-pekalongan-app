@@ -7,8 +7,8 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\KoinNuTransaction;
 use App\Models\KoinNuDistribution;
-use App\Models\infaq_pc_transactions;
-use App\Models\infaq_pc_distributions;
+use App\Models\InfaqPcTransaction;
+use App\Models\InfaqPcDistribution;
 use App\Models\InfaqMwcTransaction;
 use App\Models\InfaqMwcDistribution;
 use Carbon\Carbon;
@@ -153,7 +153,7 @@ class TransactionSeeder extends Seeder
                 $amil = $bersih * 0.2;
                 $digunakan = $bersih - $amil;
 
-                infaq_pc_transactions::create([
+                InfaqPcTransaction::create([
                     'user_id' => $userPc->id,
                     'transaction_code' => 'IPC' . str_pad($i, 5, '0', STR_PAD_LEFT),
                     'date' => $baseDate->copy()->addDays(rand(0, 150)),
@@ -166,7 +166,7 @@ class TransactionSeeder extends Seeder
                     'infaq_yang_dapat_digunakan' => $digunakan,
                 ]);
 
-                infaq_pc_distributions::create([
+                InfaqPcDistribution::create([
                     'user_id' => $userPc->id,
                     'distribution_code' => 'DPC' . str_pad($i, 5, '0', STR_PAD_LEFT),
                     'date' => $baseDate->copy()->addDays(rand(0, 150)),

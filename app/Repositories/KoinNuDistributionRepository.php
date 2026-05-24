@@ -94,6 +94,14 @@ class KoinNuDistributionRepository
             ->get();
     }
 
+    /**
+     * Get Data Distribusi Koin NU PC.
+     * @param $startDate
+     * @param $endDate
+     * @param $jenisPilar
+     * @return Collection
+     * Daftar distribusi level PC (untuk halaman list PC, lihat seluruh data).
+     */
     public function getDistributionsPc(
         ?string $startDate = null,
         ?string $endDate = null,
@@ -106,8 +114,24 @@ class KoinNuDistributionRepository
             ->get();
     }
 
-    // ===== SUMMARY METHODS (dengan cache) =====
+    /**
+     * Sum Distribusi Koin NU PC
+     * @param $startDate
+     * @param $endDate
+     * @param $jenisPilar
+     * @return int
+     */
+    public function sumDistributionsKoinNuPc(
+        ?string $startDate = null,
+        ?string $endDate = null,
+        ?string $jenisPilar = null
+    ): int {
+        return $this->approvedQuery($startDate, $endDate)
+            ->when($jenisPilar, fn($q) => $q->where('jenis_pilar', $jenisPilar))
+            ->sum('jumlah_pentasarufan_pc');
+    }
 
+    // ===== SUMMARY METHODS (dengan cache) =====
     public function getSummaryRanting(
         int $rantingId,
         ?string $startDate = null,
@@ -184,7 +208,7 @@ class KoinNuDistributionRepository
     public function create(array $data): KoinNuDistribution
     {
         $distribution = KoinNuDistribution::create($data);
-        
+
         if (isset($data['ranting_id'])) {
             $this->bumpCacheVersion("ranting:{$data['ranting_id']}");
         }
@@ -252,5 +276,5 @@ class KoinNuDistributionRepository
         return KoinNuDistribution::where('wilayah_id', $wilayahId)->where('status', 'pending')->count();
     }
 
-    
+
 }

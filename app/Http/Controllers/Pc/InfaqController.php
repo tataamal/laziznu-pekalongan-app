@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Pc;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\InfaqPcTransactionService;
-use App\Services\InfaqPcDistributionService;
+use App\Services\InfaqPcTransactionervice;
+use App\Services\InfaqPcDistributionervice;
 use App\Repositories\InfaqPcTransactionRepository;
 use App\Repositories\InfaqPcDistributionRepository;
 use Illuminate\Support\Facades\Auth;
@@ -13,14 +13,14 @@ use Illuminate\Support\Facades\DB;
 
 class InfaqController extends Controller
 {
-    protected InfaqPcTransactionService $transactionService;
-    protected InfaqPcDistributionService $distributionService;
+    protected InfaqPcTransactionervice $transactionService;
+    protected InfaqPcDistributionervice $distributionService;
     protected InfaqPcTransactionRepository $transactionRepo;
     protected InfaqPcDistributionRepository $distributionRepo;
 
     public function __construct(
-        InfaqPcTransactionService $transactionService,
-        InfaqPcDistributionService $distributionService,
+        InfaqPcTransactionervice $transactionService,
+        InfaqPcDistributionervice $distributionService,
         InfaqPcTransactionRepository $transactionRepo,
         InfaqPcDistributionRepository $distributionRepo
     ) {
@@ -162,7 +162,7 @@ class InfaqController extends Controller
     public function destroy(Request $request, $id)
     {
         $isPemasukan = $request->query('type') === 'Pemasukan';
-        
+
         if ($isPemasukan) {
             $this->transactionService->deleteTransaction($id);
         } else {

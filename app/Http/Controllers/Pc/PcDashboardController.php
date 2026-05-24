@@ -3,120 +3,102 @@
 namespace App\Http\Controllers\Pc;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\InfaqTransaction;
-use App\Models\Income;
-use App\Models\User;
-use Illuminate\Support\Facades\DB;
+use App\Repositories\KoinNuTransactionRepository;
+use App\Repositories\KoinNuDistributionRepository;
+use App\Repositories\InfaqPcDistributionRepository;
+use App\Repositories\InfaqPcTransactionRepository;
+use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
 
 class PcDashboardController extends Controller
 {
+    public function __construct(
+        private KoinNuTransactionRepository $KoinNuTransactionRepo,
+        private InfaqPcTransactionRepository $infaqPcTransactionRepo,
+        private InfaqPcDistributionRepository $infaqPcDistributionRepo,
+        private KoinNuDistributionRepository $KoinNuDistributionRepo,
+        private UserRepository $userRepo,
+    ) {
+    }
+
     public function index()
     {
-        $userId = Auth::id();
+        // Mengambil data Pemasukan Koin NU PC (Collection)
+        $data_koin_nu = $this->KoinNuTransactionRepo->getKoinNuPc();
+        $data_distribusi_koin_nu = $this->KoinNuDistributionRepo->getDistributionsPc();
 
-        // 1. Data untuk Card
-        $pcInfaqs = InfaqTransaction::where('user_id', $userId)->get();
+        // Sum
+        $total_koin_nu = $this->KoinNuTransactionRepo->sumKoinNuPc();
+        $total_koin_nu_distribusi = $this->KoinNuDistributionRepo->sumDistributionsKoinNuPc();
+        $total_hak_amil_pc = $this->KoinNuTransactionRepo->getHakAmilPc();
+        $dana_dapat_digunakan_pc = $this->KoinNuTransactionRepo->getDanaDapatDigunakanPc();
 
-        $totalSaldoPc = $pcInfaqs->filter(function($trx) {
-            return $trx->transaction_type === 'Pemasukan' || 
-                   ($trx->transaction_type === 'Pengeluaran' && $trx->infaq_type !== 'Saldo Koin NU');
-        })->sum('allowed_budget');
+        // real dana koin nu yang dapat digunakan
+        $sisa_dana_koin_nu = $dana_dapat_digunakan_pc - $total_koin_nu_distribusi;
 
-        $koinNuExpenses = $pcInfaqs->filter(function($trx) {
-            return $trx->transaction_type === 'Pengeluaran' && $trx->infaq_type === 'Saldo Koin NU';
-        })->sum('allowed_budget'); // allowed_budget is negative
+        // Data Infaq PC
+        $data_infaq_pc = $this->infaqPcTransactionRepo->getTransactions();
+        $data_distribusi_infaq_pc = $this->infaqPcDistributionRepo->getDistributions();
 
-        $totalHakAmilPcKoinNu = Income::where('status', 'validated')->sum('hak_amil_pc') + $koinNuExpenses;
-        
-        $saldoHakAmilInfaqPC = $pcInfaqs->filter(function($trx) {
-            return $trx->transaction_type === 'Pemasukan';
-        })->sum('hak_amil_pc');
+        // sum infaq
+        $total_infaq_pc = $this->infaqPcTransactionRepo->sumPemasukan();
+        $total_infaq_pc_distribusi = $this->infaqPcDistributionRepo->sumDistributions();
+        $total_hak_amil_pc_infaq = $this->infaqPcTransactionRepo->sumHakAmilPc();
+        $dana_dapat_digunakan_pc = $this->infaqPcTransactionRepo->sumDanaDapatDigunakanPc();
+        $sisa_dana_infaq_pc = $dana_dapat_digunakan_pc - $total_infaq_pc_distribusi;
 
-        $koinNuSeluruhWilayah = Income::where('status', 'validated')->sum('hak_amil_mwc');
+        // menghitung jumlah user
+        $totalMwcUsers = $this->userRepo->totalUserMwc();
+        $totalRantingUsers = $this->userRepo->totalRanting();
 
-        $totalMwcUsers = User::where('role', 'mwc')->count();
-        $totalRantingUsers = User::where('role', 'ranting')->count();
+        $userId = (int) Auth::id();
+        $months = $this->infaqPcTransactionRepo->getTrendMonths();
+        $trendLabels = $this->infaqPcTransactionRepo->getTrendLabels();
 
-        // 2. Data untuk Trend (6 Bulan Terakhir)
-        $months = collect(range(5, 0))->map(function($i) { return now()->subMonths($i)->format('Y-m'); });
-        $trendLabels = $months->map(function($m) { return \Carbon\Carbon::createFromFormat('Y-m', $m)->translatedFormat('M'); });
+        $trendMwc = $this->infaqPcTransactionRepo->sumTrendMwc($months);
+        $trendPcIncome = $this->infaqPcTransactionRepo->sumTrendPcIncome($userId, $months);
+        $trendPcExpense = $this->infaqPcDistributionRepo->sumTrendPcExpense($months, $userId);
+        $trendRanting = $this->infaqPcTransactionRepo->sumTrendRanting($months);
 
-        $trendMwc = $months->map(function($m) {
-            return InfaqTransaction::whereHas('user', function($q) { $q->where('role', 'mwc'); })
-                ->where('transaction_type', 'Pemasukan')
-                ->whereRaw("DATE_FORMAT(transaction_date, '%Y-%m') = ?", [$m])
-                ->sum('gross_amount');
-        });
+        $expenseDistribution = $this->infaqPcDistributionRepo->getExpenseDistributionForUser($userId);
+        $distLabels = $expenseDistribution['labels'];
+        $distData = $expenseDistribution['data'];
 
-        $trendPcIncome = $months->map(function($m) use ($userId) {
-            return InfaqTransaction::where('user_id', $userId)
-                ->where('transaction_type', 'Pemasukan')
-                ->whereRaw("DATE_FORMAT(transaction_date, '%Y-%m') = ?", [$m])
-                ->sum('gross_amount');
-        });
-
-        $trendPcExpense = $months->map(function($m) use ($userId) {
-            return InfaqTransaction::where('user_id', $userId)
-                ->where('transaction_type', 'Pengeluaran')
-                ->whereRaw("DATE_FORMAT(transaction_date, '%Y-%m') = ?", [$m])
-                ->sum('gross_amount');
-        });
-
-        $trendRanting = $months->map(function($m) {
-            return Income::whereRaw("DATE_FORMAT(date, '%Y-%m') = ?", [$m])
-                ->sum('gross_profit');
-        });
-
-        // 3. Distribusi Pengeluaran Infaq (Khusus User PC)
-        $pcExpenseData = InfaqTransaction::where('user_id', $userId)
-            ->where('transaction_type', 'Pengeluaran')
-            ->select('infaq_type', \Illuminate\Support\Facades\DB::raw('SUM(gross_amount) as total'))
-            ->groupBy('infaq_type')
-            ->get();
-        
-        $distLabels = $pcExpenseData->pluck('infaq_type');
-        $distData = $pcExpenseData->pluck('total');
-
-        // Table Data (Latest 10 transactions for PC only)
-        $latestTransactions = InfaqTransaction::where('user_id', $userId)
-            ->latest()
-            ->take(10)
-            ->get()
-            ->map(function($trx) {
-                return [
-                    'kode' => $trx->transaction_code,
-                    'tanggal' => $trx->transaction_date,
-                    'user' => 'PC - Anda',
-                    'role' => 'pc',
-                    'jenis_label' => $trx->infaq_type,
-                    'jenis_filter' => strtolower($trx->transaction_type),
-                    'nominal' => (float) $trx->gross_amount,
-                    'tipe' => $trx->transaction_type,
-                    'status' => 'validated'
-                ];
-            });
+        $latestTransactions = $this->infaqPcTransactionRepo->getLatestTransactionsForPc($userId, 10);
 
         // Chart Data Json
         $chartDataJson = json_encode([
             'trend' => [
                 'labels' => $trendLabels->all(),
-                'mwc' => $trendMwc->map(fn($v) => (float)$v)->all(),
-                'pc_income' => $trendPcIncome->map(fn($v) => (float)$v)->all(),
-                'pc_expense' => $trendPcExpense->map(fn($v) => (float)$v)->all(),
-                'ranting' => $trendRanting->map(fn($v) => (float)$v)->all()
+                'mwc' => $trendMwc->map(fn($v) => (float) $v)->all(),
+                'pc_income' => $trendPcIncome->map(fn($v) => (float) $v)->all(),
+                'pc_expense' => $trendPcExpense->map(fn($v) => (float) $v)->all(),
+                'ranting' => $trendRanting->map(fn($v) => (float) $v)->all()
             ],
             'distribution' => [
                 'labels' => $distLabels->all(),
-                'data' => $distData->map(fn($v) => (float)$v)->all()
+                'data' => $distData->map(fn($v) => (float) $v)->all()
             ]
         ]);
 
         return view('pc.dashboard', compact(
-            'totalSaldoPc', 'totalHakAmilPcKoinNu', 'saldoHakAmilInfaqPC', 'koinNuSeluruhWilayah',
-            'totalMwcUsers', 'totalRantingUsers',
-            'chartDataJson', 'latestTransactions'
+            // card data
+            'total_koin_nu',
+            'total_koin_nu_distribusi',
+            'total_hak_amil_pc',
+            'sisa_dana_koin_nu',
+            'total_infaq_pc',
+            'total_infaq_pc_distribusi',
+            'total_hak_amil_pc_infaq',
+            'sisa_dana_infaq_pc',
+
+            // user data
+            'totalMwcUsers',
+            'totalRantingUsers',
+
+            // chart data
+            'chartDataJson',
+            'latestTransactions'
         ));
     }
 }

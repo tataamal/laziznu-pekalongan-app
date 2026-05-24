@@ -13,8 +13,8 @@ use App\Models\KoinNuTransaction;
 use App\Models\KoinNuDistribution;
 use App\Models\InfaqMwcTransaction;
 use App\Models\InfaqMwcDistribution;
-use App\Models\infaq_pc_transactions;
-use App\Models\infaq_pc_distributions;
+use App\Models\InfaqPcTransaction;
+use App\Models\InfaqPcDistribution;
 
 class DashboardController extends Controller
 {

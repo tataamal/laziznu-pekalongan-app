@@ -8,153 +8,188 @@
         @vite('resources/js/pc-dashboard.js')
     @endpush
 
-    <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {{-- Card 1: Saldo Infaq PC --}}
-        <div class="rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm">
-            <div class="text-sm font-medium text-white/90">Total Saldo Infaq PC</div>
-            <div class="mt-4 text-3xl font-bold">Rp {{ number_format($totalSaldoPc, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-white/80">Saldo akumulasi dari Infaq PC</div>
-        </div>
+    <div class="w-full space-y-4">
+        <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div class="rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm">
+                <div class="text-sm font-medium text-white/90">Saldo Koin NU PC</div>
+                <div class="mt-4 text-3xl font-bold">Rp {{ number_format($total_koin_nu ?? 0, 0, ',', '.') }}</div>
+                <div class="mt-3 text-xs text-white/80">Total pemasukan Koin NU untuk alokasi PC</div>
+            </div>
 
-        {{-- Card 2: Hak Amil Infaq --}}
-        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Hak Amil Infaq PC</div>
-            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($saldoHakAmilInfaqPC ?? 0, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Total hak amil dari transaksi infaq PC</div>
-        </div>
+            <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                <div class="text-sm font-medium text-zinc-600">Pengeluaran Koin NU PC</div>
+                <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($total_koin_nu_distribusi ?? 0, 0, ',', '.') }}</div>
+                <div class="mt-3 text-xs text-zinc-500">Total pentasarufan dari saldo Koin NU PC</div>
+            </div>
 
-        {{-- Card 3: Hak Amil Koin --}}
-        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Saldo KOIN NU Khusus PC</div>
-            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($totalHakAmilPcKoinNu ?? 0, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Total saldo hak amil PC (dari Koin NU)</div>
-        </div>
+            <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                <div class="text-sm font-medium text-zinc-600">Hak Amil Koin NU PC</div>
+                <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($total_hak_amil_pc ?? 0, 0, ',', '.') }}</div>
+                <div class="mt-3 text-xs text-zinc-500">Total hak amil dari pemasukan Koin NU PC</div>
+            </div>
 
-        {{-- Card 4: KOIN NU Seluruh Wilayah --}}
-        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Saldo KOIN NU Seluruh Wilayah</div>
-            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($koinNuSeluruhWilayah ?? 0, 0, ',', '.') }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Akumulasi Hak Amil MWC seluruh ranting</div>
-        </div>
+            <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                <div class="text-sm font-medium text-zinc-600">Saldo Koin NU Dapat Digunakan</div>
+                <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($sisa_dana_koin_nu ?? 0, 0, ',', '.') }}</div>
+                <div class="mt-3 text-xs text-zinc-500">Sisa dana setelah dikurangi distribusi Koin NU</div>
+            </div>
 
-        {{-- Card 5: Total Pengguna MWC --}}
-        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Total Pengguna MWC</div>
-            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">{{ $totalMwcUsers }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Jumlah user dengan role MWC</div>
-        </div>
+            <div class="rounded-3xl bg-gradient-to-br from-yellow-700 to-amber-500 p-5 text-white shadow-sm">
+                <div class="text-sm font-medium text-white/90">Saldo Infaq PC</div>
+                <div class="mt-4 text-3xl font-bold">Rp {{ number_format($total_infaq_pc ?? 0, 0, ',', '.') }}</div>
+                <div class="mt-3 text-xs text-white/80">Total pemasukan infaq bersih untuk PC</div>
+            </div>
 
-        {{-- Card 6: Total Pengguna Ranting --}}
-        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="text-sm font-medium text-zinc-600">Total Pengguna Ranting</div>
-            <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">{{ $totalRantingUsers }}</div>
-            <div class="mt-3 text-xs text-zinc-500">Jumlah user dengan role Ranting</div>
-        </div>
-    </section>
+            <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                <div class="text-sm font-medium text-zinc-600">Pengeluaran Infaq PC</div>
+                <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($total_infaq_pc_distribusi ?? 0, 0, ',', '.') }}</div>
+                <div class="mt-3 text-xs text-zinc-500">Total distribusi dari saldo infaq PC</div>
+            </div>
 
-    {{-- Chart JSON Data --}}
-    <script type="application/json" id="pc-chart-data">
-        {!! $chartDataJson !!}
-    </script>
+            <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                <div class="text-sm font-medium text-zinc-600">Hak Amil Infaq PC</div>
+                <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($total_hak_amil_pc_infaq ?? 0, 0, ',', '.') }}</div>
+                <div class="mt-3 text-xs text-zinc-500">Total hak amil dari transaksi infaq PC</div>
+            </div>
 
-    <section class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Pemasukan MWC & Ranting 6 Bulan Terakhir</h3>
-            <div id="trendChartMwcRanting" class="min-h-[350px] w-full"></div>
-        </div>
+            <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                <div class="text-sm font-medium text-zinc-600">Infaq Dapat Digunakan PC</div>
+                <div class="mt-4 text-3xl font-bold tracking-tight text-zinc-900">Rp {{ number_format($sisa_dana_infaq_pc ?? 0, 0, ',', '.') }}</div>
+                <div class="mt-3 text-xs text-zinc-500">Sisa dana infaq setelah pengeluaran distribusi</div>
+            </div>
+        </section>
 
-        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Saldo PC 6 Bulan Terakhir</h3>
-            <div id="trendChartPc" class="min-h-[350px] w-full"></div>
-        </div>
-    </section>
-
-    <section class="mt-4">
-        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h3 class="mb-4 text-sm font-semibold text-zinc-900">Distribusi Pengeluaran Infaq</h3>
-            <div id="donutChartDistribution" class="min-h-[350px] w-full flex items-center justify-center"></div>
-        </div>
-    </section>
-
-    <section class="mt-4 grid grid-cols-1 gap-4">
-        <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <h3 class="text-sm font-semibold text-zinc-900">Data Semua Transaksi</h3>
-                <div class="flex flex-wrap items-center gap-2">
-                    <select id="filterJenis" class="rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none ring-0 focus:border-green-300">
-                        <option value="">Semua Jenis</option>
-                        <option value="pemasukan">Pemasukan</option>
-                        <option value="pengeluaran">Pengeluaran</option>
-                    </select>
-
-                    <select id="filterRole" class="rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none ring-0 focus:border-green-300">
-                        <option value="">Semua Role</option>
-                        <option value="developer">Developer</option>
-                        <option value="pc">PC</option>
-                        <option value="mwc">MWC</option>
-                        <option value="ranting">Ranting</option>
-                    </select>
-
-                    <input type="text" id="filterTanggal" placeholder="Pilih Rentang Tanggal" class="rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none ring-0 focus:border-green-300">
-
-                    <input
-                        type="text"
-                        id="search"
-                        placeholder="Cari transaksi..."
-                        class="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 text-sm outline-none ring-0 placeholder:text-zinc-400 focus:border-green-300 sm:w-48"
-                    >
-                    <button
-                        onclick="exportTable()"
-                        class="rounded-2xl bg-green-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800"
-                    >
-                        Export
-                    </button>
+        <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-2">
+            <div class="group block rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-medium text-zinc-500 group-hover:text-zinc-700 transition-colors">Total User MWC</div>
+                        <div class="mt-2 flex items-baseline gap-1 text-3xl font-bold tracking-tight text-zinc-900">
+                            {{ $totalMwcUsers ?? 0 }}
+                            <span class="text-sm font-medium text-zinc-400">User</span>
+                        </div>
+                        <div class="mt-1 text-xs text-zinc-400">Terdaftar sebagai pengguna MWC</div>
+                    </div>
+                    <div class="rounded-2xl bg-emerald-50 p-4 text-emerald-600 transition-colors duration-300 group-hover:bg-emerald-100">
+                        <i class="fa-solid fa-users text-2xl"></i>
+                    </div>
                 </div>
             </div>
 
-            <div class="scrollbar-thin scrollbar-thumb-zinc-200 hover:scrollbar-thumb-zinc-300 max-h-[320px] overflow-y-auto overflow-x-auto">
-                <table id="dataTable" class="w-full border-collapse">
-                    <thead class="sticky top-0 z-10 bg-white shadow-[0_1px_0_0_rgba(244,244,245,1)]">
-                        <tr class="text-left text-xs uppercase tracking-wide text-zinc-500">
-                            <th class="px-3 py-3 font-semibold">Kode</th>
-                            <th class="px-3 py-3 font-semibold">Tanggal</th>
-                            <th class="px-3 py-3 font-semibold">User</th>
-                            <th class="px-3 py-3 font-semibold">Role</th>
-                            <th class="px-3 py-3 font-semibold">Jenis</th>
-                            <th class="px-3 py-3 font-semibold text-right">Nominal</th>
-                            <th class="px-3 py-3 font-semibold text-center">Tipe</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($latestTransactions as $trx)
-                        <tr class="border-b border-zinc-100 text-sm text-zinc-700 trx-row" 
-                            data-jenis="{{ $trx['jenis_filter'] }}" 
-                            data-role="{{ strtolower($trx['role']) }}" 
-                            data-tanggal="{{ \Carbon\Carbon::parse($trx['tanggal'])->format('Y-m-d') }}">
-                            <td class="px-3 py-3">{{ $trx['kode'] }}</td>
-                            <td class="px-3 py-3">{{ \Carbon\Carbon::parse($trx['tanggal'])->format('d M Y') }}</td>
-                            <td class="px-3 py-3 font-medium">{{ $trx['user'] }}</td>
-                            <td class="px-3 py-3"><span class="capitalize">{{ $trx['role'] }}</span></td>
-                            <td class="px-3 py-3">{{ $trx['jenis_label'] }}</td>
-                            <td class="px-3 py-3 text-right">Rp {{ number_format($trx['nominal'], 0, ',', '.') }}</td>
-                            <td class="px-3 py-3 text-center">
-                                @if($trx['tipe'] === 'Pemasukan')
-                                    <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">Pemasukan</span>
-                                @else
-                                    <span class="rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-700">Pengeluaran</span>
-                                @endif
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="7" class="px-3 py-6 text-center text-sm text-zinc-500">
-                                Belum ada data transaksi.
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <div class="group block rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-sm font-medium text-zinc-500 group-hover:text-zinc-700 transition-colors">Total User Ranting</div>
+                        <div class="mt-2 flex items-baseline gap-1 text-3xl font-bold tracking-tight text-zinc-900">
+                            {{ $totalRantingUsers ?? 0 }}
+                            <span class="text-sm font-medium text-zinc-400">User</span>
+                        </div>
+                        <div class="mt-1 text-xs text-zinc-400">Terdaftar sebagai pengguna Ranting</div>
+                    </div>
+                    <div class="rounded-2xl bg-amber-50 p-4 text-amber-600 transition-colors duration-300 group-hover:bg-amber-100">
+                        <i class="fa-solid fa-user-group text-2xl"></i>
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <script type="application/json" id="pc-chart-data">
+            {!! $chartDataJson !!}
+        </script>
+
+        <section class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm lg:col-span-2">
+                <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Pemasukan MWC dan Ranting</h3>
+                <div id="trendChartMwcRanting" class="min-h-[300px] w-full"></div>
+            </div>
+
+            <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm lg:col-span-1">
+                <h3 class="mb-4 text-sm font-semibold text-zinc-900">Distribusi Pengeluaran Infaq PC</h3>
+                <div id="donutChartDistribution" class="flex h-full min-h-[300px] w-full items-center justify-center"></div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 gap-4">
+            <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Pemasukan dan Pengeluaran PC</h3>
+                <div id="trendChartPc" class="min-h-[350px] w-full"></div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 gap-4">
+            <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <h3 class="text-sm font-semibold text-zinc-900">Data Semua Transaksi</h3>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <select id="filterJenis" class="rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-green-300">
+                            <option value="">Semua Jenis</option>
+                            <option value="pemasukan">Pemasukan</option>
+                            <option value="pengeluaran">Pengeluaran</option>
+                        </select>
+                        <select id="filterRole" class="rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-green-300">
+                            <option value="">Semua Role</option>
+                            <option value="pc">PC</option>
+                            <option value="mwc">MWC</option>
+                            <option value="ranting">Ranting</option>
+                        </select>
+                        <input type="text" id="filterTanggal" placeholder="Pilih Rentang Tanggal" class="rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-green-300">
+                        <input type="text" id="search" placeholder="Cari transaksi..." class="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 text-sm outline-none placeholder:text-zinc-400 focus:border-green-300 sm:w-48">
+                    </div>
+                </div>
+
+                <div class="scrollbar-thin max-h-[320px] overflow-y-auto overflow-x-auto">
+                    <table id="dataTable" class="w-full border-collapse">
+                        <thead class="sticky top-0 z-10 bg-white shadow-[0_1px_0_0_rgba(244,244,245,1)]">
+                            <tr class="text-left text-xs uppercase tracking-wide text-zinc-500">
+                                <th class="px-3 py-3 font-semibold text-center">Kode Transaksi</th>
+                                <th class="px-3 py-3 font-semibold text-center">Tanggal</th>
+                                <th class="px-3 py-3 font-semibold text-center">Nama User</th>
+                                <th class="px-3 py-3 font-semibold text-center">Role</th>
+                                <th class="px-3 py-3 font-semibold text-center">Jenis</th>
+                                <th class="px-3 py-3 font-semibold text-center">Tipe</th>
+                                <th class="px-3 py-3 font-semibold text-center">Nominal</th>
+                                <th class="px-3 py-3 font-semibold text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($latestTransactions as $trx)
+                                <tr class="border-b border-zinc-100 text-sm text-zinc-700 trx-row"
+                                    data-jenis="{{ $trx['jenis_filter'] }}"
+                                    data-role="{{ strtolower($trx['role']) }}"
+                                    data-tanggal="{{ \Carbon\Carbon::parse($trx['tanggal'])->format('Y-m-d') }}">
+                                    <td class="px-3 py-3 text-center">{{ $trx['kode'] }}</td>
+                                    <td class="px-3 py-3 text-center">{{ \Carbon\Carbon::parse($trx['tanggal'])->format('d M Y') }}</td>
+                                    <td class="px-3 py-3 text-center font-medium">{{ $trx['user'] }}</td>
+                                    <td class="px-3 py-3 text-center"><span class="capitalize">{{ $trx['role'] }}</span></td>
+                                    <td class="px-3 py-3 text-center">{{ $trx['jenis_label'] }}</td>
+                                    <td class="px-3 py-3 text-center">{{ $trx['tipe'] }}</td>
+                                    <td class="px-3 py-3 text-center font-bold">Rp {{ number_format($trx['nominal'], 0, ',', '.') }}</td>
+                                    <td class="px-3 py-3 text-center">
+                                        @php
+                                            $statusClass = [
+                                                'validated' => 'bg-green-100 text-green-700',
+                                                'rejected' => 'bg-red-100 text-red-700',
+                                            ][$trx['status']] ?? 'bg-orange-100 text-orange-700';
+
+                                            $statusLabel = [
+                                                'validated' => 'Tervalidasi',
+                                                'rejected' => 'Ditolak',
+                                            ][$trx['status']] ?? 'Proses';
+                                        @endphp
+                                        <span class="rounded-full px-2.5 py-1 text-xs font-semibold text-center {{ $statusClass }}">
+                                            {{ $statusLabel }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="px-3 py-6 text-center text-sm text-zinc-500">Belum ada data transaksi.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
 @endsection

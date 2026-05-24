@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class KoinNuDistribution extends Model
 {
-    protected $table = "Koin_nu_distributions";
+    protected $table = "koin_nu_distributions";
 
     protected $fillable = [
         "user_id",

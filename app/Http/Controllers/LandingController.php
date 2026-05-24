@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\KoinNuTransaction;
 use App\Models\KoinNuDistribution;
-use App\Models\infaq_pc_transactions;
-use App\Models\infaq_pc_distributions;
+use App\Models\InfaqPcTransaction;
+use App\Models\InfaqPcDistribution;
 use App\Models\InfaqMwcTransaction;
 use App\Models\InfaqMwcDistribution;
 use App\Models\Wilayah;
@@ -166,13 +166,13 @@ class LandingController extends Controller
     public function getInfaqStatsData($month, $year, $wilayahId)
     {
         // PC Stats
-        $pcIncomeQuery = infaq_pc_transactions::query()
+        $pcIncomeQuery = InfaqPcTransaction::query()
             ->whereMonth('date', $month)
             ->whereYear('date', $year);
 
         $pcIncome = $pcIncomeQuery->sum('pemasukan_infaq_kotor');
 
-        $pcExpenseQuery = infaq_pc_distributions::query()
+        $pcExpenseQuery = InfaqPcDistribution::query()
             ->whereMonth('date', $month)
             ->whereYear('date', $year);
 

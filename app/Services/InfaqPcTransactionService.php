@@ -6,7 +6,7 @@ use App\Repositories\InfaqPcTransactionRepository;
 use App\Models\InfaqPcTransaction;
 use Illuminate\Support\Facades\Auth;
 
-class InfaqPcTransactionService
+class InfaqPcTransactionervice
 {
     protected InfaqPcTransactionRepository $repository;
 
@@ -18,7 +18,7 @@ class InfaqPcTransactionService
     public function createTransaction(array $data): InfaqPcTransaction
     {
         $calculatedData = $this->calculateFields($data['pemasukan_infaq_kotor'], $data['jasa_petugas'] ?? 0);
-        
+
         $transactionData = array_merge($data, $calculatedData);
         $transactionData['transaction_code'] = $this->generateTransactionCode();
         $transactionData['user_id'] = Auth::id();

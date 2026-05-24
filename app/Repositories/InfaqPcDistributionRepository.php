@@ -4,7 +4,8 @@ namespace App\Repositories;
 
 use App\Models\InfaqPcDistribution;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class InfaqPcDistributionRepository
@@ -28,17 +29,68 @@ class InfaqPcDistributionRepository
         Cache::increment($key);
     }
 
+    /**
+     * Summary of getDistributions
+     * @param string $jenisPilar
+     * @param string $startDate
+     * @param string $endDate
+     * @return Collection
+     */
     public function getDistributions(
         ?string $jenisPilar = null,
         ?string $startDate = null,
         ?string $endDate = null
-    ): Collection {
+    ): EloquentCollection {
         return InfaqPcDistribution::query()
             ->when($jenisPilar, fn($q) => $q->where('jenis_pilar', $jenisPilar))
             ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
             ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
             ->orderByDesc('date')
             ->get();
+    }
+
+    /**
+     * Sum total distribusi infaq PC
+     * @param string|null $jenisPilar,
+     * @param string|null $startDate,
+     * @param string|null $endDate,
+     * @return int
+     */
+    public function sumDistributions(
+        ?string $jenisPilar = null,
+        ?string $startDate = null,
+        ?string $endDate = null
+    ): int {
+        return InfaqPcDistribution::query()
+            ->when($jenisPilar, fn($q) => $q->where('jenis_pilar', $jenisPilar))
+            ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
+            ->sum('jumlah_total_distribusi');
+    }
+
+    public function getExpenseDistributionForUser(int $userId): array
+    {
+        $expenseData = InfaqPcDistribution::query()
+            ->where('user_id', $userId)
+            ->select('jenis_pilar')
+            ->selectRaw('SUM(jumlah_total_distribusi) as total')
+            ->groupBy('jenis_pilar')
+            ->get();
+
+        return [
+            'labels' => $expenseData->pluck('jenis_pilar'),
+            'data' => $expenseData->pluck('total'),
+        ];
+    }
+
+    public function sumTrendPcExpense(Collection $months, int $userId): Collection
+    {
+        return $months->map(function ($month) use ($userId) {
+            return InfaqPcDistribution::query()
+                ->where('user_id', $userId)
+                ->whereRaw("DATE_FORMAT(date, '%Y-%m') = ?", [$month])
+                ->sum('jumlah_total_distribusi');
+        });
     }
 
     // ============================================================

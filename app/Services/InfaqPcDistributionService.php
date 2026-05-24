@@ -7,7 +7,7 @@ use App\Models\InfaqPcDistribution;
 use App\Models\InfaqPcTransaction;
 use Illuminate\Support\Facades\Auth;
 
-class InfaqPcDistributionService
+class InfaqPcDistributionervice
 {
     protected InfaqPcDistributionRepository $repository;
 
@@ -27,7 +27,7 @@ class InfaqPcDistributionService
     public function createDistribution(array $data): InfaqPcDistribution
     {
         $costAmount = $data['jumlah_total_distribusi'] ?? 0;
-        
+
         $balance = $this->getBalance();
         if ($costAmount > $balance) {
             throw new \Exception('Saldo Infaq PC tidak mencukupi. Sisa saldo yang dapat digunakan: Rp ' . number_format($balance, 0, ',', '.'));

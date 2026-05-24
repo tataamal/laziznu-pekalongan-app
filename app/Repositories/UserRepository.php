@@ -48,4 +48,22 @@ class UserRepository
             ->orderBy('name')
             ->get();
     }
+
+    /**
+     *
+     * @return int
+     */
+    public function totalUserMwc():int
+    {
+        return User::where('role', 'mwc')->count();
+    }
+
+    /**
+     *
+     * @return int
+     */
+    public function totalRanting():int
+    {
+        return User::where('role', 'ranting')->count();
+    }
 }

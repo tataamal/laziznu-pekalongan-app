@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class infaq_pc_transactions extends Model
+class InfaqPcTransaction extends Model
 {
     protected $table = "infaq_pc_transactions";
     protected $fillable = [

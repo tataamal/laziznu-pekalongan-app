@@ -6,6 +6,7 @@ use App\Models\KoinNuTransaction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class KoinNuTransactionRepository
 {
@@ -194,7 +195,7 @@ class KoinNuTransactionRepository
             ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
             ->when(!empty($filters['transaction_code']), fn($q) => $q->where('transaction_code', 'like', '%' . $filters['transaction_code'] . '%'))
             ->when(!empty($filters['ranting_name']), fn($q) => $q->whereHas('ranting', fn($q2) => $q2->where('nama_ranting', 'like', '%' . $filters['ranting_name'] . '%')))
-            ->when(!empty($filters['status']) && $filters['status'] !== 'all', function($q) use ($filters) {
+            ->when(!empty($filters['status']) && $filters['status'] !== 'all', function ($q) use ($filters) {
                 if ($filters['status'] === 'validated') {
                     $q->whereIn('status', ['validated', 'approved']);
                 } else {
@@ -219,7 +220,10 @@ class KoinNuTransactionRepository
     }
 
     /**
-     * Daftar transaksi level PC (untuk halaman list PC, lihat seluruh data).
+     * Get Data Transaksi Koin NU PC.
+     * @param $startDate
+     * @param $endDate
+     * @return Collection
      */
     public function getKoinNuPc(
         ?string $startDate = null,
@@ -236,6 +240,43 @@ class KoinNuTransactionRepository
             ->get();
     }
 
+    public function sumKoinNuPc(
+        ?string $startDate = null,
+        ?string $endDate = null
+    ): int {
+        return $this->approvedQuery($startDate, $endDate)
+            ->sum('koin_nu_pc');
+    }
+
+    /**
+     * Get Hak Amil PC
+     * @param $startDate
+     * @param $endDate
+     * @return int
+     */
+    public function getHakAmilPc(
+        ?string $startDate = null,
+        ?string $endDate = null
+    ): int {
+        return $this->approvedQuery($startDate, $endDate)
+            ->select([...$this->commonColumns, 'hak_amil_pc'])
+            ->sum('hak_amil_pc');
+    }
+
+    /**
+     * Get Data Dana yang dapat digunakan untuk PC
+     * @param $startDate
+     * @param $endDate
+     * @return int
+     */
+    public function getDanaDapatDigunakanPc(
+        ?string $startDate = null,
+        ?string $endDate = null
+    ): int {
+        return $this->approvedQuery($startDate, $endDate)
+            ->select([...$this->commonColumns, 'dana_dapat_digunakan_pc'])
+            ->sum('dana_dapat_digunakan_pc');
+    }
     // ============================================================
     // SUMMARY METHODS — untuk dashboard (di-cache, 1 query agregat)
     // ============================================================

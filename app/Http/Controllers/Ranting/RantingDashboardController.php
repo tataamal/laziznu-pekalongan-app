@@ -28,7 +28,7 @@ class RantingDashboardController extends Controller
                                  $distributions->where('date', '>=', $startOfMonth->format('Y-m-d'))->count();
         
         $usableFund = $incomes->where('status', 'approved')->sum('dana_dapat_digunakan_ranting');
-        $months = collect(range(5, 0))->map(function($i) { return now()->subMonths($i)->format('Y-m'); });
+        $months = collect(range(5, 0))->map(function($i) { return now()->subMonthsNoOverflow($i)->format('Y-m'); });
         $barLabels = $months->map(function($m) { return Carbon::createFromFormat('Y-m', $m)->translatedFormat('M'); });
         $barData = $months->map(function($m) use ($incomes) { 
             return $incomes->where('status', 'approved')->filter(function($inc) use ($m) { 

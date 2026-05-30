@@ -10,11 +10,50 @@
 
     <div class="w-full space-y-4">
         <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <div class="rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm">
-                <div class="text-sm font-medium text-white/90">Saldo Koin NU PC</div>
+            <div id="card-koin-nu" class="relative rounded-3xl bg-gradient-to-br from-green-700 to-emerald-500 p-5 text-white shadow-sm transition-all duration-300 hover:shadow-lg cursor-pointer">
+                <div class="text-sm font-medium text-white/90 flex items-center justify-between">
+                    <span>Saldo Koin NU PC</span>
+                    <i class="fa-solid fa-circle-info text-white/80"></i>
+                </div>
                 <div class="mt-4 text-3xl font-bold">Rp {{ number_format($total_koin_nu ?? 0, 0, ',', '.') }}</div>
                 <div class="mt-3 text-xs text-white/80">Total pemasukan Koin NU untuk alokasi PC</div>
             </div>
+
+            {{-- Tooltip Box --}}
+            <div id="tooltip-koin-nu" class="fixed pointer-events-none opacity-0 invisible transition-all duration-200 z-50 text-xs w-64 bg-white/95 backdrop-blur-md text-zinc-900 rounded-2xl p-4 shadow-2xl border border-zinc-200/50">
+                <div class="font-semibold mb-2 border-b border-zinc-100 pb-1 text-zinc-700">Detail per MWC</div>
+                <div class="space-y-1.5 max-h-[150px] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-200">
+                    @forelse($koinNuByMwc as $item)
+                        <div class="flex justify-between items-center">
+                            <span class="truncate pr-2 text-zinc-600">{{ $item->wilayah ? $item->wilayah->nama_wilayah : 'Transaksi PC' }}</span>
+                            <span class="font-bold text-zinc-800">Rp {{ number_format($item->total_koin, 0, ',', '.') }}</span>
+                        </div>
+                    @empty
+                        <div class="text-zinc-400 text-center py-2">Belum ada data</div>
+                    @endforelse
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const card = document.getElementById('card-koin-nu');
+                    const tooltip = document.getElementById('tooltip-koin-nu');
+                    
+                    if (card && tooltip) {
+                        card.addEventListener('mousemove', function(e) {
+                            tooltip.style.left = (e.clientX + 15) + 'px';
+                            tooltip.style.top = (e.clientY - 15) + 'px';
+                            tooltip.classList.remove('opacity-0', 'invisible');
+                            tooltip.classList.add('opacity-100', 'visible');
+                        });
+                        
+                        card.addEventListener('mouseleave', function() {
+                            tooltip.classList.add('opacity-0', 'invisible');
+                            tooltip.classList.remove('opacity-100', 'visible');
+                        });
+                    }
+                });
+            </script>
 
             <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
                 <div class="text-sm font-medium text-zinc-600">Pengeluaran Koin NU PC</div>
@@ -99,20 +138,19 @@
 
         <section class="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm lg:col-span-2">
-                <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Pemasukan MWC dan Ranting</h3>
+                <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Koin NU dan Infaq PC</h3>
                 <div id="trendChartMwcRanting" class="min-h-[300px] w-full"></div>
             </div>
 
             <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm lg:col-span-1">
-                <h3 class="mb-4 text-sm font-semibold text-zinc-900">Distribusi Pengeluaran Infaq PC</h3>
+                <div class="mb-4 flex items-center justify-between">
+                    <h3 class="text-sm font-semibold text-zinc-900">Distribusi Pengeluaran PC</h3>
+                    <select id="filterDistribusi" class="rounded-xl border border-zinc-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-green-300">
+                        <option value="koin_nu">Koin NU</option>
+                        <option value="infaq">Infaq PC</option>
+                    </select>
+                </div>
                 <div id="donutChartDistribution" class="flex h-full min-h-[300px] w-full items-center justify-center"></div>
-            </div>
-        </section>
-
-        <section class="grid grid-cols-1 gap-4">
-            <div class="rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-                <h3 class="mb-4 text-sm font-semibold text-zinc-900">Trend Pemasukan dan Pengeluaran PC</h3>
-                <div id="trendChartPc" class="min-h-[350px] w-full"></div>
             </div>
         </section>
 
@@ -123,14 +161,10 @@
                     <div class="flex flex-wrap items-center gap-2">
                         <select id="filterJenis" class="rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-green-300">
                             <option value="">Semua Jenis</option>
-                            <option value="pemasukan">Pemasukan</option>
-                            <option value="pengeluaran">Pengeluaran</option>
-                        </select>
-                        <select id="filterRole" class="rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-green-300">
-                            <option value="">Semua Role</option>
-                            <option value="pc">PC</option>
-                            <option value="mwc">MWC</option>
-                            <option value="ranting">Ranting</option>
+                            <option value="pemasukan-koin-nu">Pemasukan Koin NU PC</option>
+                            <option value="pengeluaran-koin-nu">Pengeluaran Koin NU PC</option>
+                            <option value="pemasukan-infaq">Pemasukan Infaq PC</option>
+                            <option value="pengeluaran-infaq">Pengeluaran Infaq PC</option>
                         </select>
                         <input type="text" id="filterTanggal" placeholder="Pilih Rentang Tanggal" class="rounded-2xl border border-zinc-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-green-300">
                         <input type="text" id="search" placeholder="Cari transaksi..." class="w-full rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 text-sm outline-none placeholder:text-zinc-400 focus:border-green-300 sm:w-48">

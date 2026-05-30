@@ -93,6 +93,30 @@ class InfaqPcDistributionRepository
         });
     }
 
+    public function getDistributionGroupedByPilarPc(): array
+    {
+        $data = InfaqPcDistribution::query()
+            ->select('jenis_pilar')
+            ->selectRaw('SUM(jumlah_total_distribusi) as total')
+            ->groupBy('jenis_pilar')
+            ->having('total', '>', 0)
+            ->get();
+
+        return [
+            'labels' => $data->pluck('jenis_pilar'),
+            'data' => $data->pluck('total'),
+        ];
+    }
+
+    public function getLatestDistributions(int $limit = 50): EloquentCollection
+    {
+        return InfaqPcDistribution::query()
+            ->with('user')
+            ->orderByDesc('date')
+            ->take($limit)
+            ->get();
+    }
+
     // ============================================================
     // CRUD METHODS
     // ============================================================

@@ -107,7 +107,7 @@ class InfaqPcTransactionRepository
         $totalMonths = max(1, $totalMonths);
 
         return collect(range($totalMonths - 1, 0))
-            ->map(fn($i) => now()->subMonths($i)->format('Y-m'));
+            ->map(fn($i) => now()->subMonthsNoOverflow($i)->format('Y-m'));
     }
 
     /**
@@ -168,6 +168,24 @@ class InfaqPcTransactionRepository
                     'status' => 'validated',
                 ];
             });
+    }
+
+    public function sumTrendInfaqPc(Collection $months): Collection
+    {
+        return $months->map(function ($month) {
+            return InfaqPcTransaction::query()
+                ->whereRaw("DATE_FORMAT(date, '%Y-%m') = ?", [$month])
+                ->sum('pemasukan_infaq_bersih');
+        });
+    }
+
+    public function getLatestTransactions(int $limit = 50): Collection
+    {
+        return InfaqPcTransaction::query()
+            ->with('user')
+            ->orderByDesc('date')
+            ->take($limit)
+            ->get();
     }
 
     // ============================================================

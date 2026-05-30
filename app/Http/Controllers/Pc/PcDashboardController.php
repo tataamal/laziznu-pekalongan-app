@@ -26,6 +26,7 @@ class PcDashboardController extends Controller
         // Mengambil data Pemasukan Koin NU PC (Collection)
         $data_koin_nu = $this->KoinNuTransactionRepo->getKoinNuPc();
         $data_distribusi_koin_nu = $this->KoinNuDistributionRepo->getDistributionsPc();
+        $koinNuByMwc = $this->KoinNuTransactionRepo->getKoinNuPcGroupedByMwc();
 
         // Sum
         $total_koin_nu = $this->KoinNuTransactionRepo->sumKoinNuPc();
@@ -55,29 +56,94 @@ class PcDashboardController extends Controller
         $months = $this->infaqPcTransactionRepo->getTrendMonths();
         $trendLabels = $this->infaqPcTransactionRepo->getTrendLabels();
 
-        $trendMwc = $this->infaqPcTransactionRepo->sumTrendMwc($months);
-        $trendPcIncome = $this->infaqPcTransactionRepo->sumTrendPcIncome($userId, $months);
-        $trendPcExpense = $this->infaqPcDistributionRepo->sumTrendPcExpense($months, $userId);
-        $trendRanting = $this->infaqPcTransactionRepo->sumTrendRanting($months);
+        $trendKoinNu = $this->KoinNuTransactionRepo->sumTrendKoinNuPc($months);
+        $trendInfaq = $this->infaqPcTransactionRepo->sumTrendInfaqPc($months);
 
-        $expenseDistribution = $this->infaqPcDistributionRepo->getExpenseDistributionForUser($userId);
-        $distLabels = $expenseDistribution['labels'];
-        $distData = $expenseDistribution['data'];
+        $distKoinNu = $this->KoinNuDistributionRepo->getDistributionGroupedByPilarPc();
+        $distInfaq = $this->infaqPcDistributionRepo->getDistributionGroupedByPilarPc();
 
-        $latestTransactions = $this->infaqPcTransactionRepo->getLatestTransactionsForPc($userId, 10);
+        // 3. Data Semua Transaksi
+        $koinNuIncomes = $this->KoinNuTransactionRepo->getLatestApprovedKoinNuPcTransactions(50);
+        $koinNuExpenses = $this->KoinNuDistributionRepo->getLatestApprovedKoinNuDistributionsPc(50);
+        $infaqIncomes = $this->infaqPcTransactionRepo->getLatestTransactions(50);
+        $infaqExpenses = $this->infaqPcDistributionRepo->getLatestDistributions(50);
+
+        $allTransactions = collect();
+
+        foreach ($koinNuIncomes as $trx) {
+            $allTransactions->push([
+                'kode' => $trx->transaction_code,
+                'tanggal' => $trx->date,
+                'user' => $trx->user ? $trx->user->name : '-',
+                'role' => $trx->user ? $trx->user->role : '-',
+                'jenis_label' => 'Dana Koin NU PC',
+                'jenis_filter' => 'pemasukan-koin-nu',
+                'nominal' => (float) $trx->koin_nu_pc,
+                'tipe' => 'Pemasukan',
+                'status' => $trx->status,
+            ]);
+        }
+
+        foreach ($koinNuExpenses as $dist) {
+            $allTransactions->push([
+                'kode' => $dist->distribution_code,
+                'tanggal' => $dist->date,
+                'user' => $dist->user ? $dist->user->name : '-',
+                'role' => $dist->user ? $dist->user->role : '-',
+                'jenis_label' => $dist->jenis_pilar,
+                'jenis_filter' => 'pengeluaran-koin-nu',
+                'nominal' => (float) $dist->jumlah_pentasarufan_pc,
+                'tipe' => 'Pengeluaran',
+                'status' => $dist->status,
+            ]);
+        }
+
+        foreach ($infaqIncomes as $trx) {
+            $allTransactions->push([
+                'kode' => $trx->transaction_code,
+                'tanggal' => $trx->date,
+                'user' => $trx->user ? $trx->user->name : '-',
+                'role' => $trx->user ? $trx->user->role : '-',
+                'jenis_label' => $trx->jenis_infaq,
+                'jenis_filter' => 'pemasukan-infaq',
+                'nominal' => (float) $trx->pemasukan_infaq_bersih,
+                'tipe' => 'Pemasukan',
+                'status' => 'validated',
+            ]);
+        }
+
+        foreach ($infaqExpenses as $dist) {
+            $allTransactions->push([
+                'kode' => $dist->distribution_code,
+                'tanggal' => $dist->date,
+                'user' => $dist->user ? $dist->user->name : '-',
+                'role' => $dist->user ? $dist->user->role : '-',
+                'jenis_label' => $dist->jenis_pilar,
+                'jenis_filter' => 'pengeluaran-infaq',
+                'nominal' => (float) $dist->jumlah_total_distribusi,
+                'tipe' => 'Pengeluaran',
+                'status' => 'validated',
+            ]);
+        }
+
+        $latestTransactions = $allTransactions->sortByDesc('tanggal')->values()->take(100);
 
         // Chart Data Json
         $chartDataJson = json_encode([
             'trend' => [
                 'labels' => $trendLabels->all(),
-                'mwc' => $trendMwc->map(fn($v) => (float) $v)->all(),
-                'pc_income' => $trendPcIncome->map(fn($v) => (float) $v)->all(),
-                'pc_expense' => $trendPcExpense->map(fn($v) => (float) $v)->all(),
-                'ranting' => $trendRanting->map(fn($v) => (float) $v)->all()
+                'koin_nu' => $trendKoinNu->map(fn($v) => (float) $v)->all(),
+                'infaq' => $trendInfaq->map(fn($v) => (float) $v)->all(),
             ],
             'distribution' => [
-                'labels' => $distLabels->all(),
-                'data' => $distData->map(fn($v) => (float) $v)->all()
+                'koin_nu' => [
+                    'labels' => $distKoinNu['labels']->all(),
+                    'data' => $distKoinNu['data']->map(fn($v) => (float) $v)->all()
+                ],
+                'infaq' => [
+                    'labels' => $distInfaq['labels']->all(),
+                    'data' => $distInfaq['data']->map(fn($v) => (float) $v)->all()
+                ]
             ]
         ]);
 
@@ -98,7 +164,8 @@ class PcDashboardController extends Controller
 
             // chart data
             'chartDataJson',
-            'latestTransactions'
+            'latestTransactions',
+            'koinNuByMwc'
         ));
     }
 }

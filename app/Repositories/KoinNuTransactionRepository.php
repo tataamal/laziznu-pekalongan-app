@@ -441,6 +441,33 @@ class KoinNuTransactionRepository
         return $deleted;
     }
 
+    public function sumTrendKoinNuPc(\Illuminate\Support\Collection $months): \Illuminate\Support\Collection
+    {
+        return $months->map(function ($month) {
+            return $this->approvedQuery()
+                ->whereRaw("DATE_FORMAT(date, '%Y-%m') = ?", [$month])
+                ->sum('koin_nu_pc');
+        });
+    }
+
+    public function getLatestApprovedKoinNuPcTransactions(int $limit = 50): Collection
+    {
+        return $this->approvedQuery()
+            ->with(['user', 'ranting', 'wilayah'])
+            ->orderByDesc('date')
+            ->take($limit)
+            ->get();
+    }
+
+    public function getKoinNuPcGroupedByMwc(): Collection
+    {
+        return $this->approvedQuery()
+            ->selectRaw('wilayah_id, SUM(koin_nu_pc) as total_koin')
+            ->groupBy('wilayah_id')
+            ->with('wilayah:id,nama_wilayah')
+            ->get();
+    }
+
     // ============================================================
     // GET COUNT PENDING DATA METHODS
     // ============================================================

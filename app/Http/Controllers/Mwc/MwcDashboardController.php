@@ -48,7 +48,7 @@ class MwcDashboardController extends Controller
         $infaq_dapat_digunakan_mwc = $this->infaqMwcTransactionRepository->getInfaqDapatDigunakanMwc($wilayahId);
 
         $months = collect(range(5, 0))->map(function ($i) {
-            return now()->subMonths($i)->format('Y-m'); });
+            return now()->subMonthsNoOverflow($i)->format('Y-m'); });
         $lineLabels = $months->map(function ($m) {
             return Carbon::createFromFormat('Y-m', $m)->translatedFormat('M'); });
 

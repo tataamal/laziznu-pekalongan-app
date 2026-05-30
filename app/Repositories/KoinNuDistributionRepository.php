@@ -267,6 +267,31 @@ class KoinNuDistributionRepository
         return $deleted;
     }
 
+    public function getDistributionGroupedByPilarPc(): array
+    {
+        $data = $this->approvedQuery()
+            ->select('jenis_pilar')
+            ->selectRaw('SUM(jumlah_pentasarufan_pc) as total')
+            ->groupBy('jenis_pilar')
+            ->having('total', '>', 0)
+            ->get();
+
+        return [
+            'labels' => $data->pluck('jenis_pilar'),
+            'data' => $data->pluck('total'),
+        ];
+    }
+
+    public function getLatestApprovedKoinNuDistributionsPc(int $limit = 50): Collection
+    {
+        return $this->approvedQuery()
+            ->with(['user', 'ranting', 'wilayah'])
+            ->where('jumlah_pentasarufan_pc', '>', 0)
+            ->orderByDesc('date')
+            ->take($limit)
+            ->get();
+    }
+
     // ============================================================
     // GET COUNT PENDING DATA METHODS
     // ============================================================
@@ -275,6 +300,4 @@ class KoinNuDistributionRepository
     {
         return KoinNuDistribution::where('wilayah_id', $wilayahId)->where('status', 'pending')->count();
     }
-
-
 }

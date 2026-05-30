@@ -17,14 +17,14 @@ document.addEventListener("DOMContentLoaded", function () {
         white: "#ffffff",
     };
 
-    // 1. Trend Chart MWC & Ranting (Area Chart)
+    // 1. Trend Chart Koin NU & Infaq PC (Area Chart)
     const trendMwcRantingOptions = {
         series: [{
-            name: 'Pemasukan MWC',
-            data: chartData.trend.mwc
+            name: 'Pemasukan Koin NU PC',
+            data: chartData.trend.koin_nu
         }, {
-            name: 'Pemasukan Ranting',
-            data: chartData.trend.ranting
+            name: 'Pemasukan Infaq PC',
+            data: chartData.trend.infaq
         }],
         chart: {
             height: 350,
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
             markers: { radius: 6, width: 8, height: 8, offsetX: -4 }
         }
     };
-    
+
     if (document.querySelector("#trendChartMwcRanting")) {
         new ApexCharts(document.querySelector("#trendChartMwcRanting"), trendMwcRantingOptions).render();
     }
@@ -136,14 +136,12 @@ document.addEventListener("DOMContentLoaded", function () {
             markers: { radius: 6, width: 8, height: 8, offsetX: -4 }
         }
     };
-    
-    if (document.querySelector("#trendChartPc")) {
-        new ApexCharts(document.querySelector("#trendChartPc"), trendPcOptions).render();
-    }
 
-    // 3. Donut Chart (Distribusi Pengeluaran Infaq PC Only)
-    const hasDistData = chartData.distribution.data && chartData.distribution.data.length > 0;
-    
+    // 3. Donut Chart (Distribusi Pengeluaran PC)
+    let currentDist = "koin_nu"; // default
+    let distData = chartData.distribution[currentDist];
+    let hasDistData = distData && distData.data && distData.data.length > 0;
+
     // Minimal & Premium Colors
     const donutColors = [
         palette.primary,    // Emerald Green
@@ -155,8 +153,8 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
     const donutOptions = {
-        series: hasDistData ? chartData.distribution.data : [1],
-        labels: hasDistData ? chartData.distribution.labels : ['Belum ada pengeluaran'],
+        series: hasDistData ? distData.data : [1],
+        labels: hasDistData ? distData.labels : ['Belum ada pengeluaran'],
         chart: {
             type: 'donut',
             height: 380,
@@ -169,9 +167,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     size: '72%',
                     labels: {
                         show: true,
-                        name: { 
-                            show: true, 
-                            fontSize: '14px', 
+                        name: {
+                            show: true,
+                            fontSize: '14px',
                             fontWeight: 500,
                             color: "#64748b",
                             offsetY: -4
@@ -232,8 +230,56 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
+    let donutChart = null;
     if (document.querySelector("#donutChartDistribution")) {
-        new ApexCharts(document.querySelector("#donutChartDistribution"), donutOptions).render();
+        donutChart = new ApexCharts(document.querySelector("#donutChartDistribution"), donutOptions);
+        donutChart.render();
+    }
+
+    const filterDistribusi = document.getElementById("filterDistribusi");
+    if (filterDistribusi) {
+        filterDistribusi.addEventListener("change", function () {
+            const selectedType = filterDistribusi.value;
+            const distDataSelected = chartData.distribution[selectedType];
+            const hasDataSelected = distDataSelected && distDataSelected.data && distDataSelected.data.length > 0;
+
+            if (donutChart) {
+                donutChart.updateOptions({
+                    series: hasDataSelected ? distDataSelected.data : [1],
+                    labels: hasDataSelected ? distDataSelected.labels : ['Belum ada pengeluaran'],
+                    colors: hasDataSelected ? donutColors : ["#f1f5f9"],
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                labels: {
+                                    value: {
+                                        formatter: function (val) {
+                                            if (!hasDataSelected) return "Rp 0";
+                                            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+                                        }
+                                    },
+                                    total: {
+                                        formatter: function (w) {
+                                            if (!hasDataSelected) return "Rp 0";
+                                            const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(total);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                if (!hasDataSelected) return "Rp 0";
+                                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+                            }
+                        }
+                    }
+                });
+            }
+        });
     }
 
     // Table Multi-Filter Data
@@ -251,7 +297,7 @@ document.addEventListener("DOMContentLoaded", function () {
             dateFormat: "Y-m-d",
             altInput: true,
             altFormat: "d M Y",
-            onChange: function() {
+            onChange: function () {
                 filterTable();
             }
         });
@@ -263,20 +309,20 @@ document.addEventListener("DOMContentLoaded", function () {
         const searchText = searchInput ? searchInput.value.toLowerCase() : "";
         const jenisValue = filterJenis ? filterJenis.value.toLowerCase() : "";
         const roleValue = filterRole ? filterRole.value.toLowerCase() : "";
-        
+
         // Handle Flatpickr Range
         let startDate = null;
         let endDate = null;
         if (flatpickrInstance && flatpickrInstance.selectedDates.length > 0) {
             startDate = flatpickrInstance.selectedDates[0];
-            startDate.setHours(0,0,0,0);
+            startDate.setHours(0, 0, 0, 0);
             if (flatpickrInstance.selectedDates.length > 1) {
                 endDate = flatpickrInstance.selectedDates[1];
-                endDate.setHours(23,59,59,999);
+                endDate.setHours(23, 59, 59, 999);
             } else {
                 // If only one date selected, treat end date as same day
                 endDate = new Date(startDate);
-                endDate.setHours(23,59,59,999);
+                endDate.setHours(23, 59, 59, 999);
             }
         }
 
@@ -288,13 +334,13 @@ document.addEventListener("DOMContentLoaded", function () {
             const rowRole = row.getAttribute('data-role');
             const rowTanggalStr = row.getAttribute('data-tanggal');
             const rowTanggal = new Date(rowTanggalStr);
-            rowTanggal.setHours(0,0,0,0);
+            rowTanggal.setHours(0, 0, 0, 0);
 
             // Check if matches each criteria (empty string means "all")
             const matchSearch = rowText.includes(searchText);
             const matchJenis = jenisValue === "" || rowJenis === jenisValue;
             const matchRole = roleValue === "" || rowRole === roleValue;
-            
+
             // Match Tanggal Range
             let matchTanggal = true;
             if (startDate && endDate) {

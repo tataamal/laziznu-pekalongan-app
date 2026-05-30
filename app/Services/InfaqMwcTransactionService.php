@@ -49,7 +49,7 @@ class InfaqMwcTransactionService
         $danaDigunakan = $bersih - $hakAmil;
 
         return [
-            'pemasukan_infaq_bersih' => $bersih,
+            'pemasukan_infaq_bersih' => $danaDigunakan,
             'hak_amil' => $hakAmil,
             'infaq_yang_dapat_digunakan' => $danaDigunakan,
         ];

@@ -7,7 +7,7 @@ use App\Models\InfaqPcDistribution;
 use App\Models\InfaqPcTransaction;
 use Illuminate\Support\Facades\Auth;
 
-class InfaqPcDistributionervice
+class InfaqPcDistributionService
 {
     protected InfaqPcDistributionRepository $repository;
 

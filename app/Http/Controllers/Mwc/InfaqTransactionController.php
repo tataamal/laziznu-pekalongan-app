@@ -201,10 +201,25 @@ class InfaqTransactionController extends Controller
 
     public function bulkDelete(Request $request)
     {
-        // Bulk delete juga sulit jika ID dari 2 tabel bisa sama. 
-        // Implementasi amannya adalah mengirim tipe, namun untuk sementara 
-        // kita abaikan atau arahkan pengguna untuk hapus satuan.
-        return redirect()->route('mwc.infaq-transaction.index')->withErrors(['error' => 'Bulk Delete dinonaktifkan pada menu ini setelah pembaruan arsitektur.']);
+        $ids = $request->input('ids');
+        if ($ids && is_array($ids)) {
+            foreach ($ids as $val) {
+                $parts = explode('-', $val, 2);
+                if (count($parts) === 2) {
+                    $type = $parts[0];
+                    $id = (int)$parts[1];
+
+                    if ($type === 'Pemasukan') {
+                        $this->transactionService->deleteTransaction($id);
+                    } elseif ($type === 'Pengeluaran') {
+                        $this->distributionService->deleteDistribution($id);
+                    }
+                }
+            }
+            return redirect()->route('mwc.infaq-transaction.index')->with('success', 'Data transaksi terpilih berhasil dihapus.');
+        }
+
+        return redirect()->route('mwc.infaq-transaction.index')->withErrors(['error' => 'Tidak ada data yang dipilih untuk dihapus.']);
     }
 
     private function saveDocumentationFile($file): string

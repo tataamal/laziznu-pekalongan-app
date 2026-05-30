@@ -87,7 +87,7 @@ class ManagementMunfiqController extends Controller
             'jenis_kelamin' => 'required|in:L,P',
             'alamat' => 'nullable|string',
             'status' => 'required|in:Aktif,Pasif',
-            'kode_kaleng' => 'required|string|max:255|unique:munfiq_data,kode_kaleng,' . $management_munfiq->id,
+            'kode_kaleng' => 'required|string|max:255|unique:data_munfiqs,kode_kaleng,' . $management_munfiq->id,
         ]);
 
         $management_munfiq->update([

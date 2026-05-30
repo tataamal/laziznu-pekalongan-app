@@ -83,7 +83,7 @@
                                 data-search="{{ strtolower($item->transaction_code . ' ' . $item->infaq_type . ' ' . $item->description) }}"
                                 data-date="{{ $item->transaction_date }}">
                                 <td class="px-6 py-5 text-center">
-                                    <input type="checkbox" name="ids[]" value="{{ $item->id }}"
+                                    <input type="checkbox" name="ids[]" value="{{ $item->transaction_type }}-{{ $item->id }}"
                                         class="row-checkbox rounded border-slate-300 text-green-600 focus:ring-green-500">
                                 </td>
                                 <td class="px-6 py-5">
@@ -150,7 +150,6 @@
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Keterangan</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Penerima</th>
                             <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Total</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Bersih</th>
                             <th class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider text-slate-500 w-[120px]">Aksi</th>
                         </tr>
                     </thead>
@@ -160,7 +159,7 @@
                                 data-search="{{ strtolower($item->transaction_code . ' ' . $item->infaq_type . ' ' . $item->description) }}"
                                 data-date="{{ $item->transaction_date }}">
                                 <td class="px-6 py-5 text-center">
-                                    <input type="checkbox" name="ids[]" value="{{ $item->id }}"
+                                    <input type="checkbox" name="ids[]" value="{{ $item->transaction_type }}-{{ $item->id }}"
                                         class="row-checkbox rounded border-slate-300 text-green-600 focus:ring-green-500">
                                 </td>
                                 <td class="px-6 py-5">
@@ -186,9 +185,6 @@
                                 </td>
                                 <td class="px-6 py-5">
                                     <div class="font-bold text-slate-900">Rp {{ number_format($item->gross_amount, 0, ',', '.') }}</div>
-                                </td>
-                                <td class="px-6 py-5">
-                                    <div class="font-bold text-green-700">Rp {{ number_format($item->net_amount, 0, ',', '.') }}</div>
                                 </td>
                                 <td class="px-6 py-5 text-center">
                                     <div class="flex items-center justify-center gap-2">
@@ -344,6 +340,12 @@
             </div>
         </div>
     </div>
+
+    {{-- Bulk Delete Form --}}
+    <form id="bulkDeleteForm" action="{{ route('mwc.infaq-transaction.bulk-delete') }}" method="POST" class="hidden">
+        @csrf @method('DELETE')
+        <div id="bulkDeleteInputs"></div>
+    </form>
 
     @push('vite-scripts')
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -541,6 +543,31 @@
                     confirmButtonText: 'Ya, Hapus!'
                 }).then(res => {
                     if (res.isConfirmed) document.getElementById(id).submit();
+                });
+            }
+
+            function confirmBulkDelete() {
+                Swal.fire({
+                    title: 'Hapus Terpilih?',
+                    text: "Semua data transaksi yang dipilih akan dihapus permanen.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    confirmButtonText: 'Ya, Hapus!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const checkedIds = Array.from(rowCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+                        const inputsContainer = document.getElementById('bulkDeleteInputs');
+                        inputsContainer.innerHTML = '';
+                        checkedIds.forEach(id => {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'ids[]';
+                            input.value = id;
+                            inputsContainer.appendChild(input);
+                        });
+                        document.getElementById('bulkDeleteForm').submit();
+                    }
                 });
             }
         </script>

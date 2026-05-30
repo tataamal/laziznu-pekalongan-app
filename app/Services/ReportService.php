@@ -58,15 +58,25 @@ class ReportService
 
                 // Hanya ambil yang ada nilainya di level ini
                 if ($amount > 0) {
+                    $pilar = $item->jenis_pilar ?? 'Koin NU';
+                    $desc = $item->deskripsi;
+                    $wilayahName = $item->wilayah->nama_wilayah ?? '-';
                     return [
                         'distribution_code' => $item->distribution_code ?? '-',
+                        'transaction_code' => $item->distribution_code ?? '-',
                         'date' => $item->date,
-                        'jenis_pilar' => $item->jenis_pilar ?? 'Koin NU',
-                        'deskripsi' => $item->deskripsi,
+                        'jenis_pilar' => $pilar,
+                        'type' => $pilar,
+                        'deskripsi' => $desc,
+                        'event_name' => $desc ?: '-',
                         'jumlah_penerima_manfaat' => $penerima,
-                        'keterangan' => $item->deskripsi,
+                        'penerima_manfaat' => $penerima,
+                        'keterangan' => $desc,
                         'jumlah_total_distribusi' => $amount,
-                        'nama_wilayah' => $item->wilayah->nama_wilayah ?? '-',
+                        'amount' => $amount,
+                        'nama_wilayah' => $wilayahName,
+                        'wilayah' => $wilayahName,
+                        'status' => 'Selesai',
                     ];
                 }
                 return null;
@@ -83,13 +93,22 @@ class ReportService
                 if ($endDate) $query->where('date', '<=', $endDate);
 
                 $infaqDistributions = $query->get()->map(function ($item) {
+                    $pilar = $item->jenis_pilar;
+                    $desc = $item->deskripsi;
                     return [
-                        'date' => $item->date,
+                        'distribution_code' => $item->distribution_code,
                         'transaction_code' => $item->distribution_code,
+                        'date' => $item->date,
+                        'jenis_pilar' => $pilar,
+                        'type' => $pilar,
+                        'deskripsi' => $desc,
+                        'event_name' => $desc ?: '-',
+                        'jumlah_penerima_manfaat' => $item->jumlah_penerima_manfaat,
                         'penerima_manfaat' => $item->jumlah_penerima_manfaat,
-                        'event_name' => $item->deskripsi ?: '-',
+                        'keterangan' => $desc ?: '-',
+                        'jumlah_total_distribusi' => $item->jumlah_total_distribusi,
                         'amount' => $item->jumlah_total_distribusi,
-                        'type' => $item->jenis_pilar,
+                        'nama_wilayah' => 'PC',
                         'wilayah' => 'PC',
                         'status' => 'Selesai',
                     ];
@@ -101,15 +120,25 @@ class ReportService
                 if ($wilayahId) $query->where('wilayah_id', $wilayahId);
 
                 $infaqDistributions = $query->get()->map(function ($item) {
+                    $pilar = $item->jenis_pilar;
+                    $desc = $item->deskripsi;
+                    $wilayahName = $item->wilayah->nama_wilayah ?? '-';
                     return [
                         'distribution_code' => $item->distribution_code,
+                        'transaction_code' => $item->distribution_code,
                         'date' => $item->date,
-                        'jenis_pilar' => $item->jenis_pilar,
-                        'deskripsi' => $item->deskripsi,
+                        'jenis_pilar' => $pilar,
+                        'type' => $pilar,
+                        'deskripsi' => $desc,
+                        'event_name' => $desc ?: '-',
                         'jumlah_penerima_manfaat' => $item->jumlah_penerima_manfaat,
+                        'penerima_manfaat' => $item->jumlah_penerima_manfaat,
                         'keterangan' => $item->keterangan ?? '-',
                         'jumlah_total_distribusi' => $item->jumlah_total_distribusi,
-                        'nama_wilayah' => $item->wilayah->nama_wilayah ?? '-',
+                        'amount' => $item->jumlah_total_distribusi,
+                        'nama_wilayah' => $wilayahName,
+                        'wilayah' => $wilayahName,
+                        'status' => 'Selesai',
                     ];
                 });
             }

@@ -95,6 +95,35 @@ class KoinNuDistributionRepository
     }
 
     /**
+     * Daftar distribusi level ranting (untuk admin PC).
+     */
+    public function getKoinNuRantingDistributions(
+        ?int $wilayahId = null,
+        ?string $status = null,
+        ?string $startDate = null,
+        ?string $endDate = null
+    ): Collection {
+        return KoinNuDistribution::query()
+            ->with(['user', 'user.wilayah', 'ranting'])
+            ->when($wilayahId, function ($q) use ($wilayahId) {
+                $q->where(function ($q2) use ($wilayahId) {
+                    $q2->where('wilayah_id', $wilayahId)
+                       ->orWhereHas('ranting', function ($q3) use ($wilayahId) {
+                           $q3->where('wilayah_id', $wilayahId);
+                       })
+                       ->orWhereHas('user', function ($q3) use ($wilayahId) {
+                           $q3->where('wilayah_id', $wilayahId);
+                       });
+                });
+            })
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
+            ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))
+            ->orderByDesc('date')
+            ->get();
+    }
+
+    /**
      * Get Data Distribusi Koin NU PC.
      * @param $startDate
      * @param $endDate

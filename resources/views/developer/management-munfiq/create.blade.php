@@ -16,7 +16,7 @@
                 <select name="data_ranting_id" id="data_ranting_id" class="mt-1 block w-full rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 text-sm outline-none ring-0 focus:border-green-300" required>
                     <option value="">Pilih Ranting</option>
                     @foreach($rantings as $ranting)
-                        <option value="{{ $ranting->id }}" {{ old('data_ranting_id') == $ranting->id ? 'selected' : '' }}>{{ $ranting->nama }} (Kode: {{ $ranting->kode_ranting }})</option>
+                        <option value="{{ $ranting->id }}" {{ old('data_ranting_id') == $ranting->id ? 'selected' : '' }}>{{ $ranting->nama_ranting }} (Kode: {{ $ranting->kode_ranting }})</option>
                     @endforeach
                 </select>
                 @error('data_ranting_id') <span class="mt-1 block text-xs text-red-500">{{ $message }}</span> @enderror

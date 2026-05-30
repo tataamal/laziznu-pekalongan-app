@@ -12,7 +12,6 @@ class InfaqPcDistribution extends Model
         "distribution_code",
         "date",
         "jenis_pilar",
-        "deskripsi",
         "jumlah_penerima_manfaat",
         "keterangan",
         "jumlah_total_distribusi",

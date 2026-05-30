@@ -85,10 +85,10 @@
             <div>
                 <h3 class="text-lg font-bold text-slate-800 mb-4 ml-1">Riwayat Pemasukan</h3>
                 <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden text-sm">
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto overflow-y-auto" style="max-height: 480px;">
                         <table class="w-full border-collapse" id="dataMwcTablePemasukan">
-                            <thead>
-                                <tr class="bg-slate-50/80 border-b border-slate-100">
+                            <thead class="sticky top-0 z-10 bg-slate-50/95 backdrop-blur-md">
+                                <tr class="border-b border-slate-100">
                                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Kode Transaksi</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Wilayah MWC</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jenis Transaksi</th>
@@ -142,10 +142,10 @@
             <div>
                 <h3 class="text-lg font-bold text-slate-800 mb-4 ml-1">Riwayat Pengeluaran</h3>
                 <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden text-sm">
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto overflow-y-auto" style="max-height: 480px;">
                         <table class="w-full border-collapse" id="dataMwcTablePengeluaran">
-                            <thead>
-                                <tr class="bg-slate-50/80 border-b border-slate-100">
+                            <thead class="sticky top-0 z-10 bg-slate-50/95 backdrop-blur-md">
+                                <tr class="border-b border-slate-100">
                                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Kode Transaksi</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Wilayah MWC</th>
                                     <th class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Jenis Transaksi</th>

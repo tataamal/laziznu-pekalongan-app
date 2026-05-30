@@ -23,7 +23,7 @@ class ManagementMunfiqController extends Controller
                 $q->where('nama', 'like', "%{$search}%")
                   ->orWhere('kode_kaleng', 'like', "%{$search}%")
                   ->orWhereHas('data_ranting', function ($qr) use ($search) {
-                      $qr->where('nama', 'like', "%{$search}%");
+                      $qr->where('nama_ranting', 'like', "%{$search}%");
                   });
             });
         }
@@ -34,14 +34,14 @@ class ManagementMunfiqController extends Controller
 
     public function create()
     {
-        $rantings = DataRanting::where('wilayah_id', auth()->user()->wilayah_id)->orderBy('nama')->get();
+        $rantings = DataRanting::where('wilayah_id', auth()->user()->wilayah_id)->orderBy('nama_ranting')->get();
         return view('mwc.management-munfiq.create', compact('rantings'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'data_ranting_id' => 'required|exists:data_ranting,id',
+            'data_ranting_id' => 'required|exists:data_rantings,id',
             'nama' => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:L,P',
             'alamat' => 'nullable|string',
@@ -83,7 +83,7 @@ class ManagementMunfiqController extends Controller
     {
         abort_if($management_munfiq->data_ranting->wilayah_id != auth()->user()->wilayah_id, 403);
         $munfiq = $management_munfiq;
-        $rantings = DataRanting::where('wilayah_id', auth()->user()->wilayah_id)->orderBy('nama')->get();
+        $rantings = DataRanting::where('wilayah_id', auth()->user()->wilayah_id)->orderBy('nama_ranting')->get();
         return view('mwc.management-munfiq.edit', compact('munfiq', 'rantings'));
     }
 
@@ -92,12 +92,12 @@ class ManagementMunfiqController extends Controller
         abort_if($management_munfiq->data_ranting->wilayah_id != auth()->user()->wilayah_id, 403);
         
         $request->validate([
-            'data_ranting_id' => 'required|exists:data_ranting,id',
+            'data_ranting_id' => 'required|exists:data_rantings,id',
             'nama' => 'required|string|max:255',
             'jenis_kelamin' => 'required|in:L,P',
             'alamat' => 'nullable|string',
             'status' => 'required|in:Aktif,Pasif',
-            'kode_kaleng' => 'required|string|max:255|unique:munfiq_data,kode_kaleng,' . $management_munfiq->id,
+            'kode_kaleng' => 'required|string|max:255|unique:data_munfiqs,kode_kaleng,' . $management_munfiq->id,
         ]);
 
         $ranting = DataRanting::where('wilayah_id', auth()->user()->wilayah_id)->findOrFail($request->data_ranting_id);

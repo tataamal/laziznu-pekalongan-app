@@ -29,13 +29,21 @@ class InfaqMwcDistributionRepository
     }
 
     public function getDistributions(
-        int $wilayahId,
+        ?int $wilayahId = null,
         ?string $jenisPilar = null,
         ?string $startDate = null,
         ?string $endDate = null
     ): Collection {
         return InfaqMwcDistribution::query()
-            ->where('wilayah_id', $wilayahId)
+            ->with(['user', 'user.wilayah'])
+            ->when($wilayahId, function ($q) use ($wilayahId) {
+                $q->where(function ($q2) use ($wilayahId) {
+                    $q2->where('wilayah_id', $wilayahId)
+                       ->orWhereHas('user', function ($q3) use ($wilayahId) {
+                           $q3->where('wilayah_id', $wilayahId);
+                       });
+                });
+            })
             ->when($jenisPilar, fn($q) => $q->where('jenis_pilar', $jenisPilar))
             ->when($startDate, fn($q) => $q->where('date', '>=', $startDate))
             ->when($endDate, fn($q) => $q->where('date', '<=', $endDate))

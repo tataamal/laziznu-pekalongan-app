@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create("InfaqPcDistribution", function (Blueprint $table) {
+        Schema::create("infaq_pc_distributions", function (Blueprint $table) {
             $table->id();
             $table->foreignId("user_id")->constrained("users")->onDelete("cascade");
             $table->string("distribution_code")->unique();
@@ -29,6 +29,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists("InfaqPcDistribution");
+        Schema::dropIfExists("infaq_pc_distributions");
     }
 };

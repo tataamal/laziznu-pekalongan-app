@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Pc;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\InfaqPcTransactionervice;
-use App\Services\InfaqPcDistributionervice;
+use App\Services\InfaqPcTransactionService;
+use App\Services\InfaqPcDistributionService;
 use App\Repositories\InfaqPcTransactionRepository;
 use App\Repositories\InfaqPcDistributionRepository;
 use Illuminate\Support\Facades\Auth;
@@ -13,14 +13,14 @@ use Illuminate\Support\Facades\DB;
 
 class InfaqController extends Controller
 {
-    protected InfaqPcTransactionervice $transactionService;
-    protected InfaqPcDistributionervice $distributionService;
+    protected InfaqPcTransactionService $transactionService;
+    protected InfaqPcDistributionService $distributionService;
     protected InfaqPcTransactionRepository $transactionRepo;
     protected InfaqPcDistributionRepository $distributionRepo;
 
     public function __construct(
-        InfaqPcTransactionervice $transactionService,
-        InfaqPcDistributionervice $distributionService,
+        InfaqPcTransactionService $transactionService,
+        InfaqPcDistributionService $distributionService,
         InfaqPcTransactionRepository $transactionRepo,
         InfaqPcDistributionRepository $distributionRepo
     ) {
@@ -56,7 +56,7 @@ class InfaqController extends Controller
             $item->transaction_type = 'Pengeluaran';
             $item->transaction_date = $item->date;
             $item->infaq_type = $item->jenis_pilar;
-            $item->description = $item->deskripsi;
+            $item->description = $item->keterangan;
             $item->gross_amount = $item->jumlah_total_distribusi;
             $item->penerima_manfaat = $item->jumlah_penerima_manfaat;
             $item->net_amount = 0;
@@ -103,7 +103,6 @@ class InfaqController extends Controller
                 $data = [
                     'date' => $validated['transaction_date'],
                     'jenis_pilar' => $validated['infaq_type'],
-                    'deskripsi' => $validated['description'] ?? '',
                     'keterangan' => $validated['description'] ?? '',
                     'jumlah_total_distribusi' => $validated['gross_amount'],
                     'jumlah_penerima_manfaat' => $validated['penerima_manfaat'] ?? 0,
@@ -144,7 +143,7 @@ class InfaqController extends Controller
                 $data = [
                     'date' => $validated['transaction_date'],
                     'jenis_pilar' => $validated['infaq_type'],
-                    'deskripsi' => $validated['description'] ?? '',
+                    'keterangan' => $validated['description'] ?? '',
                     'jumlah_total_distribusi' => $validated['gross_amount'],
                     'jumlah_penerima_manfaat' => $validated['penerima_manfaat'] ?? 0,
                 ];
@@ -174,6 +173,24 @@ class InfaqController extends Controller
 
     public function bulkDelete(Request $request)
     {
-        return redirect()->route('pc.infaq.index')->withErrors(['error' => 'Bulk Delete dinonaktifkan pada menu ini setelah pembaruan arsitektur.']);
+        $ids = $request->input('ids');
+        if ($ids && is_array($ids)) {
+            foreach ($ids as $val) {
+                $parts = explode('-', $val, 2);
+                if (count($parts) === 2) {
+                    $type = $parts[0];
+                    $id = (int)$parts[1];
+
+                    if ($type === 'Pemasukan') {
+                        $this->transactionService->deleteTransaction($id);
+                    } elseif ($type === 'Pengeluaran') {
+                        $this->distributionService->deleteDistribution($id);
+                    }
+                }
+            }
+            return redirect()->route('pc.infaq.index')->with('success', 'Data transaksi terpilih berhasil dihapus.');
+        }
+
+        return redirect()->route('pc.infaq.index')->withErrors(['error' => 'Tidak ada data yang dipilih untuk dihapus.']);
     }
 }

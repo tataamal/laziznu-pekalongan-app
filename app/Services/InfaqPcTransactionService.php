@@ -6,7 +6,7 @@ use App\Repositories\InfaqPcTransactionRepository;
 use App\Models\InfaqPcTransaction;
 use Illuminate\Support\Facades\Auth;
 
-class InfaqPcTransactionervice
+class InfaqPcTransactionService
 {
     protected InfaqPcTransactionRepository $repository;
 
@@ -53,7 +53,7 @@ class InfaqPcTransactionervice
         $danaDigunakan = $bersih - $hakAmil;
 
         return [
-            'pemasukan_infaq_bersih' => $bersih,
+            'pemasukan_infaq_bersih' => $danaDigunakan,
             'hak_amil' => $hakAmil,
             'infaq_yang_dapat_digunakan' => $danaDigunakan,
         ];

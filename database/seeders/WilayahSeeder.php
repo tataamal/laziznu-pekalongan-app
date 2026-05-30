@@ -32,12 +32,14 @@ class WilayahSeeder extends Seeder
         ];
 
         foreach ($list as $nama) {
-            Wilayah::create([
-                'nama_wilayah' => $nama,
-                'alamat' => 'Jl. ' . $nama,
-                'pic' => 'Admin',
-                'no_telp' => '081234567890',
-            ]);
+            Wilayah::updateOrCreate(
+                ['nama_wilayah' => $nama],
+                [
+                    'alamat' => 'Jl. ' . $nama,
+                    'pic' => 'Admin',
+                    'no_telp' => '081234567890',
+                ]
+            );
         }
     }
 }
